@@ -1,0 +1,2759 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<title>Шляхи людства</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  color-scheme: light;
+  --plane: #f6f5f1;
+  --surface: #fcfcfb;
+  --surface-2: #f0efea;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #7d7b75;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --ring: rgba(11, 11, 11, 0.10);
+  --accent: #1c5cab;
+  --bar: #6da7ec;
+  --warn: #d03b3b;
+  --c-libdem: #2a78d6; --c-autocratic: #eb6834; --c-socdem: #1baf7a; --c-oligarchic: #eda100;
+  --c-dominated: #e87ba4; --c-council: #008300; --c-technofeudal: #6250d6; --c-socialist: #e34948;
+  --c-collapse: #a8a6a0;
+  --radius: 12px;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --plane: #0d0d0d; --surface: #1a1a19; --surface-2: #232321;
+    --ink: #f0efec; --ink-2: #c3c2b7; --muted: #8f8d86; --grid: #2c2c2a; --axis: #383835;
+    --ring: rgba(255, 255, 255, 0.10); --accent: #86b6ef; --bar: #3987e5; --warn: #e66767;
+    --c-libdem: #3987e5; --c-autocratic: #d95926; --c-socdem: #199e70; --c-oligarchic: #c98500;
+    --c-dominated: #d55181; --c-council: #008300; --c-technofeudal: #9085e9; --c-socialist: #e66767;
+    --c-collapse: #6b6a66;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --plane: #0d0d0d; --surface: #1a1a19; --surface-2: #232321;
+  --ink: #f0efec; --ink-2: #c3c2b7; --muted: #8f8d86; --grid: #2c2c2a; --axis: #383835;
+  --ring: rgba(255, 255, 255, 0.10); --accent: #86b6ef; --bar: #3987e5; --warn: #e66767;
+  --c-libdem: #3987e5; --c-autocratic: #d95926; --c-socdem: #199e70; --c-oligarchic: #c98500;
+  --c-dominated: #d55181; --c-council: #008300; --c-technofeudal: #9085e9; --c-socialist: #e66767;
+  --c-collapse: #6b6a66;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--plane); color: var(--ink); font: 15px/1.5 var(--font); }
+h1, h2, h3 { margin: 0; line-height: 1.25; }
+h2 { font-size: 15px; font-weight: 650; }
+h3 { font-size: 14px; font-weight: 650; }
+p { margin: 0; }
+a { color: var(--accent); }
+button, select, input { font: inherit; color: inherit; }
+[hidden] { display: none !important; }
+.muted { color: var(--ink-2); }
+.small { font-size: 13px; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* ---------- шапка ---------- */
+.top { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; padding: 14px 24px; border-bottom: 1px solid var(--grid); background: var(--surface); position: sticky; top: 0; z-index: 5; }
+.brand h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
+.brand .sub { color: var(--ink-2); font-size: 13px; }
+.nav { display: flex; gap: 4px; margin-left: auto; flex-wrap: wrap; }
+.navl { padding: 7px 12px; border-radius: 999px; color: var(--ink-2); text-decoration: none; font-weight: 550; font-size: 14px; }
+.navl:hover { background: var(--surface-2); color: var(--ink); }
+.navl.on { background: var(--ink); color: var(--surface); }
+.langs { display: flex; }
+
+main { max-width: 1320px; margin: 0 auto; padding: 18px 24px 48px; }
+.intro { color: var(--ink-2); max-width: 820px; margin: 4px 0 14px; }
+.endnote { background: var(--surface); border: 1px solid var(--grid); border-left: 3px solid var(--accent); padding: 10px 14px; border-radius: 8px; margin-bottom: 14px; }
+
+/* ---------- кнопки ---------- */
+.btn { border: 1px solid var(--ring); background: var(--surface); padding: 7px 14px; border-radius: 8px; cursor: pointer; font-weight: 550; font-size: 14px; }
+.btn:hover { background: var(--surface-2); }
+.btn.primary { background: var(--ink); color: var(--surface); border-color: var(--ink); min-width: 84px; }
+.btn.primary:hover { opacity: .88; }
+.btn.small { padding: 4px 10px; font-size: 13px; }
+.btn:disabled { opacity: .5; cursor: default; }
+.segs { display: inline-flex; border: 1px solid var(--ring); border-radius: 8px; overflow: hidden; background: var(--surface); }
+.seg { border: 0; background: transparent; padding: 7px 11px; cursor: pointer; font-size: 14px; font-weight: 550; color: var(--ink-2); }
+.seg + .seg { border-left: 1px solid var(--ring); }
+.seg.on, .seg[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+.langs .seg { border: 1px solid var(--ring); }
+.langs .seg:first-child { border-radius: 8px 0 0 8px; } .langs .seg:last-child { border-radius: 0 8px 8px 0; border-left: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--ring); background: var(--surface); border-radius: 999px; padding: 3px 10px; font-size: 13px; cursor: pointer; color: var(--ink-2); }
+.chip.on { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.year { font-size: 34px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; min-width: 3.2em; }
+.ctls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+/* ---------- картки ---------- */
+.card { background: var(--surface); border: 1px solid var(--ring); border-radius: var(--radius); padding: 16px; }
+.card + .card { margin-top: 14px; }
+.cardhead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 14px; margin-bottom: 10px; }
+
+.live { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 14px; align-items: start; }
+.col-main { min-width: 0; }
+.col-side { position: sticky; top: 76px; max-height: calc(100vh - 92px); overflow-y: auto; }
+
+/* ---------- плитки блоків ---------- */
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+.tile { position: relative; text-align: left; border: 1px solid var(--ring); background: var(--surface); border-radius: var(--radius); padding: 12px 12px 10px 16px; cursor: pointer; overflow: hidden; display: flex; flex-direction: column; gap: 6px; }
+.tile::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--cc, var(--axis)); transition: background .4s; }
+.tile:hover { background: var(--surface-2); }
+.tile.sel { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
+.tile .tname { font-weight: 650; display: flex; justify-content: space-between; gap: 6px; align-items: baseline; }
+.tile .tgdp { color: var(--muted); font-size: 12px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.catlab { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; }
+.dot { width: 10px; height: 10px; border-radius: 3px; flex: none; background: var(--cc, var(--axis)); }
+.tile .tsub { color: var(--ink-2); font-size: 12px; line-height: 1.35; }
+.wartag { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 650; color: var(--warn); text-transform: uppercase; letter-spacing: .04em; }
+.meters { display: grid; grid-template-columns: auto 1fr auto; gap: 3px 8px; align-items: center; font-size: 11.5px; color: var(--ink-2); }
+.meter { display: block; height: 6px; background: var(--surface-2); border-radius: 3px; overflow: hidden; }
+.meter i { display: block; height: 100%; background: var(--bar); border-radius: 3px; transition: width .3s; }
+.meter.hot i { background: var(--warn); }
+
+/* ---------- часова стрічка ---------- */
+.timeline { width: 100%; position: relative; }
+.timeline svg { display: block; width: 100%; height: auto; }
+.legend { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--ink-2); }
+.legend li { display: inline-flex; align-items: center; gap: 6px; }
+.legend .dot { width: 11px; height: 11px; }
+
+.tl { display: grid; gap: 5px; }
+.tlr { display: grid; grid-template-columns: 128px minmax(0, 1fr); align-items: center; gap: 8px; font-size: 12.5px; }
+.tll { color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tlb { cursor: pointer; border-radius: 3px; }
+.tlb svg { display: block; width: 100%; }
+.tlb.sel { outline: 2px solid var(--ink); outline-offset: 1px; }
+.tlaxis { position: relative; height: 16px; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tlaxis span { position: absolute; top: 0; transform: translateX(-50%); }
+.tlaxis span:first-child { transform: none; }
+.tlnote { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+/* ---------- хроніка ---------- */
+.chron { list-style: none; margin: 0; padding: 0; max-height: 420px; overflow-y: auto; }
+.chron li { display: grid; grid-template-columns: 44px 1fr; gap: 2px 10px; padding: 8px 0; border-top: 1px solid var(--grid); font-size: 14px; }
+.chron li:first-child { border-top: 0; }
+.chron .cy { font-weight: 650; font-variant-numeric: tabular-nums; color: var(--ink-2); }
+.chron .shift { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-2); margin-top: 3px; }
+.chron .why { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+.chron li.k-transition .ct { font-weight: 600; }
+.chron .empty { display: block; color: var(--muted); border: 0; }
+
+/* ---------- обраний блок ---------- */
+.selhead { display: flex; flex-direction: column; gap: 6px; padding-bottom: 12px; border-bottom: 1px solid var(--grid); }
+.selhead h2 { font-size: 20px; }
+.selhead .catlab { font-size: 15px; }
+.selhead .desc { color: var(--ink-2); font-size: 13px; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; font-size: 13px; }
+.kv dt { color: var(--muted); } .kv dd { margin: 0; }
+.real { font-size: 12.5px; color: var(--ink-2); display: block; }
+.real .catlab { font-size: 12.5px; vertical-align: middle; }
+.sec { padding: 12px 0; border-bottom: 1px solid var(--grid); }
+.sec:last-child { border-bottom: 0; }
+.sec > h3 { margin-bottom: 8px; }
+.bars { display: grid; grid-template-columns: minmax(0, 1.4fr) 1fr 30px; gap: 5px 8px; align-items: center; font-size: 12.5px; }
+.bars .v { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink-2); }
+.sparks { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; }
+.spark { font-size: 12px; color: var(--ink-2); }
+.spark .sl { display: flex; justify-content: space-between; gap: 6px; }
+.spark .sl b { color: var(--ink); font-weight: 650; font-variant-numeric: tabular-nums; }
+.spark svg { display: block; width: 100%; height: 44px; overflow: visible; }
+.gtable { width: 100%; border-collapse: collapse; font-size: 12px; table-layout: fixed; }
+.gtable th:first-child { width: 28%; }
+.gtable th { font-size: 11.5px; line-height: 1.25; vertical-align: bottom; }
+.gtable th { font-weight: 600; color: var(--ink-2); text-align: left; padding: 2px 4px; }
+.gtable td { padding: 2px 4px; }
+.gtable td:first-child { color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cell { display: grid; grid-template-columns: 1fr 22px; gap: 4px; align-items: center; }
+.cell span { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+.gtable tr.sep td { padding-top: 6px; border-top: 1px solid var(--grid); }
+.ideas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.ideas h4 { margin: 0 0 4px; font-size: 12px; font-weight: 600; color: var(--ink-2); }
+.ideas .bars { grid-template-columns: minmax(0, 1fr) 26px; font-size: 11.5px; gap: 1px 4px; }
+.ideas .bars .lab { grid-column: 1 / -1; display: flex; justify-content: space-between; }
+.ideas .bars .meter { grid-column: 1 / -1; height: 5px; margin-bottom: 3px; }
+.people { display: grid; gap: 10px; }
+.person { border: 1px solid var(--grid); border-radius: 10px; padding: 10px 12px; }
+.person .pn { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.person .pn b { font-weight: 650; }
+.person .pr { color: var(--muted); font-size: 12px; }
+.mood { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 6px 0; font-size: 11px; color: var(--ink-2); }
+.diary { list-style: none; padding: 0; margin: 0; font-size: 13px; }
+.diary li { padding: 3px 0; display: grid; grid-template-columns: 38px 1fr; gap: 6px; }
+.diary li span { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 12px; padding-top: 1px; }
+.diary li:first-child { color: var(--ink); }
+.diary li:not(:first-child) { color: var(--ink-2); }
+
+/* ---------- майбутні ---------- */
+.futgrid { display: grid; grid-template-columns: 380px minmax(0, 1fr); gap: 14px; margin-bottom: 14px; align-items: start; }
+.futgrid .card + .card { margin-top: 0; }
+.presets { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 12px; }
+.slider { margin-bottom: 12px; }
+.slider label { display: flex; justify-content: space-between; font-size: 13.5px; font-weight: 550; }
+.slider label output { color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.slider input { width: 100%; accent-color: var(--ink); margin: 4px 0 0; }
+.slider .ends { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--muted); }
+.runrow { display: flex; align-items: center; gap: 8px; margin: 6px 0 10px; font-size: 14px; }
+.runrow select { border: 1px solid var(--ring); border-radius: 8px; padding: 6px 8px; background: var(--surface); }
+.runrow .btn { margin-left: auto; }
+.progress { position: relative; height: 22px; border-radius: 6px; background: var(--surface-2); overflow: hidden; margin-bottom: 10px; font-size: 12px; }
+.progress i { position: absolute; inset: 0 auto 0 0; background: var(--bar); opacity: .35; width: 0; }
+.progress span { position: relative; padding: 0 8px; line-height: 22px; }
+.hl { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.hl th { text-align: left; font-weight: 600; color: var(--ink-2); font-size: 12.5px; padding: 4px 8px 6px 0; border-bottom: 1px solid var(--grid); }
+.hl td { padding: 7px 8px 7px 0; border-bottom: 1px solid var(--grid); vertical-align: top; }
+.hl tr:last-child td { border-bottom: 0; }
+.hl .catlab { font-weight: 550; }
+.hl .pct { font-variant-numeric: tabular-nums; color: var(--ink-2); font-weight: 500; }
+.multiples { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 18px; }
+.mult h3 { margin-bottom: 4px; }
+.mult svg { display: block; width: 100%; height: auto; overflow: visible; }
+.mult .sub { font-size: 12px; color: var(--muted); }
+.paths { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 18px; margin-top: 10px; }
+.paths ol { margin: 4px 0 0; padding: 0; list-style: none; font-size: 13px; }
+.paths li { padding: 4px 0; border-top: 1px solid var(--grid); display: grid; grid-template-columns: 40px 1fr; gap: 6px; }
+.paths li b { font-variant-numeric: tabular-nums; font-weight: 600; }
+.pathseq { display: inline-flex; flex-wrap: wrap; gap: 2px 4px; align-items: center; }
+.pathseq .dot { width: 9px; height: 9px; }
+.ftable { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-bottom: 14px; }
+.ftable caption { text-align: left; font-weight: 650; padding: 6px 0; }
+.ftable th, .ftable td { padding: 3px 6px; border-bottom: 1px solid var(--grid); text-align: right; font-variant-numeric: tabular-nums; }
+.ftable th:first-child, .ftable td:first-child { text-align: left; }
+.scroll { overflow-x: auto; }
+
+/* ---------- метод ---------- */
+.prose { max-width: 860px; margin: 0 auto; background: var(--surface); border: 1px solid var(--ring); border-radius: var(--radius); padding: 24px 28px; }
+.prose h2 { font-size: 18px; margin: 26px 0 8px; }
+.prose h2:first-child { margin-top: 0; }
+.prose p { margin: 0 0 10px; }
+.prose ul { padding-left: 20px; margin: 0 0 10px; }
+.prose li { margin-bottom: 4px; }
+.debate { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 6px 0 10px; }
+.debate p { background: var(--surface-2); border-radius: 10px; padding: 12px 14px; margin: 0; font-size: 14px; }
+.bt { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 10px 0; }
+.bt th { text-align: left; color: var(--ink-2); font-weight: 600; font-size: 12.5px; border-bottom: 1px solid var(--axis); padding: 4px 6px; }
+.bt td { border-bottom: 1px solid var(--grid); padding: 5px 6px; vertical-align: middle; }
+.bt td.n { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bt .meter { width: 90px; display: inline-block; vertical-align: middle; margin-right: 6px; }
+
+/* ---------- підказка ---------- */
+.tip { position: fixed; z-index: 20; pointer-events: none; background: var(--surface); color: var(--ink); border: 1px solid var(--ring); box-shadow: 0 6px 24px rgba(0, 0, 0, .14); border-radius: 8px; padding: 8px 10px; font-size: 12.5px; max-width: 280px; }
+.tip b { font-weight: 650; }
+.tip .tr { display: flex; align-items: center; gap: 6px; justify-content: space-between; }
+.tip .tr span:last-child { font-variant-numeric: tabular-nums; color: var(--ink-2); }
+.tip .tr .catlab { font-weight: 500; font-size: 12.5px; }
+
+/* ---------- адаптивність ---------- */
+@media (max-width: 1100px) {
+  .live { grid-template-columns: 1fr; }
+  .col-side { position: static; max-height: none; }
+  .futgrid { grid-template-columns: 1fr; }
+}
+@media (max-width: 760px) {
+  .top { padding: 10px 16px; position: static; }
+  .nav { margin-left: 0; order: 3; width: 100%; }
+  .langs { margin-left: auto; }
+  main { padding: 14px 16px 40px; }
+  .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tlr { grid-template-columns: 84px minmax(0, 1fr); }
+  .multiples, .paths { grid-template-columns: 1fr; }
+  .debate { grid-template-columns: 1fr; }
+  .prose { padding: 18px 16px; }
+  .year { font-size: 28px; }
+  .ideas { grid-template-columns: 1fr; }
+}
+@media (max-width: 420px) {
+  .tiles { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .tile { padding: 10px 8px 8px 12px; }
+  .sparks { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <h1 data-i18n="title">Шляхи людства</h1>
+    <p class="sub" data-i18n="subtitle"></p>
+  </div>
+  <nav class="nav" role="tablist">
+    <a href="#live" class="navl" data-view="live" data-i18n="nav.live"></a>
+    <a href="#futures" class="navl" data-view="futures" data-i18n="nav.futures"></a>
+    <a href="#method" class="navl" data-view="method" data-i18n="nav.method"></a>
+  </nav>
+  <div class="langs" role="group" aria-label="Мова / Sprache">
+    <button class="seg lang" data-lang="uk" lang="uk">UK</button>
+    <button class="seg lang" data-lang="de" lang="de">DE</button>
+  </div>
+</header>
+
+<main>
+  <!-- ============ СИМУЛЯЦІЯ ============ -->
+  <section class="view" id="view-live">
+    <div class="toolbar">
+      <div class="segs" role="group">
+        <button class="seg mode" data-mode="history" data-i18n="mode.history"></button>
+        <button class="seg mode" data-mode="future" data-i18n="mode.future"></button>
+      </div>
+      <div class="year" id="year" aria-live="polite">1900</div>
+      <div class="ctls">
+        <button class="btn primary" id="play"></button>
+        <button class="btn" id="step" data-i18n="ctl.step"></button>
+        <div class="segs" role="group" id="speeds" data-i18n-aria="ctl.speed"></div>
+        <button class="btn" id="reset" data-i18n="ctl.new"></button>
+      </div>
+    </div>
+    <p class="intro" data-i18n="live.intro"></p>
+    <p class="endnote" id="endnote" hidden data-i18n="live.end"></p>
+
+    <div class="live">
+      <div class="col-main">
+        <div class="tiles" id="tiles"></div>
+        <section class="card">
+          <div class="cardhead">
+            <h2 data-i18n="live.timeline"></h2>
+          </div>
+          <div class="timeline" id="timeline"></div>
+          <ul class="legend" id="legendLive"></ul>
+        </section>
+        <section class="card">
+          <div class="cardhead">
+            <h2 data-i18n="live.chron"></h2>
+            <div class="chips" id="chronFilter">
+              <button class="chip" data-f="all" data-i18n="f.all"></button>
+              <button class="chip" data-f="transition" data-i18n="f.transition"></button>
+              <button class="chip" data-f="war" data-i18n="f.war"></button>
+              <button class="chip" data-f="shock" data-i18n="f.shock"></button>
+              <button class="chip" data-f="politics" data-i18n="f.politics"></button>
+            </div>
+          </div>
+          <ol class="chron" id="chron"></ol>
+        </section>
+      </div>
+      <aside class="col-side card" id="selected"></aside>
+    </div>
+  </section>
+
+  <!-- ============ МОЖЛИВІ МАЙБУТНІ ============ -->
+  <section class="view" id="view-futures" hidden>
+    <p class="intro" data-i18n="fu.intro"></p>
+    <div class="futgrid">
+      <section class="card knobs">
+        <h2 data-i18n="fu.knobs"></h2>
+        <div class="presets" id="presets"></div>
+        <div id="sliders"></div>
+        <div class="runrow">
+          <label for="nRuns" data-i18n="fu.runs"></label>
+          <select id="nRuns"><option value="100">100</option><option value="200" selected>200</option><option value="400">400</option></select>
+          <button class="btn primary" id="goFut" data-i18n="fu.go"></button>
+        </div>
+        <div class="progress" id="futProg" hidden><i></i><span></span></div>
+        <p class="muted small" data-i18n="fu.note"></p>
+      </section>
+      <section class="card headline">
+        <h2 data-i18n="fu.headline"></h2>
+        <div id="headline"></div>
+      </section>
+    </div>
+    <section class="card">
+      <div class="cardhead">
+        <ul class="legend" id="legendFut"></ul>
+        <button class="btn small" id="futToggle"></button>
+      </div>
+      <div class="multiples" id="multiples"></div>
+      <div id="futTable" hidden></div>
+    </section>
+    <section class="card">
+      <h2 data-i18n="fu.paths"></h2>
+      <p class="muted small" data-i18n="fu.pathHint"></p>
+      <div class="paths" id="paths"></div>
+    </section>
+  </section>
+
+  <!-- ============ МЕТОД ============ -->
+  <section class="view" id="view-method" hidden>
+    <article class="prose">
+      <h2 data-i18n="me.what.h"></h2>
+      <p data-i18n="me.what.p"></p>
+      <h2 data-i18n="me.how.h"></h2>
+      <p data-i18n-html="me.how.1"></p>
+      <p data-i18n-html="me.how.2"></p>
+      <p data-i18n-html="me.how.3"></p>
+      <p data-i18n-html="me.how.4"></p>
+      <p data-i18n-html="me.how.5"></p>
+      <p data-i18n-html="me.how.6"></p>
+      <h2 data-i18n="me.tf.h"></h2>
+      <div class="debate">
+        <p data-i18n-html="me.tf.pro"></p>
+        <p data-i18n-html="me.tf.con"></p>
+      </div>
+      <p data-i18n-html="me.tf.model"></p>
+      <h2 data-i18n="me.bt.h"></h2>
+      <p data-i18n="me.bt.p"></p>
+      <div id="backtest"></div>
+      <h2 data-i18n="me.lim.h"></h2>
+      <ul>
+        <li data-i18n="me.lim.1"></li><li data-i18n="me.lim.2"></li><li data-i18n="me.lim.3"></li>
+        <li data-i18n="me.lim.4"></li><li data-i18n="me.lim.5"></li><li data-i18n="me.lim.6"></li>
+      </ul>
+      <h2 data-i18n="me.src.h"></h2>
+      <p data-i18n="me.theory"></p>
+      <ul id="sources"></ul>
+    </article>
+  </section>
+</main>
+
+<div class="tip" id="tip" role="tooltip" hidden></div>
+
+<script>
+/* ============================================================
+   Тексти інтерфейсу: українська та німецька.
+   Підстановки: {name} — параметр; {f?жіноча|чоловіча} — вибір за булевим параметром.
+   ============================================================ */
+(function (H) {
+  'use strict';
+  const uk = {
+    title: 'Шляхи людства',
+    subtitle: 'модель політичних систем, 1900–2100',
+    'nav.live': 'Симуляція', 'nav.futures': 'Можливі майбутні', 'nav.method': 'Як це працює',
+    'mode.history': 'Історія 1900→2025', 'mode.future': 'Майбутнє 2025→2100',
+    'ctl.play': 'Пуск', 'ctl.pause': 'Пауза', 'ctl.step': '+1 рік', 'ctl.new': 'Новий прогін', 'ctl.speed': 'Швидкість',
+    'ctl.yps': '{n} р/с',
+    'live.intro': 'Один можливий перебіг подій. Кожен прогін трохи інший: випадковість — частина історії. Натисніть на блок, щоб побачити його людей і причини змін.',
+    'live.timeline': 'Системи за роками', 'live.real': 'реально', 'live.model': 'модель',
+    'live.chron': 'Хроніка', 'live.why': 'Чому', 'live.empty': 'Поки нічого не сталося. Натисніть «Пуск».',
+    'f.all': 'Усе', 'f.transition': 'Зміни системи', 'f.war': 'Війни', 'f.shock': 'Шоки', 'f.politics': 'Вибори й реформи',
+    'live.end': 'Кінець прогону. Спробуйте «Новий прогін» — або подивіться «Можливі майбутні», де сотні прогонів зведено разом.',
+    'war': 'війна', 'atWar': 'Війна', 'gdp': 'ВВП/особу', 'kusd': 'тис. $',
+    'sel.system': 'Система', 'sel.regime': 'Режим', 'sel.order': 'Економіка', 'sel.gov': 'Ідеологія влади',
+    'sel.pressure': 'Тиск на систему (за Турчином)', 'sel.trends': 'Як змінювалося', 'sel.groups': 'Потреби й почуття груп',
+    'sel.ideas': 'Які ідеї поширені', 'sel.people': 'Люди', 'sel.diary': 'Щоденник',
+    'sel.real': 'Насправді цього року: {cat}',
+    'm.mmp': 'Зубожіння мас', 'm.emp': 'Надлишок еліт', 'm.sfd': 'Слабкість держави (фінанси)', 'm.psi': 'Загальний стрес',
+    'm.gdp': 'ВВП на особу, тис. $', 'm.omega': 'Частка доходу верхніх 10%', 'm.legit': 'Легітимність влади',
+    'm.inc': 'Голос простих людей (інклюзивність)', 'm.plat': 'Сила власників платформ', 'm.anger': 'Гнів простих людей',
+    'ms.psi': 'Стрес', 'ms.anger': 'Гнів', 'ms.legit': 'Легітимність', 'ms.gdp': 'ВВП на особу',
+    'g.C': 'Прості люди', 'g.A': 'Освічені претенденти', 'g.E': 'Еліти', 'g.S': 'Держава й армія',
+    'role.C': 'працює', 'role.A': '{f?освічена, прагне нагору|освічений, прагне нагору}', 'role.E': 'з еліти', 'role.S': 'на державній службі',
+    'n.mat': 'Достаток', 'n.sec': 'Безпека', 'n.status': 'Статус', 'n.voice': 'Голос', 'n.belong': 'Належність', 'n.meaning': 'Сенс',
+    'e.anger': 'Гнів', 'e.fear': 'Страх', 'e.hope': 'Надія', 'e.trust': 'Довіра', 'e.pride': 'Гордість',
+    'p.age': '{n} р.', 'p.gen': '{n}-е покоління', 'p.mood': 'Настрій',
+    'needsLegend': 'Смуга — наскільки задоволена потреба (0–100).',
+
+    // блоки
+    'b.US': 'США', 'b.EU': 'Європа (ЄС)', 'b.UA': 'Україна', 'b.RU': 'Росія', 'b.CN': 'Китай', 'b.GS': 'Глобальний Південь', 'b.JP': 'Японія',
+    // узагальнені системи
+    'cat.libdem': 'Ліберальна демократія', 'cat.autocratic': 'Автократія', 'cat.socdem': 'Соціальна демократія',
+    'cat.oligarchic': 'Олігархія / гібридний режим', 'cat.dominated': 'Під чужою владою', 'cat.council': 'Радна (кооперативна) демократія',
+    'cat.technofeudal': 'Технофеодалізм', 'cat.socialist': 'Державний соціалізм', 'cat.collapse': 'Розпад / громадянська війна',
+    'cat.democracy': 'Демократія',
+    'catd.libdem': 'Вибори, свободи, ринок із невеликою держбезпекою.',
+    'catd.autocratic': 'Влада однієї особи чи групи без справжніх виборів; ринок під контролем держави.',
+    'catd.socdem': 'Демократія з сильною соціальною державою та профспілками.',
+    'catd.oligarchic': 'Вибори є, але голос мають лише багаті й свої; або конкурентний авторитаризм.',
+    'catd.dominated': 'Колонія, окупація чи частина чужої імперії.',
+    'catd.council': 'Рішення ухвалюють ради працівників і громад; спільна власність на ключові ресурси.',
+    'catd.technofeudal': 'Влада й дохід течуть до власників цифрових платформ як рента: люди залежать від «хмарних маєтків», а не від ринку.',
+    'catd.socialist': 'Однопартійна держава і планова економіка.',
+    'catd.collapse': 'Держави фактично немає: громадянська війна, розпад, хаос.',
+    // режими
+    'reg.autocracy': 'автократія', 'reg.oligarchy': 'олігархічний парламентаризм', 'reg.democracy': 'демократія', 'reg.hybrid': 'гібридний режим',
+    'reg.oneparty': 'однопартійна держава', 'reg.junta': 'військова хунта', 'reg.theocracy': 'теократія', 'reg.technocorp': 'влада платформ (технокорпоратизм)',
+    'reg.council': 'радна демократія', 'reg.collapse': 'розпад',
+    // економічні лади
+    'ord.agrarian': 'аграрна', 'ord.laissez': 'вільний ринок (laissez-faire)', 'ord.welfare': 'соціальна ринкова', 'ord.neoliberal': 'неоліберальна',
+    'ord.planned': 'планова', 'ord.statecap': 'державний капіталізм', 'ord.rentier': 'платформна рента', 'ord.commons': 'спільне надбання (commons)', 'ord.subsistence': 'виживання',
+    // ідеології
+    'ideo.trad': 'традиція, монархія', 'ideo.rel': 'релігійна політика', 'ideo.lib': 'лібералізм', 'ideo.socdem': 'соціал-демократія', 'ideo.soc': 'комунізм / соціалізм',
+    'ideo.nat': 'націоналізм', 'ideo.neolib': 'неолібералізм', 'ideo.tech': 'техно-лібертаріанство', 'ideo.green': 'зелена політика', 'ideo.coop': 'кооперативізм',
+    // причини
+    'c.mmp': 'зубожіння мас', 'c.emp': 'надлишок еліт', 'c.sfd': 'фінансова слабкість держави', 'c.legit': 'втрата легітимності', 'c.anger': 'гнів людей',
+    'c.fear': 'страх', 'c.war': 'поразка у війні', 'c.foreign': 'чужа влада', 'c.platform': 'влада платформ', 'c.stagn': 'застій економіки',
+
+    // переходи (хроніка)
+    'tr.erosion': '{bloc}: поступове розмивання демократії — суди, медіа й вибори підпорядковують владі.',
+    'tr.redemocratize': '{bloc}: повернення до демократії.',
+    'tr.autocratize': '{bloc}: вибори скасовано, влада концентрується в одних руках.',
+    'tr.suffrage': '{bloc}: загальне виборче право — голосувати можуть усі.',
+    'tr.reform': '{bloc}: великі соціальні реформи замість революції (ідея: {by}).',
+    'tr.reformAbove': '{bloc}: реформи згори — влада сама змінює економіку, щоб утриматися.',
+    'tr.opening': '{bloc}: відкриття — ринок і обмежена політична конкуренція.',
+    'tr.populist': '{bloc}: перемога популістів-націоналістів на хвилі гніву.',
+    'tr.protest': '{bloc}: масові протести змусили режим піти — демократичний перехід.',
+    'tr.techCapture': '{bloc}: власники цифрових платформ захоплюють реальну владу.',
+    'tr.stateReassert': '{bloc}: держава силою приборкує платформи й олігархів — і людей разом із ними.',
+    'tr.revolution': '{bloc}: революція. До влади приходять прихильники ідеї «{by}».',
+    'tr.revolutionCivilWar': '{bloc}: революція переростає в громадянську війну (ідея повсталих: {by}).',
+    'tr.reaction': '{bloc}: еліти й армія встановлюють націоналістичну диктатуру, щоб зупинити лівих.',
+    'tr.coup': '{bloc}: військовий переворот.',
+    'tr.collapse': '{bloc}: держава розпадається.',
+    'tr.rebuild': '{bloc}: після хаосу з\'являється нова влада ({by}).',
+    'tr.independence': '{bloc}: незалежність (ідея: {by}).',
+    'tr.independenceWar': '{bloc}: війна за незалежність.',
+    'tr.decolonization': '{bloc}: деколонізація — більшість колоній здобуває незалежність.',
+    'tr.conquered': '{bloc}: завойовано — під владою «{by}».',
+    'tr.occupation': '{bloc}: окупація переможцями й нова демократична конституція.',
+    'tr.shift': '{from} → {to}',
+    // події
+    'ev.joinWar': '{bloc} вступає у війну.',
+    'ev.pandemic': 'Пандемія по всьому світу.', 'ev.pandemicR': 'Нова пандемія.',
+    'ev.crash': 'Фінансовий крах — починається депресія.', 'ev.crashR': 'Фінансова криза.',
+    'ev.oil': 'Нафтовий шок: ціни на енергію злітають.',
+    'ev.invasion': '{bloc}: іноземне вторгнення.', 'ev.crimea': '{bloc}: анексія Криму й війна на сході.',
+    'ev.climate': '{bloc}: кліматична катастрофа — посухи, повені, неврожай.',
+    'ev.order': '{bloc}: економіку перебудовано: {from} → {to}.',
+    'ev.election': '{bloc}: вибори — влада переходить від «{from}» до «{to}».',
+    'ev.succession': '{bloc}: зміна лідера; нове покоління при владі.',
+    'ev.war': 'Війна: {a} проти {b}.',
+    'ev.war.ww1': 'Перша світова війна.', 'ev.war.ww2': 'Друга світова війна.',
+    'ev.war.invasion2022': 'Повномасштабне вторгнення Росії в Україну.', 'ev.war.japan': 'Японія вторгається в Китай.',
+    'ev.war.ongoing': 'Війна Росії проти України триває.',
+    'ev.defeat': '{bloc}: поразка у війні.',
+    'ev.ceasefire': 'Перемир\'я: {a} і {b} припиняють бойові дії.',
+    'ev.warEnd': 'Кінець війни: перемогла сторона «{win}», програла — «{lose}».',
+    'ev.hardPeace': '{bloc}: жорсткий мир, нав\'язаний переможцем ({by}).',
+    'ev.reconstruction': '{bloc}: відбудова з допомогою союзників.',
+    'ev.muddle': '{bloc}: криза, але система якось тримається.',
+    'ev.crackdown': '{bloc}: протести придушено силою.',
+
+    // щоденники
+    'job.agr': 'у полі', 'job.ind': 'на заводі', 'job.dig': 'на складі й доставці', 'job.ai': 'на підробітках через застосунок',
+    'd.anger.C.0': 'Ціни знову вгору, а платня та сама. Я гарую {job}, а багатіють інші.',
+    'd.anger.C.1': 'Сусіди кажуть, що терпіти більше не можна. Я {f?згодна|згоден}.',
+    'd.fear.C.0': 'Боюся втратити роботу {job}. Що тоді їстимуть діти?',
+    'd.fear.C.1': 'Погано сплю. Ніхто не знає, що буде завтра.',
+    'd.hope.C.0': 'Цього року трохи легше. Може, діти житимуть краще, ніж я.',
+    'd.hope.C.1': 'Відклали трохи грошей. Вперше за довгий час думаю про майбутнє.',
+    'd.trust.C.0': 'Життя йде своїм порядком: робота {job}, родина, вихідні.',
+    'd.trust.C.1': 'Влада не ідеальна, але порядок є. Скаржитись не буду.',
+    'd.anger.A.0': '{f?Вчилася|Вчився} роками, а місця нагорі займають свої. Так не може тривати.',
+    'd.anger.A.1': 'Ходжу на збори й пишу тексти. Ця система не дає ходу таким, як я.',
+    'd.fear.A.0': 'Диплом нічого не гарантує. Боюся, що мене замінять — людиною чи машиною.',
+    'd.fear.A.1': 'Друзі виїжджають за кордон. Я ще думаю.',
+    'd.hope.A.0': 'Нові ідеї ширяться швидше, ніж влада встигає їх забороняти. Зміни близько.',
+    'd.hope.A.1': '{f?Отримала|Отримав} нову посаду. Може, зсередини щось вийде змінити.',
+    'd.trust.A.0': 'Кар\'єра просувається. Правила зрозумілі, і я граю за ними.',
+    'd.trust.A.1': 'Сперечаємося з колегами про політику, але без злості.',
+    'd.anger.E.0': 'Податки, вимоги, натовп під вікнами. Хто їм дав право?',
+    'd.anger.E.1': 'Свої ж гризуться за посади дедалі злісніше. Пирога на всіх не вистачає.',
+    'd.fear.E.0': '{f?Перевела|Перевів} частину статків за кордон. Про всяк випадок.',
+    'd.fear.E.1': 'Довелося посилити охорону. Настрої внизу мені не подобаються.',
+    'd.hope.E.0': 'Справи йдуть чудово: нові ринки, нові можливості.',
+    'd.hope.E.1': 'Діти вчаться в найкращих школах. Родина триматиметься нагорі.',
+    'd.trust.E.0': 'Усе під контролем. Головне — не розгойдувати човен.',
+    'd.trust.E.1': 'Обід із міністром пройшов приємно. Ми розуміємо одне одного.',
+    'd.anger.S.0': 'Платню затримують. Чому я маю захищати цих людей нагорі?',
+    'd.anger.S.1': 'Отримали наказ, з яким я не {f?згодна|згоден}. Поки виконую.',
+    'd.fear.S.0': 'Якщо накажуть стріляти в людей — що я зроблю?',
+    'd.fear.S.1': 'У штабі говорять пошепки. Ніхто не знає, хто наступний.',
+    'd.hope.S.0': 'Служба має сенс, коли держава працює. Цього року — працює.',
+    'd.hope.S.1': 'Підвищення! Нарешті оцінили.',
+    'd.trust.S.0': 'Служу, як служили батьки. Держава стоїть.',
+    'd.trust.S.1': 'Звичайний рік: накази, звіти, навчання.',
+    'd.war.C': 'Брата забрали на фронт. Щодня чекаю звісток.',
+    'd.war.A': '{f?Пішла|Пішов} добровольцем. Не можу сидіти осторонь.',
+    'd.war.E': 'Війна — це замовлення для одних і руїна для інших. Я поки серед перших.',
+    'd.war.S': 'Фронт близько. Я бачу, скільки коштує кожен метр.',
+    'd.sit.inequality': 'Ті, хто нагорі, забирають дедалі більше. Нам лишаються крихти.',
+    'd.sit.platform.X': 'Без рейтингу в застосунку тепер нікуди: ні роботи, ні житла.',
+    'd.sit.platform.E': 'Хто володіє платформою, той збирає данину з усіх. Добре бути серед власників.',
+    'd.sit.repression': 'Говоримо пошепки. Краще не писати зайвого.',
+    'd.sit.growth': 'Навколо будують нове. Місто змінюється на очах.',
+    'd.sit.stagn': 'Роками нічого не змінюється: ті самі обличчя, ті самі черги.',
+    'd.sit.elites': 'На кожну посаду — десятки охочих із дипломами. Хтось лишиться ні з чим.',
+    'd.sit.debt': 'Бюджет знову урізали. Держава в боргах, а вимоги ті самі.',
+    'd.sit.ai': 'Машини роблять дедалі більше. Що лишиться людям?',
+    'd.sit.ai.E': 'Автоматизація знизила витрати вдвічі. Прибутки рекордні.',
+    'd.sit.climate': 'Літо знову нестерпне. Старі кажуть, раніше такого не було.',
+    'd.collapse': 'Влади немає. Кожен сам за себе: хліб, вода, безпека.',
+    'd.ai': 'Тепер більшу частину роботи робить машина. Мене залишили — поки що.',
+    'd.inherit': '{pf?Померла|Помер} {parent}. Тепер я продовжую справу родини.',
+    'd.ev.revolution.C': 'Ми вийшли на вулиці — і старий режим упав! Хочу вірити, що тепер буде інакше.',
+    'd.ev.revolution.A': 'Те, про що ми сперечалися роками, сталося. Тепер треба будувати.',
+    'd.ev.revolution.E': 'Усе, що будувала моя родина, відібрали за одну ніч.',
+    'd.ev.revolution.S': 'Наказу стріляти ми не виконали. Тепер служимо новій владі.',
+    'd.ev.revolutionCivilWar': 'Революція переросла в громадянську війну. Сусід проти сусіда.',
+    'd.ev.collapse': 'Держава розвалилася. Ніхто не платить, ніхто не захищає.',
+    'd.ev.coup': 'Танки на вулицях. Армія взяла владу «для порядку».',
+    'd.ev.coup.S': 'Ми взяли владу. Політики довели країну до краю — тепер наш порядок.',
+    'd.ev.reaction': 'Нова влада обіцяє велич і порядок. Тих, хто проти, вже забирають.',
+    'd.ev.reaction.A': 'Друзі-журналісти замовкли. Дехто зник.',
+    'd.ev.protest': 'Мільйони на площах — і режим поступився! Будуть чесні вибори.',
+    'd.ev.techCapture': 'Тепер усе вирішують власники платформ. Без їхнього застосунку — ні роботи, ні кредиту.',
+    'd.ev.techCapture.E': 'Наші алгоритми керують краще за будь-який парламент. Принаймні так ми кажемо.',
+    'd.ev.techCapture.C': 'Мій рейтинг у застосунку впав — і мене більше ніхто не наймає.',
+    'd.ev.stateReassert': 'Держава приборкала платформи й олігархів. Але й нам стало тісніше.',
+    'd.ev.populist': 'Переміг той, хто обіцяв покарати еліти. Подивимося.',
+    'd.ev.reform': 'Великі реформи: пенсії, лікарні, права працівників. Боролися недарма.',
+    'd.ev.reformAbove': 'Влада сама почала реформи — щоб не дійшло до вулиць.',
+    'd.ev.opening': 'Країна відкривається: ринок, нові товари, нові можливості й нові ризики.',
+    'd.ev.suffrage': 'Тепер голосувати можуть усі. {f?Віддала|Віддав} свій перший голос.',
+    'd.ev.erosion': 'Суди, медіа, вибори — все потроху стає «своїм». Помітно не одразу.',
+    'd.ev.autocratize': 'Вибори скасували. Кажуть, тимчасово.',
+    'd.ev.redemocratize': 'Ми знову обираємо владу. Це крихко, але це наше.',
+    'd.ev.conquered': 'Чужі прапори на наших вулицях. Школи, мова, закони — тепер вирішують не тут.',
+    'd.ev.independence': 'Ми незалежні! Своя держава.',
+    'd.ev.independenceWar': 'Боремося за незалежність. Ціна величезна.',
+    'd.ev.decolonization': 'Колоніальна влада йде. Тепер ми самі відповідаємо за свою долю.',
+    'd.ev.occupation': 'Нам пишуть нову конституцію переможці. Дивне відчуття — але голод минає.',
+    'd.ev.rebuild': 'Після хаосу знову з\'явилася влада. Хай яка, але влада.',
+    'd.ev.war': '{att?Наша держава почала війну.|На нас напали.} Усе змінилося за один день.',
+    'd.ev.war.ww1': 'Почалася велика війна. Кажуть, до Різдва все скінчиться.',
+    'd.ev.war.ww2': 'Знову війна — ще страшніша за попередню.',
+    'd.ev.war.invasion2022': '{att?По телевізору кажуть про «спецоперацію». Про загиблих мовчать.|Прокинулися від вибухів. Повномасштабна війна.}',
+    'd.ev.war.japan': 'Японська армія вторглася. Міста горять.',
+    'd.ev.invasion': 'Іноземна армія на нашій землі.',
+    'd.ev.joinWar': 'Наша країна вступила у війну.',
+    'd.ev.crimea': 'Забрали Крим, на сході війна. Відчуття, що це лише початок.',
+    'd.ev.crash': 'Банки лопаються, заводи зупиняються. Велика криза.',
+    'd.ev.crashR': 'Криза: звільнення, борги, нервові новини.',
+    'd.ev.pandemic': 'Хвороба забирає людей. Сидимо вдома, рахуємо втрати.',
+    'd.ev.pandemicR': 'Нова хвороба. Лікарні переповнені.',
+    'd.ev.climate': 'Спека й посуха — врожай пропав, ціни злетіли.',
+    'd.ev.oil': 'Пальне подорожчало вдвічі. Черги на заправках.',
+    'd.ev.defeat': 'Ми програли війну. Злидні й гіркота.',
+    'd.ev.warEnd': 'Війна скінчилася. Повертаються не всі.',
+    'd.ev.ceasefire': 'Перемир\'я. Ніхто не вірить, що надовго, — але стріляти перестали.',
+    'd.ev.hardPeace': 'Переможці продиктували жорсткий мир. Платитимемо десятиліттями.',
+    'd.ev.reconstruction': 'Приходить допомога на відбудову. Місто знову будується.',
+    'd.ev.crackdown': 'Протест розігнали. Багатьох затримали.',
+
+    // майбутні
+    'fu.intro': 'Сотні прогонів моделі з 2025 до 2100 за однакових припущень. Графіки показують, у скількох прогонах блок мав ту чи іншу систему в кожен рік. Це не прогноз, а карта ймовірних напрямків за цих припущень — змініть повзунки й подивіться, що зрушиться.',
+    'fu.knobs': 'Припущення', 'fu.presets': 'Готові сценарії', 'fu.runs': 'Прогонів', 'fu.go': 'Порахувати', 'fu.running': 'Рахую… {n} з {m}',
+    'k.ai': 'Швидкість автоматизації та ШІ', 'k.ai.lo': 'повільно', 'k.ai.hi': 'дуже швидко',
+    'k.conc': 'Концентрація цифрових платформ', 'k.conc.lo': 'конкуренція', 'k.conc.hi': 'кілька монополій',
+    'k.policy': 'Антимонопольна політика й регулювання', 'k.policy.lo': 'слабкі', 'k.policy.hi': 'сильні',
+    'k.climate': 'Кліматичний тиск', 'k.climate.lo': 'м\'який', 'k.climate.hi': 'важкий',
+    'k.tension': 'Геополітична напруга', 'k.tension.lo': 'розрядка', 'k.tension.hi': 'нова холодна війна',
+    'pr.base': 'Базовий', 'pr.tf': 'Влада платформ', 'pr.reg': 'Приборкані платформи', 'pr.storm': 'Буря: клімат і війни',
+    'fu.headline': 'Найімовірніше за цих припущень',
+    'fu.in': 'у {y}', 'fu.tfEver': 'технофеодалізм хоча б раз до 2100',
+    'fu.paths': 'Типові шляхи', 'fu.table': 'Таблицею', 'fu.chart': 'Графіками',
+    'fu.share': 'частка прогонів', 'fu.year': 'Рік', 'fu.legend': 'Системи',
+    'fu.note': 'Читайте відсотки як «у скількох змодельованих світах», а не як шанс, що так буде. Модель груба: справжня невизначеність більша.',
+    'fu.pathHint': '«>» — наступна зміна системи; демократії (ринкову й соціальну) тут об\'єднано.',
+    'fu.none': 'ніколи',
+
+    // метод
+    'me.what.h': 'Що це і чого це не є',
+    'me.what.p': 'Це дослідницька модель, а не передбачення. Вона зводить людство до шести блоків і чотирьох груп у кожному — простих людей, освічених претендентів на статус, еліт і держави з армією. Мета — побачити механізми: чому системи ламаються, що з\'являється на їхньому місці і як це залежить від припущень. Кожне число тут — наближена оцінка; змінивши припущення, ви отримаєте інші результати, і саме в цьому сенс.',
+    'me.how.h': 'Як модель «думає»',
+    'me.how.1': '<b>Потреби й почуття.</b> У кожної групи є шість потреб (достаток, безпека, статус, голос, належність, сенс). Незадоволені потреби породжують гнів і страх, задоволені — надію й довіру. Люди порівнюють своє життя з очікуваннями й з іншими: втрата болить сильніше, ніж тішить такий самий здобуток.',
+    'me.how.2': '<b>Структурний тиск (Турчин).</b> Три сили підточують будь-яку систему: зубожіння мас, надлишок освічених претендентів на обмежену кількість місць нагорі та фінансова слабкість держави. Разом вони дають «індекс політичного стресу».',
+    'me.how.3': '<b>Ідеї.</b> Десять ідеологій поширюються між людьми залежно від того, що люди переживають: злидні підсилюють ліві й націоналістичні ідеї, приниження — націоналізм, цифрова економіка — техно-лібертаріанство. Ідея не може захопити маси, доки її не сформульовано (неолібералізм — лише з 1970-х).',
+    'me.how.4': '<b>Криза і розв\'язка.</b> Коли тиск перевищує міцність режиму, модель зважує можливі виходи — реформи, придушення, популізм, протестний перехід, революцію (іноді з громадянською війною), реакційну диктатуру, переворот, захоплення влади платформами, державний «наступ» на них або розпад. Імовірність кожного виходу залежить від того, хто організований, чи лояльна армія, які ідеї поширені та чи є гроші на поступки.',
+    'me.how.5': '<b>Економіка й технології.</b> Технологічний фронт (індустрія → цифрова економіка → автоматизація) поширюється з різною швидкістю залежно від ладу: планова економіка добре наздоганяє в індустріальну добу й погано — у цифрову. Бідніші блоки наздоганяють, якщо держава сильна й відкрита.',
+    'me.how.6': '<b>Між блоками.</b> Напруга залежить від ідеологічної відстані й претензій на територію. Ядерна зброя стримує прямі війни. Війна виснажує, поразка підриває легітимність; союзники допомагають обороні, переможці іноді диктують жорсткий мир або відбудовують переможених.',
+    'me.tf.h': 'Технофеодалізм: аргументи «за» і «проти»',
+    'me.tf.pro': '<b>Прихильники терміна</b> (Яніс Варуфакіс, Седрік Дюран): цифрові платформи — це вже не ринки, а «хмарні маєтки». Їхні власники отримують ренту за доступ — з продавців, творців, користувачів, — а не прибуток від конкуренції. Користувачі безоплатно працюють на них, як кріпаки, а влада зосереджується в руках небагатьох.',
+    'me.tf.con': '<b>Критики</b> (Євген Морозов та інші): це той самий капіталізм на новій стадії. Ренти й монополії були в ньому завжди; платформи все одно змагаються між собою, інвестують і живуть заради накопичення капіталу. Слово «феодалізм» може відволікати від того, що проблему можна розв\'язати звичними засобами — антимонопольним правом, податками, публічними альтернативами.',
+    'me.tf.model': '<b>Як це закладено в модель.</b> Платформна рента зростає з цифровізацією, автоматизацією й концентрацією ринку, а антимонопольна політика її стримує. «Технофеодалізм» тут — це або пряма влада власників платформ, або лад, де дохід переважно тече як рента, а голос простих людей слабкий. Так модель не вирішує суперечку, а показує, за яких умов світ ближчий до сценарію Варуфакіса, а за яких — до «просто капіталізму».',
+    'me.bt.h': 'Перевірка на історії (1900–2025)',
+    'me.bt.p': 'Модель стартує з 1900 року, отримує лише зовнішні поштовхи (світові війни, Велику депресію, пандемії, нафтовий шок, кризу 2008-го, вторгнення 2022-го), а революції, реформи й переходи рахує сама. Нижче — скільки прогонів відтворили ключові повороти ХХ століття у правильному вікні.',
+    'me.bt.go': 'Запустити перевірку ({n} прогонів)', 'me.bt.running': 'Перевіряю… {n} з {m}',
+    'me.bt.event': 'Поворот', 'me.bt.window': 'Вікно', 'me.bt.share': 'Відтворено',
+    'me.bt.acc': 'Збіг системи з реальною за роками: <b>{a}%</b> (якби нічого не змінювалося з 1900 року — {b}%). Збіг типу режиму (демократія / обмежений / автократія / розпад / чужа влада): <b>{c}%</b> (без змін — {d}%).',
+    'me.bt.read': 'Висновок чесний: повороти модель відтворює непогано, а точні дати й тривалість — слабко. Її сила — у механізмах, а не в календарі.',
+    'turn.ruRevolution': 'Падіння самодержавства в Росії', 'turn.cnCollapse': 'Розпад імперії в Китаї',
+    'turn.uaIndependence1917': 'Українська державність 1917–1921', 'turn.uaReconquered': 'Україну знову підкорено',
+    'turn.usNewDeal': '«Новий курс» у США', 'turn.euAuthoritarian': 'Диктатури в Європі між війнами',
+    'turn.euDemocracy1955': 'Демократична Європа після війни', 'turn.decolonization': 'Деколонізація',
+    'turn.neoliberalTurn': 'Неоліберальний поворот у США', 'turn.ruPlanEnds': 'Кінець планової економіки в СРСР',
+    'turn.cnReform': 'Ринкові реформи в Китаї', 'turn.uaIndependence1991': 'Незалежність України 1991',
+    'turn.usStaysDemocratic': 'США лишаються демократією все століття',
+    'me.lim.h': 'Обмеження',
+    'me.lim.1': 'Блоки — це агрегати. «Європа» чи «Глобальний Південь» насправді складаються з десятків дуже різних країн.',
+    'me.lim.2': 'Коефіцієнти підібрано вручну, щоб модель поводилася правдоподібно на історії. Це не статистично оцінена модель.',
+    'me.lim.3': 'Китай у майбутньому виходить дуже стабільним — імовірно, модель недооцінює внутрішні кризи однопартійних режимів.',
+    'me.lim.4': 'Позначення систем у реальній історії спірні (наприклад, коли саме Росія стала автократією). Тут узято спрощений варіант.',
+    'me.lim.5': 'Люди в щоденниках — ілюстрація настроїв групи, а не окремі агенти з власною волею.',
+    'me.lim.6': 'Модель не знає про несподівані винаходи, харизматичних лідерів і чорних лебедів, яких ніхто не уявляє. Справжнє майбутнє ширше за будь-яку модель.',
+    'me.src.h': 'Джерела й теорії',
+    'me.theory': 'Теоретичні опори: Пітер Турчин (структурно-демографічна теорія), Ібн Хальдун (згуртованість і її втрата), Дарон Аджемоглу та Джеймс Робінсон (інклюзивні й екстрактивні інституції), Макс Вебер (легітимність).',
+    'src.0': 'Maddison Project Database 2023 (ВВП на особу)', 'src.2': 'World Inequality Database (частка верхніх 10%)', 'src.3': 'МВФ, Fiscal Monitor, квітень 2026 (держборг)',
+    'src.4': 'П. Турчин, структурно-демографічна теорія', 'src.5': 'Я. Варуфакіс, «Technofeudalism» (огляд Г. Ловінка)', 'src.6': 'Є. Морозов, критика технофеодалізму (Jacobin)', 'src.7': 'С. Дюран відповідає Морозову (Verso)',
+    'table.view': 'Показати таблицею', 'chart.view': 'Показати графіком',
+  };
+
+  const de = {
+    title: 'Wege der Menschheit',
+    subtitle: 'ein Modell politischer Systeme, 1900–2100',
+    'nav.live': 'Simulation', 'nav.futures': 'Mögliche Zukünfte', 'nav.method': 'Wie es funktioniert',
+    'mode.history': 'Geschichte 1900→2025', 'mode.future': 'Zukunft 2025→2100',
+    'ctl.play': 'Start', 'ctl.pause': 'Pause', 'ctl.step': '+1 Jahr', 'ctl.new': 'Neuer Lauf', 'ctl.speed': 'Tempo',
+    'ctl.yps': '{n} J/s',
+    'live.intro': 'Ein möglicher Verlauf. Jeder Lauf ist etwas anders: Zufall gehört zur Geschichte. Tippe auf einen Block, um seine Menschen und die Gründe für Veränderungen zu sehen.',
+    'live.timeline': 'Systeme nach Jahren', 'live.real': 'real', 'live.model': 'Modell',
+    'live.chron': 'Chronik', 'live.why': 'Warum', 'live.empty': 'Noch ist nichts passiert. Drücke „Start“.',
+    'f.all': 'Alles', 'f.transition': 'Systemwechsel', 'f.war': 'Kriege', 'f.shock': 'Schocks', 'f.politics': 'Wahlen & Reformen',
+    'live.end': 'Ende des Laufs. Probiere einen „Neuen Lauf“ – oder schau dir „Mögliche Zukünfte“ an, wo Hunderte Läufe zusammengefasst sind.',
+    'war': 'Krieg', 'atWar': 'Krieg', 'gdp': 'BIP/Kopf', 'kusd': 'Tsd. $',
+    'sel.system': 'System', 'sel.regime': 'Regime', 'sel.order': 'Wirtschaft', 'sel.gov': 'Ideologie der Macht',
+    'sel.pressure': 'Druck auf das System (nach Turchin)', 'sel.trends': 'Verlauf', 'sel.groups': 'Bedürfnisse und Gefühle der Gruppen',
+    'sel.ideas': 'Verbreitete Ideen', 'sel.people': 'Menschen', 'sel.diary': 'Tagebuch',
+    'sel.real': 'Tatsächlich in diesem Jahr: {cat}',
+    'm.mmp': 'Verarmung der Massen', 'm.emp': 'Elitenüberschuss', 'm.sfd': 'Schwäche des Staates (Finanzen)', 'm.psi': 'Gesamtstress',
+    'm.gdp': 'BIP pro Kopf, Tsd. $', 'm.omega': 'Einkommensanteil der oberen 10 %', 'm.legit': 'Legitimität der Macht',
+    'm.inc': 'Stimme der einfachen Leute (Inklusivität)', 'm.plat': 'Macht der Plattformbesitzer', 'm.anger': 'Wut der einfachen Leute',
+    'ms.psi': 'Stress', 'ms.anger': 'Wut', 'ms.legit': 'Legitimität', 'ms.gdp': 'BIP pro Kopf',
+    'g.C': 'Einfache Leute', 'g.A': 'Gebildete Aufsteiger', 'g.E': 'Eliten', 'g.S': 'Staat & Armee',
+    'role.C': 'arbeitet', 'role.A': 'gebildet, will aufsteigen', 'role.E': 'aus der Elite', 'role.S': 'im Staatsdienst',
+    'n.mat': 'Wohlstand', 'n.sec': 'Sicherheit', 'n.status': 'Status', 'n.voice': 'Mitsprache', 'n.belong': 'Zugehörigkeit', 'n.meaning': 'Sinn',
+    'e.anger': 'Wut', 'e.fear': 'Angst', 'e.hope': 'Hoffnung', 'e.trust': 'Vertrauen', 'e.pride': 'Stolz',
+    'p.age': '{n} J.', 'p.gen': '{n}. Generation', 'p.mood': 'Stimmung',
+    'needsLegend': 'Balken — wie gut das Bedürfnis erfüllt ist (0–100).',
+
+    'b.US': 'USA', 'b.EU': 'Europa (EU)', 'b.UA': 'Ukraine', 'b.RU': 'Russland', 'b.CN': 'China', 'b.GS': 'Globaler Süden', 'b.JP': 'Japan',
+    'cat.libdem': 'Liberale Demokratie', 'cat.autocratic': 'Autokratie', 'cat.socdem': 'Soziale Demokratie',
+    'cat.oligarchic': 'Oligarchie / Hybridregime', 'cat.dominated': 'Unter fremder Herrschaft', 'cat.council': 'Räte- (Genossenschafts-)Demokratie',
+    'cat.technofeudal': 'Technofeudalismus', 'cat.socialist': 'Staatssozialismus', 'cat.collapse': 'Zerfall / Bürgerkrieg',
+    'cat.democracy': 'Demokratie',
+    'catd.libdem': 'Wahlen, Freiheiten, Markt mit schmaler sozialer Absicherung.',
+    'catd.autocratic': 'Herrschaft einer Person oder Gruppe ohne echte Wahlen; Markt unter staatlicher Kontrolle.',
+    'catd.socdem': 'Demokratie mit starkem Sozialstaat und Gewerkschaften.',
+    'catd.oligarchic': 'Es gibt Wahlen, aber Gewicht haben nur Reiche und Vertraute; oder kompetitiver Autoritarismus.',
+    'catd.dominated': 'Kolonie, Besatzung oder Teil eines fremden Imperiums.',
+    'catd.council': 'Räte von Beschäftigten und Gemeinden entscheiden; Schlüsselressourcen sind Gemeingut.',
+    'catd.technofeudal': 'Macht und Einkommen fließen als Rente zu den Besitzern digitaler Plattformen: Menschen hängen von „Cloud-Lehen“ ab, nicht vom Markt.',
+    'catd.socialist': 'Einparteienstaat und Planwirtschaft.',
+    'catd.collapse': 'Faktisch kein Staat: Bürgerkrieg, Zerfall, Chaos.',
+    'reg.autocracy': 'Autokratie', 'reg.oligarchy': 'oligarchischer Parlamentarismus', 'reg.democracy': 'Demokratie', 'reg.hybrid': 'Hybridregime',
+    'reg.oneparty': 'Einparteienstaat', 'reg.junta': 'Militärjunta', 'reg.theocracy': 'Theokratie', 'reg.technocorp': 'Plattformherrschaft (Technokorporatismus)',
+    'reg.council': 'Rätedemokratie', 'reg.collapse': 'Zerfall',
+    'ord.agrarian': 'agrarisch', 'ord.laissez': 'freier Markt (Laissez-faire)', 'ord.welfare': 'soziale Marktwirtschaft', 'ord.neoliberal': 'neoliberal',
+    'ord.planned': 'Planwirtschaft', 'ord.statecap': 'Staatskapitalismus', 'ord.rentier': 'Plattformrente', 'ord.commons': 'Gemeingüter (Commons)', 'ord.subsistence': 'Überleben',
+    'ideo.trad': 'Tradition, Monarchie', 'ideo.rel': 'religiöse Politik', 'ideo.lib': 'Liberalismus', 'ideo.socdem': 'Sozialdemokratie', 'ideo.soc': 'Kommunismus / Sozialismus',
+    'ideo.nat': 'Nationalismus', 'ideo.neolib': 'Neoliberalismus', 'ideo.tech': 'Techno-Libertarismus', 'ideo.green': 'grüne Politik', 'ideo.coop': 'Genossenschaftsbewegung',
+    'c.mmp': 'Verarmung der Massen', 'c.emp': 'Elitenüberschuss', 'c.sfd': 'Finanzschwäche des Staates', 'c.legit': 'Legitimitätsverlust', 'c.anger': 'Wut der Leute',
+    'c.fear': 'Angst', 'c.war': 'Kriegsniederlage', 'c.foreign': 'Fremdherrschaft', 'c.platform': 'Plattformmacht', 'c.stagn': 'wirtschaftliche Stagnation',
+
+    'tr.erosion': '{bloc}: schleichende Aushöhlung der Demokratie – Gerichte, Medien und Wahlen werden der Macht untergeordnet.',
+    'tr.redemocratize': '{bloc}: Rückkehr zur Demokratie.',
+    'tr.autocratize': '{bloc}: Wahlen abgeschafft, die Macht konzentriert sich in einer Hand.',
+    'tr.suffrage': '{bloc}: allgemeines Wahlrecht – alle dürfen wählen.',
+    'tr.reform': '{bloc}: große Sozialreformen statt Revolution (Idee: {by}).',
+    'tr.reformAbove': '{bloc}: Reform von oben – die Führung baut die Wirtschaft selbst um, um an der Macht zu bleiben.',
+    'tr.opening': '{bloc}: Öffnung – Markt und begrenzter politischer Wettbewerb.',
+    'tr.populist': '{bloc}: Sieg nationalistischer Populisten auf einer Welle der Wut.',
+    'tr.protest': '{bloc}: Massenproteste zwingen das Regime zum Rückzug – demokratischer Übergang.',
+    'tr.techCapture': '{bloc}: Besitzer digitaler Plattformen übernehmen die reale Macht.',
+    'tr.stateReassert': '{bloc}: Der Staat bändigt Plattformen und Oligarchen mit Gewalt – und die Menschen gleich mit.',
+    'tr.revolution': '{bloc}: Revolution. Anhänger der Idee „{by}“ kommen an die Macht.',
+    'tr.revolutionCivilWar': '{bloc}: Die Revolution mündet in einen Bürgerkrieg (Idee der Aufständischen: {by}).',
+    'tr.reaction': '{bloc}: Eliten und Armee errichten eine nationalistische Diktatur, um die Linke zu stoppen.',
+    'tr.coup': '{bloc}: Militärputsch.',
+    'tr.collapse': '{bloc}: Der Staat zerfällt.',
+    'tr.rebuild': '{bloc}: Nach dem Chaos entsteht eine neue Macht ({by}).',
+    'tr.independence': '{bloc}: Unabhängigkeit (Idee: {by}).',
+    'tr.independenceWar': '{bloc}: Unabhängigkeitskrieg.',
+    'tr.decolonization': '{bloc}: Dekolonisierung – die meisten Kolonien werden unabhängig.',
+    'tr.conquered': '{bloc}: erobert – unter der Herrschaft von „{by}“.',
+    'tr.occupation': '{bloc}: Besatzung durch die Sieger und neue demokratische Verfassung.',
+    'tr.shift': '{from} → {to}',
+    'ev.joinWar': '{bloc} tritt in den Krieg ein.',
+    'ev.pandemic': 'Weltweite Pandemie.', 'ev.pandemicR': 'Eine neue Pandemie.',
+    'ev.crash': 'Finanzkrach – eine Depression beginnt.', 'ev.crashR': 'Finanzkrise.',
+    'ev.oil': 'Ölschock: Die Energiepreise explodieren.',
+    'ev.invasion': '{bloc}: ausländische Invasion.', 'ev.crimea': '{bloc}: Annexion der Krim und Krieg im Osten.',
+    'ev.climate': '{bloc}: Klimakatastrophe – Dürren, Fluten, Missernten.',
+    'ev.order': '{bloc}: Die Wirtschaft wird umgebaut: {from} → {to}.',
+    'ev.election': '{bloc}: Wahlen – die Macht geht von „{from}“ zu „{to}“ über.',
+    'ev.succession': '{bloc}: Führungswechsel; eine neue Generation an der Macht.',
+    'ev.war': 'Krieg: {a} gegen {b}.',
+    'ev.war.ww1': 'Erster Weltkrieg.', 'ev.war.ww2': 'Zweiter Weltkrieg.',
+    'ev.war.invasion2022': 'Russlands großangelegte Invasion der Ukraine.', 'ev.war.japan': 'Japan marschiert in China ein.',
+    'ev.war.ongoing': 'Russlands Krieg gegen die Ukraine dauert an.',
+    'ev.defeat': '{bloc}: Niederlage im Krieg.',
+    'ev.ceasefire': 'Waffenstillstand: {a} und {b} stellen die Kämpfe ein.',
+    'ev.warEnd': 'Kriegsende: Sieger „{win}“, Verlierer „{lose}“.',
+    'ev.hardPeace': '{bloc}: harter Frieden, diktiert vom Sieger ({by}).',
+    'ev.reconstruction': '{bloc}: Wiederaufbau mit Hilfe der Verbündeten.',
+    'ev.muddle': '{bloc}: Krise, aber das System hält sich irgendwie.',
+    'ev.crackdown': '{bloc}: Proteste gewaltsam niedergeschlagen.',
+
+    'job.agr': 'auf dem Feld', 'job.ind': 'in der Fabrik', 'job.dig': 'im Lager und in der Lieferung', 'job.ai': 'in Gelegenheitsjobs über die App',
+    'd.anger.C.0': 'Die Preise steigen schon wieder, der Lohn bleibt gleich. Ich schufte {job}, reich werden andere.',
+    'd.anger.C.1': 'Die Nachbarn sagen, so kann es nicht weitergehen. Ich finde das auch.',
+    'd.fear.C.0': 'Ich habe Angst, meine Arbeit {job} zu verlieren. Was essen dann die Kinder?',
+    'd.fear.C.1': 'Ich schlafe schlecht. Niemand weiß, was morgen kommt.',
+    'd.hope.C.0': 'Dieses Jahr ist es etwas leichter. Vielleicht haben es die Kinder besser als ich.',
+    'd.hope.C.1': 'Wir haben etwas Geld zurückgelegt. Zum ersten Mal seit Langem denke ich an die Zukunft.',
+    'd.trust.C.0': 'Das Leben geht seinen Gang: Arbeit {job}, Familie, Wochenende.',
+    'd.trust.C.1': 'Die Regierung ist nicht perfekt, aber es herrscht Ordnung. Ich beschwere mich nicht.',
+    'd.anger.A.0': 'Jahrelang studiert, und oben sitzen nur die eigenen Leute. So kann es nicht bleiben.',
+    'd.anger.A.1': 'Ich gehe zu Versammlungen und schreibe Texte. Dieses System lässt Leute wie mich nicht hoch.',
+    'd.fear.A.0': 'Ein Diplom garantiert nichts. Ich fürchte, ersetzt zu werden – von einem Menschen oder einer Maschine.',
+    'd.fear.A.1': 'Freunde gehen ins Ausland. Ich überlege noch.',
+    'd.hope.A.0': 'Neue Ideen verbreiten sich schneller, als die Macht sie verbieten kann. Der Wandel ist nah.',
+    'd.hope.A.1': 'Ich habe eine neue Stelle. Vielleicht lässt sich von innen etwas ändern.',
+    'd.trust.A.0': 'Die Karriere läuft. Die Regeln sind klar, und ich halte mich daran.',
+    'd.trust.A.1': 'Wir streiten mit Kollegen über Politik, aber ohne Groll.',
+    'd.anger.E.0': 'Steuern, Forderungen, eine Menge unter den Fenstern. Wer hat ihnen das Recht gegeben?',
+    'd.anger.E.1': 'Die eigenen Leute beißen sich immer härter um Posten. Der Kuchen reicht nicht für alle.',
+    'd.fear.E.0': 'Ich habe einen Teil des Vermögens ins Ausland gebracht. Für alle Fälle.',
+    'd.fear.E.1': 'Ich musste die Wachen verstärken. Die Stimmung unten gefällt mir nicht.',
+    'd.hope.E.0': 'Die Geschäfte laufen glänzend: neue Märkte, neue Chancen.',
+    'd.hope.E.1': 'Die Kinder lernen an den besten Schulen. Die Familie bleibt oben.',
+    'd.trust.E.0': 'Alles unter Kontrolle. Hauptsache, niemand bringt das Boot ins Schwanken.',
+    'd.trust.E.1': 'Das Essen mit dem Minister war angenehm. Wir verstehen einander.',
+    'd.anger.S.0': 'Der Sold kommt verspätet. Warum soll ich die da oben beschützen?',
+    'd.anger.S.1': 'Wir haben einen Befehl bekommen, mit dem ich nicht einverstanden bin. Noch führe ich ihn aus.',
+    'd.fear.S.0': 'Wenn der Befehl kommt, auf Menschen zu schießen – was mache ich dann?',
+    'd.fear.S.1': 'Im Stab wird geflüstert. Niemand weiß, wer der Nächste ist.',
+    'd.hope.S.0': 'Der Dienst hat Sinn, wenn der Staat funktioniert. Dieses Jahr funktioniert er.',
+    'd.hope.S.1': 'Beförderung! Endlich anerkannt.',
+    'd.trust.S.0': 'Ich diene, wie meine Eltern gedient haben. Der Staat steht.',
+    'd.trust.S.1': 'Ein gewöhnliches Jahr: Befehle, Berichte, Übungen.',
+    'd.war.C': 'Mein Bruder wurde an die Front geholt. Jeden Tag warte ich auf Nachricht.',
+    'd.war.A': 'Ich habe mich freiwillig gemeldet. Ich kann nicht danebenstehen.',
+    'd.war.E': 'Krieg bedeutet Aufträge für die einen und Ruin für die anderen. Noch gehöre ich zu den Ersten.',
+    'd.war.S': 'Die Front ist nah. Ich sehe, was jeder Meter kostet.',
+    'd.sit.inequality': 'Die oben nehmen immer mehr. Uns bleiben Krümel.',
+    'd.sit.platform.X': 'Ohne Bewertung in der App geht nichts mehr: keine Arbeit, keine Wohnung.',
+    'd.sit.platform.E': 'Wem die Plattform gehört, der kassiert Tribut von allen. Gut, zu den Besitzern zu gehören.',
+    'd.sit.repression': 'Wir reden im Flüsterton. Besser nichts Unnötiges schreiben.',
+    'd.sit.growth': 'Überall wird Neues gebaut. Die Stadt verändert sich vor unseren Augen.',
+    'd.sit.stagn': 'Seit Jahren ändert sich nichts: dieselben Gesichter, dieselben Schlangen.',
+    'd.sit.elites': 'Auf jede Stelle kommen Dutzende mit Diplom. Jemand geht leer aus.',
+    'd.sit.debt': 'Das Budget wurde wieder gekürzt. Der Staat ist verschuldet, die Anforderungen bleiben.',
+    'd.sit.ai': 'Maschinen machen immer mehr. Was bleibt für die Menschen?',
+    'd.sit.ai.E': 'Die Automatisierung hat die Kosten halbiert. Rekordgewinne.',
+    'd.sit.climate': 'Der Sommer ist wieder unerträglich. Die Alten sagen, so etwas gab es früher nicht.',
+    'd.collapse': 'Es gibt keine Regierung mehr. Jeder für sich: Brot, Wasser, Sicherheit.',
+    'd.ai': 'Den Großteil der Arbeit macht jetzt eine Maschine. Mich haben sie behalten – vorerst.',
+    'd.inherit': '{parent} ist gestorben. Jetzt führe ich die Sache der Familie fort.',
+    'd.ev.revolution.C': 'Wir sind auf die Straße gegangen – und das alte Regime ist gefallen! Ich will glauben, dass es jetzt anders wird.',
+    'd.ev.revolution.A': 'Worüber wir jahrelang gestritten haben, ist geschehen. Jetzt müssen wir aufbauen.',
+    'd.ev.revolution.E': 'Alles, was meine Familie aufgebaut hat, wurde über Nacht genommen.',
+    'd.ev.revolution.S': 'Den Schießbefehl haben wir nicht ausgeführt. Jetzt dienen wir der neuen Macht.',
+    'd.ev.revolutionCivilWar': 'Die Revolution ist in einen Bürgerkrieg umgeschlagen. Nachbar gegen Nachbar.',
+    'd.ev.collapse': 'Der Staat ist zerfallen. Niemand zahlt, niemand schützt.',
+    'd.ev.coup': 'Panzer auf den Straßen. Die Armee hat „für Ordnung“ die Macht übernommen.',
+    'd.ev.coup.S': 'Wir haben die Macht übernommen. Die Politiker haben das Land an den Rand gebracht – jetzt gilt unsere Ordnung.',
+    'd.ev.reaction': 'Die neue Macht verspricht Größe und Ordnung. Wer dagegen ist, wird schon abgeholt.',
+    'd.ev.reaction.A': 'Befreundete Journalisten schweigen. Manche sind verschwunden.',
+    'd.ev.protest': 'Millionen auf den Plätzen – und das Regime hat nachgegeben! Es wird faire Wahlen geben.',
+    'd.ev.techCapture': 'Jetzt entscheiden die Plattformbesitzer alles. Ohne ihre App – keine Arbeit, kein Kredit.',
+    'd.ev.techCapture.E': 'Unsere Algorithmen regieren besser als jedes Parlament. Zumindest sagen wir das.',
+    'd.ev.techCapture.C': 'Meine Bewertung in der App ist gefallen – und niemand stellt mich mehr ein.',
+    'd.ev.stateReassert': 'Der Staat hat Plattformen und Oligarchen gebändigt. Aber auch für uns ist es enger geworden.',
+    'd.ev.populist': 'Gewonnen hat, wer versprach, die Eliten zu bestrafen. Mal sehen.',
+    'd.ev.reform': 'Große Reformen: Renten, Krankenhäuser, Arbeitsrechte. Der Kampf hat sich gelohnt.',
+    'd.ev.reformAbove': 'Die Führung hat selbst Reformen begonnen – damit es nicht auf die Straße kommt.',
+    'd.ev.opening': 'Das Land öffnet sich: Markt, neue Waren, neue Chancen und neue Risiken.',
+    'd.ev.suffrage': 'Jetzt dürfen alle wählen. Ich habe meine erste Stimme abgegeben.',
+    'd.ev.erosion': 'Gerichte, Medien, Wahlen – alles wird nach und nach „auf Linie“ gebracht. Man merkt es nicht sofort.',
+    'd.ev.autocratize': 'Die Wahlen wurden abgesagt. Angeblich vorübergehend.',
+    'd.ev.redemocratize': 'Wir wählen unsere Regierung wieder. Es ist zerbrechlich, aber es ist unseres.',
+    'd.ev.conquered': 'Fremde Fahnen in unseren Straßen. Schulen, Sprache, Gesetze – entschieden wird jetzt woanders.',
+    'd.ev.independence': 'Wir sind unabhängig! Ein eigener Staat.',
+    'd.ev.independenceWar': 'Wir kämpfen um die Unabhängigkeit. Der Preis ist gewaltig.',
+    'd.ev.decolonization': 'Die Kolonialmacht geht. Jetzt sind wir selbst für unser Schicksal verantwortlich.',
+    'd.ev.occupation': 'Die Sieger schreiben uns eine neue Verfassung. Ein seltsames Gefühl – aber der Hunger geht vorbei.',
+    'd.ev.rebuild': 'Nach dem Chaos gibt es wieder eine Regierung. Wie auch immer – eine Regierung.',
+    'd.ev.war': '{att?Unser Staat hat einen Krieg begonnen.|Wir wurden angegriffen.} Alles hat sich an einem Tag verändert.',
+    'd.ev.war.ww1': 'Der große Krieg hat begonnen. Es heißt, zu Weihnachten sei alles vorbei.',
+    'd.ev.war.ww2': 'Wieder Krieg – noch schrecklicher als der letzte.',
+    'd.ev.war.invasion2022': '{att?Im Fernsehen reden sie von einer „Spezialoperation“. Über die Toten schweigen sie.|Wir sind von Explosionen aufgewacht. Ein großer Krieg.}',
+    'd.ev.war.japan': 'Die japanische Armee ist einmarschiert. Städte brennen.',
+    'd.ev.invasion': 'Eine fremde Armee auf unserem Boden.',
+    'd.ev.joinWar': 'Unser Land ist in den Krieg eingetreten.',
+    'd.ev.crimea': 'Sie haben die Krim genommen, im Osten ist Krieg. Es fühlt sich an wie der Anfang.',
+    'd.ev.crash': 'Banken platzen, Fabriken stehen still. Eine große Krise.',
+    'd.ev.crashR': 'Krise: Entlassungen, Schulden, nervöse Nachrichten.',
+    'd.ev.pandemic': 'Die Krankheit nimmt Menschen. Wir sitzen zu Hause und zählen die Verluste.',
+    'd.ev.pandemicR': 'Eine neue Krankheit. Die Krankenhäuser sind überfüllt.',
+    'd.ev.climate': 'Hitze und Dürre – die Ernte ist verloren, die Preise sind explodiert.',
+    'd.ev.oil': 'Sprit kostet das Doppelte. Schlangen an den Tankstellen.',
+    'd.ev.defeat': 'Wir haben den Krieg verloren. Armut und Bitterkeit.',
+    'd.ev.warEnd': 'Der Krieg ist vorbei. Nicht alle kommen zurück.',
+    'd.ev.ceasefire': 'Waffenstillstand. Niemand glaubt, dass er lange hält – aber geschossen wird nicht mehr.',
+    'd.ev.hardPeace': 'Die Sieger haben einen harten Frieden diktiert. Wir zahlen jahrzehntelang.',
+    'd.ev.reconstruction': 'Hilfe für den Wiederaufbau kommt. Die Stadt wird wieder gebaut.',
+    'd.ev.crackdown': 'Der Protest wurde aufgelöst. Viele wurden festgenommen.',
+
+    'fu.intro': 'Hunderte Modellläufe von 2025 bis 2100 unter denselben Annahmen. Die Grafiken zeigen, in wie vielen Läufen ein Block in jedem Jahr dieses oder jenes System hatte. Das ist keine Prognose, sondern eine Karte wahrscheinlicher Richtungen unter diesen Annahmen – verschiebe die Regler und sieh, was sich bewegt.',
+    'fu.knobs': 'Annahmen', 'fu.presets': 'Fertige Szenarien', 'fu.runs': 'Läufe', 'fu.go': 'Berechnen', 'fu.running': 'Rechne… {n} von {m}',
+    'k.ai': 'Tempo von Automatisierung und KI', 'k.ai.lo': 'langsam', 'k.ai.hi': 'sehr schnell',
+    'k.conc': 'Konzentration digitaler Plattformen', 'k.conc.lo': 'Wettbewerb', 'k.conc.hi': 'wenige Monopole',
+    'k.policy': 'Kartellpolitik und Regulierung', 'k.policy.lo': 'schwach', 'k.policy.hi': 'stark',
+    'k.climate': 'Klimadruck', 'k.climate.lo': 'mild', 'k.climate.hi': 'schwer',
+    'k.tension': 'Geopolitische Spannung', 'k.tension.lo': 'Entspannung', 'k.tension.hi': 'neuer Kalter Krieg',
+    'pr.base': 'Basis', 'pr.tf': 'Macht der Plattformen', 'pr.reg': 'Gezähmte Plattformen', 'pr.storm': 'Sturm: Klima und Kriege',
+    'fu.headline': 'Am wahrscheinlichsten unter diesen Annahmen',
+    'fu.in': '{y}', 'fu.tfEver': 'mindestens einmal Technofeudalismus bis 2100',
+    'fu.paths': 'Typische Wege', 'fu.table': 'Als Tabelle', 'fu.chart': 'Als Grafik',
+    'fu.share': 'Anteil der Läufe', 'fu.year': 'Jahr', 'fu.legend': 'Systeme',
+    'fu.note': 'Lies die Prozente als „in wie vielen modellierten Welten“, nicht als Wahrscheinlichkeit, dass es so kommt. Das Modell ist grob: Die echte Unsicherheit ist größer.',
+    'fu.pathHint': '„>“ – nächster Systemwechsel; Demokratien (markt- und sozialorientiert) sind hier zusammengefasst.',
+    'fu.none': 'nie',
+
+    'me.what.h': 'Was das ist und was nicht',
+    'me.what.p': 'Dies ist ein Erkundungsmodell, keine Vorhersage. Es reduziert die Menschheit auf sechs Blöcke mit je vier Gruppen – einfache Leute, gebildete Statusanwärter, Eliten sowie Staat und Armee. Ziel ist es, Mechanismen sichtbar zu machen: warum Systeme zerbrechen, was an ihre Stelle tritt und wie das von den Annahmen abhängt. Jede Zahl ist eine grobe Schätzung; mit anderen Annahmen bekommst du andere Ergebnisse – genau darum geht es.',
+    'me.how.h': 'Wie das Modell „denkt“',
+    'me.how.1': '<b>Bedürfnisse und Gefühle.</b> Jede Gruppe hat sechs Bedürfnisse (Wohlstand, Sicherheit, Status, Mitsprache, Zugehörigkeit, Sinn). Unerfüllte Bedürfnisse erzeugen Wut und Angst, erfüllte Hoffnung und Vertrauen. Menschen vergleichen ihr Leben mit Erwartungen und mit anderen: Verluste schmerzen stärker, als gleich große Gewinne freuen.',
+    'me.how.2': '<b>Struktureller Druck (Turchin).</b> Drei Kräfte untergraben jedes System: Verarmung der Massen, ein Überschuss gebildeter Anwärter auf zu wenige Plätze oben und die finanzielle Schwäche des Staates. Zusammen ergeben sie den „Index politischen Stresses“.',
+    'me.how.3': '<b>Ideen.</b> Zehn Ideologien verbreiten sich je nach Erfahrungen der Menschen: Not stärkt linke und nationalistische Ideen, Demütigung den Nationalismus, die Digitalwirtschaft den Techno-Libertarismus. Eine Idee kann die Massen erst ergreifen, wenn sie formuliert ist (Neoliberalismus erst ab den 1970ern).',
+    'me.how.4': '<b>Krise und Ausgang.</b> Übersteigt der Druck die Belastbarkeit des Regimes, wägt das Modell mögliche Ausgänge ab – Reformen, Repression, Populismus, Übergang durch Proteste, Revolution (manchmal mit Bürgerkrieg), reaktionäre Diktatur, Putsch, Machtübernahme durch Plattformen, staatliche „Gegenoffensive“ gegen sie oder Zerfall. Die Wahrscheinlichkeit jedes Ausgangs hängt davon ab, wer organisiert ist, ob die Armee loyal ist, welche Ideen verbreitet sind und ob Geld für Zugeständnisse da ist.',
+    'me.how.5': '<b>Wirtschaft und Technik.</b> Die technologische Front (Industrie → Digitalwirtschaft → Automatisierung) breitet sich je nach Wirtschaftsordnung unterschiedlich schnell aus: Planwirtschaft holt im Industriezeitalter gut auf, im digitalen schlecht. Ärmere Blöcke holen auf, wenn der Staat stark und offen ist.',
+    'me.how.6': '<b>Zwischen den Blöcken.</b> Spannungen hängen von ideologischer Distanz und Gebietsansprüchen ab. Atomwaffen schrecken direkte Kriege ab. Krieg zehrt aus, Niederlage untergräbt die Legitimität; Verbündete helfen bei der Verteidigung, Sieger diktieren manchmal einen harten Frieden oder bauen die Besiegten wieder auf.',
+    'me.tf.h': 'Technofeudalismus: Argumente dafür und dagegen',
+    'me.tf.pro': '<b>Befürworter des Begriffs</b> (Yanis Varoufakis, Cédric Durand): Digitale Plattformen sind keine Märkte mehr, sondern „Cloud-Lehen“. Ihre Besitzer kassieren Renten für den Zugang – von Händlern, Kreativen, Nutzern – statt Gewinne aus Wettbewerb. Nutzer arbeiten unbezahlt für sie wie Leibeigene, und die Macht konzentriert sich bei wenigen.',
+    'me.tf.con': '<b>Kritiker</b> (Evgeny Morozov und andere): Das ist derselbe Kapitalismus in einer neuen Phase. Renten und Monopole gab es in ihm immer; Plattformen konkurrieren weiter miteinander, investieren und leben von der Kapitalakkumulation. Das Wort „Feudalismus“ kann davon ablenken, dass sich das Problem mit bekannten Mitteln lösen lässt – Kartellrecht, Steuern, öffentliche Alternativen.',
+    'me.tf.model': '<b>Wie es im Modell steckt.</b> Die Plattformrente wächst mit Digitalisierung, Automatisierung und Marktkonzentration, Kartellpolitik bremst sie. „Technofeudalismus“ ist hier entweder die direkte Herrschaft der Plattformbesitzer oder eine Ordnung, in der Einkommen überwiegend als Rente fließt und die Stimme der einfachen Leute schwach ist. So entscheidet das Modell den Streit nicht, sondern zeigt, unter welchen Bedingungen die Welt eher Varoufakis’ Szenario und unter welchen eher „einfach Kapitalismus“ gleicht.',
+    'me.bt.h': 'Test an der Geschichte (1900–2025)',
+    'me.bt.p': 'Das Modell startet 1900 und bekommt nur äußere Anstöße (Weltkriege, Große Depression, Pandemien, Ölschock, Krise 2008, Invasion 2022); Revolutionen, Reformen und Übergänge berechnet es selbst. Unten steht, wie viele Läufe die Schlüsselwenden des 20. Jahrhunderts im richtigen Zeitfenster reproduziert haben.',
+    'me.bt.go': 'Test starten ({n} Läufe)', 'me.bt.running': 'Teste… {n} von {m}',
+    'me.bt.event': 'Wende', 'me.bt.window': 'Zeitfenster', 'me.bt.share': 'Reproduziert',
+    'me.bt.acc': 'Übereinstimmung des Systems mit dem realen, Jahr für Jahr: <b>{a} %</b> (hätte sich seit 1900 nichts geändert: {b} %). Übereinstimmung des Regimetyps (Demokratie / begrenzt / Autokratie / Zerfall / Fremdherrschaft): <b>{c} %</b> (ohne Änderung: {d} %).',
+    'me.bt.read': 'Ehrliches Fazit: Wenden reproduziert das Modell ordentlich, genaue Daten und Dauer schwach. Seine Stärke liegt in den Mechanismen, nicht im Kalender.',
+    'turn.ruRevolution': 'Sturz der Autokratie in Russland', 'turn.cnCollapse': 'Zerfall des Kaiserreichs in China',
+    'turn.uaIndependence1917': 'Ukrainische Staatlichkeit 1917–1921', 'turn.uaReconquered': 'Die Ukraine wird erneut unterworfen',
+    'turn.usNewDeal': '„New Deal“ in den USA', 'turn.euAuthoritarian': 'Diktaturen in Europa zwischen den Kriegen',
+    'turn.euDemocracy1955': 'Demokratisches Europa nach dem Krieg', 'turn.decolonization': 'Dekolonisierung',
+    'turn.neoliberalTurn': 'Neoliberale Wende in den USA', 'turn.ruPlanEnds': 'Ende der Planwirtschaft in der UdSSR',
+    'turn.cnReform': 'Marktreformen in China', 'turn.uaIndependence1991': 'Unabhängigkeit der Ukraine 1991',
+    'turn.usStaysDemocratic': 'Die USA bleiben das ganze Jahrhundert demokratisch',
+    'me.lim.h': 'Grenzen',
+    'me.lim.1': 'Blöcke sind Aggregate. „Europa“ oder der „Globale Süden“ bestehen in Wirklichkeit aus Dutzenden sehr verschiedener Länder.',
+    'me.lim.2': 'Die Koeffizienten sind von Hand gewählt, damit sich das Modell an der Geschichte plausibel verhält. Es ist kein statistisch geschätztes Modell.',
+    'me.lim.3': 'China erscheint in der Zukunft sehr stabil – vermutlich unterschätzt das Modell innere Krisen von Einparteienregimen.',
+    'me.lim.4': 'Die Einordnung realer Systeme ist umstritten (z. B. ab wann Russland eine Autokratie war). Hier wird eine vereinfachte Variante verwendet.',
+    'me.lim.5': 'Die Menschen in den Tagebüchern illustrieren die Stimmung ihrer Gruppe; sie sind keine eigenständigen Akteure.',
+    'me.lim.6': 'Das Modell kennt keine unerwarteten Erfindungen, charismatischen Führungsfiguren und Schwarzen Schwäne, die sich niemand vorstellt. Die echte Zukunft ist weiter als jedes Modell.',
+    'me.src.h': 'Quellen und Theorien',
+    'me.theory': 'Theoretische Grundlagen: Peter Turchin (strukturell-demografische Theorie), Ibn Chaldun (Zusammenhalt und sein Verlust), Daron Acemoglu und James Robinson (inklusive und extraktive Institutionen), Max Weber (Legitimität).',
+    'src.0': 'Maddison Project Database 2023 (BIP pro Kopf)', 'src.2': 'World Inequality Database (Anteil der oberen 10 %)', 'src.3': 'IWF, Fiscal Monitor, April 2026 (Staatsschulden)',
+    'src.4': 'P. Turchin, strukturell-demografische Theorie', 'src.5': 'Y. Varoufakis, „Technofeudalism“ (Rezension von G. Lovink)', 'src.6': 'E. Morozov, Kritik am Technofeudalismus (Jacobin)', 'src.7': 'C. Durand antwortet Morozov (Verso)',
+    'table.view': 'Als Tabelle zeigen', 'chart.view': 'Als Grafik zeigen',
+  };
+
+  H.I18N = { uk, de };
+  H.lang = 'uk';
+  H.hasText = function (key) { return key in (H.I18N[H.lang] || uk) || key in uk; };
+  H.t = function (key, p) {
+    const d = H.I18N[H.lang] || uk;
+    let s = key in d ? d[key] : key in uk ? uk[key] : key;
+    if (!p) return s;
+    s = s.replace(/\{(\w+)\?([^|}]*)\|([^}]*)\}/g, (_, k, a, b) => (p[k] ? a : b));
+    return s.replace(/\{(\w+)\}/g, (_, k) => (p[k] != null ? p[k] : ''));
+  };
+})(typeof window !== 'undefined' ? (window.H = window.H || {}) : (global.H = global.H || {}));
+
+</script>
+<script>
+/* ============================================================
+   Людство: дані моделі
+   Блоки, політичні режими, економічні лади, ідеології,
+   стартові стани (1900 і 2025), реальна історія для перевірки,
+   історичні шоки. Усі числа — наближені оцінки для моделі,
+   джерела перелічено в H.SOURCES.
+   ============================================================ */
+(function (H) {
+  'use strict';
+
+  H.BLOCS = ['US', 'EU', 'UA', 'RU', 'CN', 'GS'];
+
+  /* ---------- Політичні режими ----------
+     inc — інклюзивність (наскільки звичайні люди мають голос і права)
+     rep — базовий рівень репресій
+     thr — поріг кризи: наскільки сильний тиск режим витримує
+     surv — схильність до цифрового нагляду, коли технології дозволяють */
+  H.REGIMES = {
+    autocracy:  { inc: 0.08, rep: 0.45, thr: 0.36, surv: 0.8, fam: 'autocratic' },  // монархія / персоналістська автократія
+    oligarchy:  { inc: 0.38, rep: 0.20, thr: 0.42, surv: 0.3, fam: 'limited' },     // обмежена «демократія для небагатьох»
+    democracy:  { inc: 0.80, rep: 0.05, thr: 0.50, surv: 0.15, fam: 'democratic' },
+    hybrid:     { inc: 0.38, rep: 0.35, thr: 0.42, surv: 0.5, fam: 'limited' },     // конкурентний авторитаризм, популістський режим
+    oneparty:   { inc: 0.06, rep: 0.70, thr: 0.42, surv: 0.95, fam: 'autocratic' }, // ідеологічна однопартійна держава
+    junta:      { inc: 0.05, rep: 0.70, thr: 0.38, surv: 0.7, fam: 'autocratic' },
+    theocracy:  { inc: 0.12, rep: 0.60, thr: 0.42, surv: 0.7, fam: 'autocratic' },
+    technocorp: { inc: 0.30, rep: 0.20, thr: 0.45, surv: 0.85, fam: 'limited' },    // реальна влада у власників платформ
+    council:    { inc: 0.92, rep: 0.03, thr: 0.48, surv: 0.1, fam: 'democratic' },  // рада / кооперативна демократія
+    collapse:   { inc: 0.10, rep: 0.30, thr: 9.00, surv: 0.1, fam: 'collapse' },    // розпад, громадянська війна
+  };
+
+  /* ---------- Економічні лади ----------
+     omega — частка доходу верхніх 10% (Турчин: «насос багатства»)
+     tax — податкове навантаження, welfare — соціальні витрати
+     eff — ефективність (впливає на зростання), atom — розпорошення працівників */
+  H.ORDERS = {
+    agrarian:    { omega: 0.50, tax: 0.07, welfare: 0.00, eff: -0.30, atom: 0.10, fam: 'agrarian' },
+    laissez:     { omega: 0.46, tax: 0.10, welfare: 0.02, eff: 0.00, atom: 0.05, fam: 'market' },
+    welfare:     { omega: 0.31, tax: 0.36, welfare: 0.18, eff: -0.02, atom: 0.00, fam: 'market' },
+    neoliberal:  { omega: 0.44, tax: 0.28, welfare: 0.10, eff: 0.02, atom: 0.12, fam: 'market' },
+    planned:     { omega: 0.24, tax: 0.45, welfare: 0.12, eff: -0.12, atom: 0.05, fam: 'planned' },
+    statecap:    { omega: 0.42, tax: 0.24, welfare: 0.06, eff: -0.08, atom: 0.10, fam: 'statecap' },
+    rentier:     { omega: 0.56, tax: 0.20, welfare: 0.08, eff: -0.06, atom: 0.35, fam: 'rentier' },  // платформна рента
+    commons:     { omega: 0.24, tax: 0.30, welfare: 0.16, eff: -0.04, atom: 0.00, fam: 'commons' },
+    subsistence: { omega: 0.40, tax: 0.03, welfare: 0.00, eff: -0.80, atom: 0.40, fam: 'collapse' },
+  };
+
+  /* ---------- Ідеології ---------- */
+  H.IDEOS = ['trad', 'rel', 'lib', 'socdem', 'soc', 'nat', 'neolib', 'tech', 'green', 'coop'];
+  // доступність ідеї в певний рік (0..1): ідея не може захопити маси, поки її не сформульовано
+  H.ideoAvail = function (id, year) {
+    const ramp = (a, b) => year <= a ? 0 : year >= b ? 1 : (year - a) / (b - a);
+    switch (id) {
+      case 'soc': return 0.55 + 0.45 * ramp(1905, 1920);
+      case 'neolib': return ramp(1968, 1982);
+      case 'tech': return ramp(1995, 2014);
+      case 'green': return ramp(1968, 1992);
+      case 'coop': return 0.5 + 0.5 * ramp(2000, 2030);
+      default: return 1;
+    }
+  };
+  // якому ладу віддає перевагу влада певної ідеології
+  H.prefOrder = function (gov, b, year) {
+    switch (gov) {
+      case 'trad': return b.I < 0.45 ? 'agrarian' : 'statecap';
+      case 'rel': return b.I < 0.4 ? 'agrarian' : 'statecap';
+      // усталена соціальна держава має інерцію: ліберали її не демонтують
+      case 'lib': return year < 1945 ? 'laissez' : year < 1975 ? 'welfare' : (year > 2000 && b.order === 'welfare' ? 'welfare' : 'neoliberal');
+      case 'socdem': return 'welfare';
+      case 'soc': return b.regime === 'oneparty' ? (b.reformed ? 'statecap' : 'planned') : 'welfare';
+      case 'nat': return 'statecap';
+      case 'neolib': return 'neoliberal';
+      case 'tech': return b.D > 0.5 && b.platPow > 0.25 ? 'rentier' : 'neoliberal';
+      case 'green': return 'welfare';
+      case 'coop': return b.D > 0.45 ? 'commons' : 'welfare';
+      default: return b.order;
+    }
+  };
+
+  /* ---------- Узагальнені «системи» для графіків (8 кольорів + розпад) ---------- */
+  H.CATS = ['libdem', 'autocratic', 'socdem', 'oligarchic', 'dominated', 'council', 'technofeudal', 'socialist', 'collapse'];
+  H.classify = function (b) {
+    if (b.sov < 0.5) return 'dominated';
+    if (b.regime === 'collapse') return 'collapse';
+    if (b.regime === 'technocorp' || (b.order === 'rentier' && b.inc < 0.6)) return 'technofeudal';
+    if (b.regime === 'council') return 'council';
+    const fam = H.REGIMES[b.regime].fam;
+    if (fam === 'democratic') return b.order === 'welfare' || b.order === 'commons' ? 'socdem' : 'libdem';
+    if (fam === 'limited') return b.order === 'planned' ? 'socialist' : 'oligarchic';
+    return b.order === 'planned' ? 'socialist' : 'autocratic';
+  };
+  // для перевірки на історії: родина політичного режиму та родина економіки
+  H.polFam = cat => ({ libdem: 'dem', socdem: 'dem', council: 'dem', oligarchic: 'lim', technofeudal: 'lim', autocratic: 'aut', socialist: 'aut', collapse: 'col', dominated: 'dom' }[cat]);
+
+  /* ---------- Стартовий стан 1900 ----------
+     y — ВВП на особу, тис. $ (ПКС, ціни 2011, за Maddison Project, округлено)
+     I/D/A — освоєння індустріальних, цифрових технологій і автоматизації (0..1)
+     sov — суверенітет (для Глобального Півдня — частка населення поза колоніями) */
+  const ideo = o => Object.assign({ trad: 0, rel: 0, lib: 0, socdem: 0, soc: 0, nat: 0, neolib: 0, tech: 0, green: 0, coop: 0 }, o);
+  H.START_1900 = {
+    US: { pop: 76, y: 8.0, regime: 'democracy', inc: 0.50, order: 'laissez', gov: 'lib', cap: 0.40, legit: 0.62, debt: 0.07, defBias: 0, coh: 0.6, eCoh: 0.6, sov: 1,
+      I: 0.30, D: 0, AI: 0, urban: 0.40, edu: 0.88, omega: 0.42, eo: 0.25, digSov: 0.9, rep: 0.08,
+      C: { ideo: ideo({ trad: 0.05, rel: 0.27, lib: 0.33, socdem: 0.1, soc: 0.06, nat: 0.14, coop: 0.05 }), org: 0.25 },
+      A: { ideo: ideo({ rel: 0.15, lib: 0.5, socdem: 0.15, soc: 0.08, nat: 0.12 }), org: 0.2 },
+      E: { ideo: ideo({ rel: 0.15, lib: 0.7, nat: 0.1, trad: 0.05 }) } },
+    EU: { pop: 280, y: 5.0, regime: 'oligarchy', inc: 0.36, order: 'laissez', gov: 'lib', cap: 0.55, legit: 0.6, debt: 0.45, defBias: 0, coh: 0.6, eCoh: 0.55, sov: 1,
+      I: 0.28, D: 0, AI: 0, urban: 0.38, edu: 0.75, omega: 0.48, eo: 0.35, digSov: 0.9, rep: 0.2,
+      C: { ideo: ideo({ trad: 0.15, rel: 0.2, lib: 0.14, socdem: 0.2, soc: 0.1, nat: 0.16, coop: 0.05 }), org: 0.3 },
+      A: { ideo: ideo({ trad: 0.05, rel: 0.1, lib: 0.35, socdem: 0.15, soc: 0.12, nat: 0.23 }), org: 0.25 },
+      E: { ideo: ideo({ trad: 0.3, rel: 0.1, lib: 0.4, nat: 0.2 }) } },
+    UA: { pop: 28, convF: 0.7, y: 1.9, regime: 'autocracy', inc: 0.06, order: 'agrarian', gov: 'trad', cap: 0.3, legit: 0.35, debt: 0.2, defBias: 0, coh: 0.45, eCoh: 0.4, sov: 0, dom: 'RU', claim: 'RU',
+      I: 0.10, D: 0, AI: 0, urban: 0.14, edu: 0.25, omega: 0.50, eo: 0.25, digSov: 0.2, rep: 0.5,
+      C: { ideo: ideo({ trad: 0.2, rel: 0.3, lib: 0.05, socdem: 0.1, soc: 0.08, nat: 0.2, coop: 0.07 }), org: 0.1 },
+      A: { ideo: ideo({ trad: 0.05, rel: 0.1, lib: 0.2, socdem: 0.2, soc: 0.15, nat: 0.3 }), org: 0.15 },
+      E: { ideo: ideo({ trad: 0.6, rel: 0.2, lib: 0.1, nat: 0.1 }) } },
+    RU: { pop: 70, convF: 0.85, y: 2.0, regime: 'autocracy', inc: 0.06, order: 'agrarian', gov: 'trad', cap: 0.35, legit: 0.5, debt: 0.3, defBias: 0, coh: 0.5, eCoh: 0.5, sov: 1,
+      I: 0.12, D: 0, AI: 0, urban: 0.13, edu: 0.25, omega: 0.47, eo: 0.3, digSov: 0.5, rep: 0.5,
+      C: { ideo: ideo({ trad: 0.32, rel: 0.3, lib: 0.04, socdem: 0.08, soc: 0.1, nat: 0.11, coop: 0.05 }), org: 0.12 },
+      A: { ideo: ideo({ trad: 0.05, rel: 0.05, lib: 0.25, socdem: 0.2, soc: 0.3, nat: 0.15 }), org: 0.2 },
+      E: { ideo: ideo({ trad: 0.65, rel: 0.15, lib: 0.12, nat: 0.08 }) } },
+    CN: { pop: 400, convF: 0.75, y: 0.85, regime: 'autocracy', inc: 0.04, order: 'agrarian', gov: 'trad', cap: 0.15, legit: 0.32, debt: 0.4, defBias: 0.01, coh: 0.4, eCoh: 0.3, sov: 1, humil: 0.6,
+      I: 0.03, D: 0, AI: 0, urban: 0.06, edu: 0.15, omega: 0.45, eo: 0.4, digSov: 0.3, rep: 0.4,
+      C: { ideo: ideo({ trad: 0.45, rel: 0.25, lib: 0.02, socdem: 0.03, soc: 0.02, nat: 0.2, coop: 0.03 }), org: 0.08 },
+      A: { ideo: ideo({ trad: 0.25, rel: 0.05, lib: 0.25, socdem: 0.1, soc: 0.05, nat: 0.3 }), org: 0.15 },
+      E: { ideo: ideo({ trad: 0.8, rel: 0.1, nat: 0.1 }) } },
+    GS: { pop: 900, convF: 0.4, y: 1.0, regime: 'autocracy', inc: 0.06, order: 'agrarian', gov: 'trad', cap: 0.2, legit: 0.3, debt: 0.2, defBias: 0, coh: 0.35, eCoh: 0.35, sov: 0.25, dom: 'EU', claim: 'EU', humil: 0.4,
+      I: 0.04, D: 0, AI: 0, urban: 0.08, edu: 0.12, omega: 0.52, eo: 0.25, digSov: 0.2, rep: 0.45,
+      C: { ideo: ideo({ trad: 0.42, rel: 0.35, lib: 0.03, socdem: 0.03, soc: 0.02, nat: 0.13, coop: 0.02 }), org: 0.06 },
+      A: { ideo: ideo({ trad: 0.15, rel: 0.15, lib: 0.25, socdem: 0.1, soc: 0.05, nat: 0.3 }), org: 0.1 },
+      E: { ideo: ideo({ trad: 0.6, rel: 0.2, lib: 0.15, nat: 0.05 }) } },
+  };
+
+  /* ---------- Стартовий стан 2025 ----------
+     inc — за індексом ліберальної демократії V-Dem (наближено; для США — з урахуванням падіння
+     на 24% у 2025 р. за звітом V-Dem 2026); debt — валовий держборг, % ВВП (МВФ, 2025–2026);
+     omega — частка доходу верхніх 10% (World Inequality Database, наближено). */
+  H.START_2025 = {
+    US: { pop: 340, y: 60, regime: 'democracy', inc: 0.57, order: 'neoliberal', gov: 'nat', cap: 0.70, legit: 0.42, debt: 1.24, defBias: 0.035, coh: 0.32, eCoh: 0.35, sov: 1, nuke: true,
+      I: 1.0, D: 0.88, AI: 0.14, urban: 0.83, edu: 0.92, omega: 0.46, eo: 0.62, digSov: 0.95, rep: 0.1, platPow: 0.62,
+      C: { ideo: ideo({ rel: 0.14, lib: 0.22, socdem: 0.17, soc: 0.04, nat: 0.3, neolib: 0.05, tech: 0.03, green: 0.03, coop: 0.02 }), org: 0.22 },
+      A: { ideo: ideo({ rel: 0.06, lib: 0.22, socdem: 0.2, soc: 0.1, nat: 0.24, neolib: 0.04, tech: 0.08, green: 0.04, coop: 0.02 }), org: 0.4 },
+      E: { ideo: ideo({ rel: 0.08, lib: 0.25, nat: 0.25, neolib: 0.18, tech: 0.24 }) } },
+    EU: { pop: 450, y: 42, regime: 'democracy', inc: 0.74, order: 'welfare', gov: 'lib', cap: 0.70, legit: 0.5, debt: 0.88, defBias: 0.01, coh: 0.45, eCoh: 0.5, sov: 1, nuke: true,
+      I: 1.0, D: 0.82, AI: 0.1, urban: 0.75, edu: 0.9, omega: 0.36, eo: 0.42, digSov: 0.25, rep: 0.05, platPow: 0.1,
+      C: { ideo: ideo({ rel: 0.08, lib: 0.24, socdem: 0.22, soc: 0.04, nat: 0.22, neolib: 0.06, tech: 0.02, green: 0.1, coop: 0.02 }), org: 0.38 },
+      A: { ideo: ideo({ rel: 0.04, lib: 0.25, socdem: 0.2, soc: 0.06, nat: 0.18, neolib: 0.06, tech: 0.05, green: 0.13, coop: 0.03 }), org: 0.38 },
+      E: { ideo: ideo({ rel: 0.05, lib: 0.4, socdem: 0.15, nat: 0.12, neolib: 0.18, tech: 0.05, green: 0.05 }) } },
+    UA: { pop: 33, convF: 0.7, y: 11, regime: 'democracy', inc: 0.48, order: 'neoliberal', gov: 'lib', cap: 0.45, legit: 0.6, debt: 1.05, defBias: 0.01, coh: 0.75, eCoh: 0.5, sov: 1, claim: 'RU',
+      I: 0.8, D: 0.72, AI: 0.05, urban: 0.7, edu: 0.9, omega: 0.34, eo: 0.35, digSov: 0.15, rep: 0.15, platPow: 0.05, humil: 0.3,
+      C: { ideo: ideo({ rel: 0.1, lib: 0.3, socdem: 0.15, soc: 0.02, nat: 0.3, neolib: 0.05, tech: 0.03, green: 0.02, coop: 0.03 }), org: 0.45 },
+      A: { ideo: ideo({ rel: 0.05, lib: 0.38, socdem: 0.14, nat: 0.28, neolib: 0.06, tech: 0.06, green: 0.03 }), org: 0.5 },
+      E: { ideo: ideo({ lib: 0.4, nat: 0.25, neolib: 0.25, tech: 0.05, rel: 0.05 }) } },
+    RU: { pop: 144, convF: 0.85, y: 25, regime: 'autocracy', inc: 0.07, order: 'statecap', gov: 'nat', cap: 0.6, legit: 0.5, debt: 0.2, defBias: 0.02, coh: 0.45, eCoh: 0.55, sov: 1, nuke: true,
+      I: 0.9, D: 0.72, AI: 0.06, urban: 0.75, edu: 0.9, omega: 0.47, eo: 0.4, digSov: 0.55, rep: 0.8, platPow: 0.2, humil: 0.5,
+      C: { ideo: ideo({ trad: 0.1, rel: 0.15, lib: 0.07, socdem: 0.08, soc: 0.12, nat: 0.44, neolib: 0.01, tech: 0.01, green: 0.02 }), org: 0.1 },
+      A: { ideo: ideo({ trad: 0.05, rel: 0.08, lib: 0.2, socdem: 0.1, soc: 0.1, nat: 0.4, tech: 0.05, green: 0.02 }), org: 0.12 },
+      E: { ideo: ideo({ trad: 0.1, rel: 0.1, nat: 0.6, lib: 0.1, neolib: 0.1 }) } },
+    CN: { pop: 1410, convF: 0.75, reformed: true, y: 18, regime: 'oneparty', inc: 0.04, order: 'statecap', gov: 'soc', cap: 0.85, legit: 0.62, debt: 0.96, defBias: 0.04, coh: 0.6, eCoh: 0.7, sov: 1, nuke: true,
+      I: 0.85, D: 0.72, AI: 0.1, urban: 0.66, edu: 0.8, omega: 0.43, eo: 0.5, digSov: 0.85, rep: 0.75, platPow: 0.5, humil: 0.3,
+      C: { ideo: ideo({ trad: 0.05, rel: 0.05, lib: 0.05, socdem: 0.1, soc: 0.3, nat: 0.38, tech: 0.04, green: 0.03 }), org: 0.08 },
+      A: { ideo: ideo({ trad: 0.03, rel: 0.03, lib: 0.1, socdem: 0.1, soc: 0.25, nat: 0.35, tech: 0.1, green: 0.04 }), org: 0.12 },
+      E: { ideo: ideo({ soc: 0.4, nat: 0.4, tech: 0.15, lib: 0.05 }) } },
+    GS: { pop: 5000, convF: 0.4, y: 8, regime: 'hybrid', inc: 0.4, order: 'neoliberal', gov: 'nat', cap: 0.4, legit: 0.45, debt: 0.62, defBias: 0.02, coh: 0.4, eCoh: 0.4, sov: 1,
+      I: 0.55, D: 0.55, AI: 0.03, urban: 0.5, edu: 0.65, omega: 0.55, eo: 0.5, digSov: 0.15, rep: 0.35, platPow: 0.08,
+      C: { ideo: ideo({ trad: 0.1, rel: 0.3, lib: 0.12, socdem: 0.12, soc: 0.06, nat: 0.22, neolib: 0.03, tech: 0.02, green: 0.03 }), org: 0.2 },
+      A: { ideo: ideo({ trad: 0.04, rel: 0.18, lib: 0.2, socdem: 0.12, soc: 0.08, nat: 0.25, neolib: 0.04, tech: 0.06, green: 0.03 }), org: 0.25 },
+      E: { ideo: ideo({ trad: 0.1, rel: 0.15, lib: 0.25, nat: 0.25, neolib: 0.2, tech: 0.05 }) } },
+  };
+  // хто чим «озброєний» ядерно і з якого року (стримує прямі війни між такими блоками)
+  H.NUKES = { US: 1945, RU: 1949, EU: 1952, CN: 1964 };
+  // наскільки старіння населення гальмуватиме економіку до 2075 (наближено, за прогнозами ООН)
+  H.AGING = { US: 0.05, EU: 0.15, UA: 0.25, RU: 0.2, CN: 0.28, GS: -0.05 };
+
+  /* ---------- Реальна історія (узагальнено до 9 «систем») ----------
+     Блоки — агрегати: усередині ЄС чи Глобального Півдня завжди були різні режими.
+     Тут показано переважний тип за населенням. */
+  H.HISTORY = {
+    US: [[1900, 'libdem'], [1933, 'socdem'], [1981, 'libdem']],
+    EU: [[1900, 'oligarchic'], [1919, 'libdem'], [1933, 'autocratic'], [1945, 'socdem']],
+    UA: [[1900, 'dominated'], [1917, 'collapse'], [1922, 'dominated'], [1991, 'oligarchic'], [2014, 'libdem']],
+    RU: [[1900, 'autocratic'], [1917, 'collapse'], [1922, 'socialist'], [1992, 'oligarchic'], [2012, 'autocratic']],
+    CN: [[1900, 'autocratic'], [1912, 'collapse'], [1928, 'autocratic'], [1937, 'collapse'], [1950, 'socialist'], [1978, 'autocratic']],
+    GS: [[1900, 'dominated'], [1950, 'autocratic'], [1990, 'oligarchic']],
+  };
+  H.historyAt = function (id, year) {
+    let c = null;
+    for (const [y, cat] of H.HISTORY[id]) if (year >= y) c = cat;
+    return c;
+  };
+
+  /* ---------- Історичні шоки (режим «з реальними шоками») ----------
+     Модель отримує зовнішні поштовхи, а реакцію на них (революції, реформи, переходи)
+     рахує сама. */
+  H.SHOCKS = [
+    { year: 1914, type: 'war', sides: [['EU'], ['RU']], until: 1918, key: 'ww1' },
+    { year: 1917, type: 'joinwar', bloc: 'US', side: 1, key: 'usJoins' },
+    { year: 1918, type: 'pandemic', sev: 0.02, key: 'flu' },
+    { year: 1929, type: 'crash', sev: 0.35, len: 4, key: 'depression' },
+    { year: 1937, type: 'invasion', bloc: 'CN', until: 1945, key: 'japan' },
+    { year: 1939, type: 'war', sides: [['EU'], ['RU']], until: 1945, key: 'ww2' },
+    { year: 1941, type: 'joinwar', bloc: 'US', side: 1, key: 'usJoins2' },
+    { year: 1973, type: 'oil', sev: 0.04, key: 'oil' },
+    { year: 2008, type: 'crash', sev: 0.07, len: 2, key: 'gfc' },
+    { year: 2014, type: 'tension', a: 'RU', b: 'UA', val: 0.9, key: 'crimea' },
+    { year: 2020, type: 'pandemic', sev: 0.006, gdp: 0.04, key: 'covid' },
+    { year: 2022, type: 'war', sides: [['RU'], ['UA']], until: null, key: 'invasion2022' },
+  ];
+
+  /* ---------- Технологічний фронт ---------- */
+  H.frontier = function (year, scen) {
+    const lerp = (pts) => {
+      if (year <= pts[0][0]) return pts[0][1];
+      for (let i = 1; i < pts.length; i++) if (year <= pts[i][0]) { const [a, va] = pts[i - 1], [b, vb] = pts[i]; return va + (vb - va) * (year - a) / (b - a); }
+      return pts[pts.length - 1][1];
+    };
+    const I = lerp([[1900, 0.3], [1930, 0.55], [1960, 0.82], [1985, 0.97], [2000, 1]]);
+    const D = lerp([[1950, 0], [1975, 0.05], [1995, 0.22], [2010, 0.62], [2025, 0.88], [2040, 0.97], [2060, 1]]);
+    let A = lerp([[2005, 0], [2015, 0.03], [2025, 0.14]]);
+    if (year > 2025) {
+      const sp = scen ? scen.ai : 0.5;                 // 0 — повільно, 1 — дуже швидко
+      const k = 0.06 + 0.22 * sp, mid = 2062 - 30 * sp; // логістична крива автоматизації
+      const target = 0.14 + 0.81 / (1 + Math.exp(-k * (year - mid)));
+      A = Math.max(0.14, target);
+    }
+    return { I, D, A };
+  };
+
+  /* ---------- Джерела ---------- */
+  H.SOURCES = [
+    ['Maddison Project Database 2023 (ВВП на особу)', 'https://www.rug.nl/ggdc/historicaldevelopment/maddison/'],
+    ['V-Dem Democracy Report 2026', 'https://www.v-dem.net/documents/75/V-Dem_Institute_Democracy_Report_2026_lowres.pdf'],
+    ['World Inequality Database (частка верхніх 10%)', 'https://wid.world/'],
+    ['IMF Fiscal Monitor, квітень 2026 (держборг)', 'https://www.mappr.co/public-debt-by-country/'],
+    ['P. Turchin, структурно-демографічна теорія', 'https://escholarship.org/content/qt6qp8x28p/qt6qp8x28p.pdf'],
+    ['Y. Varoufakis, «Technofeudalism» (огляд Г. Ловінка)', 'https://www.yanisvaroufakis.eu/2024/04/01/technofeudalism-reviewed-by-geert-lovink/'],
+    ['E. Morozov, критика технофеодалізму (Jacobin)', 'https://jacobin.com/2023/04/evgeny-morozov-critique-of-techno-feudalism-modes-of-production-capitalism'],
+    ['C. Durand відповідає Морозову (Verso)', 'https://www.versobooks.com/blogs/news/where-is-digital-technology-taking-us-cedric-durand-responds-to-evgeny-morozov'],
+  ];
+})(window.H = window.H || {});
+
+/* ---------- Ключові повороти ХХ століття: перевірка «у правильному вікні» ---------- */
+(function (H) {
+  'use strict';
+  // test: чи відбулася подія у вікні [from, to]; given — умова, без якої подія не має сенсу
+  H.TURNS = [
+    { id: 'ruRevolution', bloc: 'RU', from: 1905, to: 1925, test: (r) => r.some(x => x.y >= 1905 && x.y <= 1925 && x.cat !== 'autocratic') },
+    { id: 'cnCollapse', bloc: 'CN', from: 1905, to: 1930, test: (r) => r.some(x => x.y >= 1905 && x.y <= 1930 && x.cat === 'collapse') },
+    { id: 'uaIndependence1917', bloc: 'UA', from: 1915, to: 1925, test: (r) => r.some(x => x.y >= 1915 && x.y <= 1925 && x.cat !== 'dominated') },
+    { id: 'uaReconquered', bloc: 'UA', from: 1918, to: 1940, given: (r) => r.some(x => x.y >= 1915 && x.y <= 1925 && x.cat !== 'dominated'), test: (r) => r.some(x => x.y >= 1919 && x.y <= 1940 && x.cat === 'dominated') },
+    { id: 'usNewDeal', bloc: 'US', from: 1929, to: 1945, test: (r) => r.some(x => x.y >= 1929 && x.y <= 1945 && x.order === 'welfare') },
+    { id: 'euAuthoritarian', bloc: 'EU', from: 1920, to: 1940, test: (r) => r.some(x => x.y >= 1920 && x.y <= 1940 && (x.cat === 'autocratic' || x.cat === 'socialist')) },
+    { id: 'euDemocracy1955', bloc: 'EU', from: 1955, to: 1960, test: (r) => r.filter(x => x.y >= 1955 && x.y <= 1960).every(x => x.cat === 'libdem' || x.cat === 'socdem') },
+    { id: 'decolonization', bloc: 'GS', from: 1940, to: 1970, test: (r) => r.some(x => x.y >= 1940 && x.y <= 1970 && x.sov >= 0.5) && r.every(x => x.y >= 1940 || x.sov < 0.5) },
+    { id: 'neoliberalTurn', bloc: 'US', from: 1970, to: 1995, test: (r) => r.some(x => x.y >= 1970 && x.y <= 1995 && x.order === 'neoliberal') },
+    { id: 'ruPlanEnds', bloc: 'RU', from: 1980, to: 2000, given: (r) => r.some(x => x.y < 1980 && x.order === 'planned'), test: (r) => { const a = r.find(x => x.y === 1979); return a && a.order === 'planned' && r.some(x => x.y >= 1980 && x.y <= 2000 && x.order !== 'planned'); } },
+    { id: 'cnReform', bloc: 'CN', from: 1970, to: 1995, given: (r) => r.some(x => x.y >= 1950 && x.y < 1970 && x.order === 'planned'), test: (r) => r.some(x => x.y >= 1970 && x.y <= 1995 && x.order !== 'planned') },
+    { id: 'uaIndependence1991', bloc: 'UA', from: 1985, to: 2000, given: (r) => r.some(x => x.y >= 1960 && x.y <= 1984 && x.cat === 'dominated'), test: (r) => r.some(x => x.y >= 1985 && x.y <= 2000 && x.cat !== 'dominated') },
+    { id: 'usStaysDemocratic', bloc: 'US', from: 1900, to: 2024, test: (r) => r.filter(x => x.y <= 2024).every(x => x.cat === 'libdem' || x.cat === 'socdem') },
+  ];
+  H.checkTurn = function (t, sim) {
+    const r = sim.blocs[t.bloc].rec;
+    if (t.given && !t.given(r)) return null;
+    return !!t.test(r);
+  };
+})(window.H = window.H || {});
+
+</script>
+<script>
+/* ============================================================
+   Людство: рушій моделі (крок = 1 рік)
+   Механізми:
+   - Турчин (структурно-демографічна теорія): зубожіння мас × надлишок
+     претендентів в еліту × фінансова криза держави = політичний стрес;
+   - Ібн Хальдун: згуртованість (асабія) росте від загроз, слабне від нерівності;
+   - Аджемоглу і Робінсон: інклюзивність інституцій, баланс держави й суспільства;
+   - Вебер: легітимність із результатів, процедур і віри;
+   - технологічні епохи визначають, хто володіє ключовим капіталом
+     (земля → машини → дані й обчислення) і як вилучається дохід.
+   Потреби → емоції → ідеології та організація → дії груп → кризи → переходи.
+   ============================================================ */
+(function (H) {
+  'use strict';
+  const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+  H.clamp = clamp;
+
+  H.rng = function (seed) {
+    let a = seed >>> 0;
+    const f = () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+    f.getState = () => a; f.setState = v => { a = v | 0; };
+    return f;
+  };
+
+  const IDEOS = H.IDEOS;
+  const LIBERAL = new Set(['lib', 'socdem', 'neolib', 'green', 'coop']);
+  const IMPERIAL = new Set(['nat', 'soc', 'trad']);
+  const MARKET = new Set(['laissez', 'welfare', 'neoliberal', 'rentier']);
+  // «відстань» між ідеологіями правлячих груп (для напруги між блоками)
+  function ideoDist(a, b) {
+    if (a === b) return 0;
+    const fam = x => LIBERAL.has(x) || x === 'tech' ? 'L' : x === 'soc' ? 'S' : x === 'nat' ? 'N' : 'T';
+    const fa = fam(a), fb = fam(b);
+    if (fa === fb) return 0.1;
+    if ((fa === 'N' && fb === 'T') || (fa === 'T' && fb === 'N')) return 0.3;
+    return 0.8;
+  }
+
+  function newGroup(src) {
+    return {
+      ideo: Object.assign({}, src.ideo), org: src.org || 0.2,
+      needs: { mat: 0.6, sec: 0.6, status: 0.5, voice: 0.3, belong: 0.5, meaning: 0.5 },
+      emo: { anger: 0.3, fear: 0.3, hope: 0.4, trust: 0.5, pride: 0.4 },
+    };
+  }
+
+  /* ---------- Симуляція ---------- */
+  function Sim(opts) {
+    opts = opts || {};
+    this.mode = opts.mode || 'history';
+    this.seed = opts.seed == null ? Math.floor(Math.random() * 1e9) : opts.seed;
+    this.rnd = H.rng(this.seed);
+    this.useShocks = opts.shocks !== false;
+    this.scen = Object.assign({ ai: 0.5, conc: 0.55, climate: 0.4, tension: 0.5, policy: 0.5 }, opts.scen || {});
+    this.year = this.mode === 'history' ? 1900 : 2025;
+    this.endYear = opts.endYear || (this.mode === 'history' ? 2025 : 2100);
+    const start = this.mode === 'history' ? H.START_1900 : H.START_2025;
+    this.blocs = {};
+    for (const id of H.BLOCS) {
+      const s = start[id];
+      const b = Object.assign({}, s);
+      b.id = id;
+      b.C = newGroup(s.C); b.A = newGroup(s.A); b.E = newGroup(s.E);
+      b.S = { loyal: 0.6, org: 0.5 };
+      b.platPow = s.platPow || 0; b.humil = s.humil || 0; b.pride = 0.3; b.warDefeat = 0;
+      b.gAvg = 0.015; b.g = 0.015; b.stagn = 0; b.cool = 0; b.yrsRegime = 10; b.demYears = b.regime === 'democracy' ? 30 : 0;
+      b.expect = b.y * (1 - b.omega) / 0.55; b.elect = 1 + Math.floor(this.rnd() * 4);
+      b.streak = { pref: null, n: 0 }; b.collapseYrs = 0; b.pending = null; b.war = null; b.events = [];
+      b.reserve = id === 'US' && this.year >= 1945 ? 0.5 : 0;
+      b.rec = [];
+      this.blocs[id] = b;
+    }
+    this.climate = 0;
+    // умовна конвергенція: стартовий розрив між потенціалом і реальним рівнем
+    // (інституції, які заважають наздоганяти) скорочується лише за сильної держави й відкритості
+    for (const id of H.BLOCS) { const b = this.blocs[id]; b.tfp = Math.log(b.y) - this.lnPot(b); }
+    this.tension = {};
+    this.wars = [];
+    this.log = [];
+    this.front = H.frontier(this.year, this.scen);
+    this.climate = 0; this.crash = null; this.oil = 0; this.lastCats = {};
+    if (this.mode === 'future') {
+      // війна Росії проти України триває на старті сценарію
+      const w0 = this.startWar(['RU'], ['UA'], null, 'ongoing', true);
+      w0.start = 2022; w0.exh = { RU: 0.35, UA: 0.45 };   // війна триває вже понад три роки
+      this.setTension('RU', 'UA', 0.95);
+      this.setTension('US', 'CN', 0.55); this.setTension('EU', 'RU', 0.7); this.setTension('US', 'RU', 0.6);
+    } else {
+      this.setTension('EU', 'RU', 0.45); this.setTension('RU', 'UA', 0.2);
+    }
+    for (const id of H.BLOCS) this.lastCats[id] = H.classify(this.blocs[id]);
+    this.record();
+  }
+  H.Sim = Sim;
+  const P = Sim.prototype;
+
+  const pk = (a, b) => [a, b].sort().join('-');
+  P.getTension = function (a, b) { return this.tension[pk(a, b)] || 0; };
+  P.setTension = function (a, b, v) { this.tension[pk(a, b)] = clamp(v); };
+  P.emit = function (bloc, key, p, kind) {
+    const e = { year: this.year, bloc, key, p: p || {}, kind: kind || 'event' };
+    this.log.push(e);
+    if (bloc && this.blocs[bloc]) { this.blocs[bloc].events.push(e); }
+    if (this.log.length > 3000) this.log.shift();
+    return e;
+  };
+  P.avail = function (id) { return H.ideoAvail(id, this.year); };
+  P.power = function (b) {
+    return Math.pow(b.pop, 0.55) * Math.pow(b.y, 0.8) * (0.3 + b.cap) * (b.regime === 'collapse' ? 0.3 : 1) * (b.war ? 1.4 : 1);
+  };
+
+  /* ---------- Один рік ---------- */
+  P.step = function () {
+    this.year++;
+    const year = this.year;
+    this.front = H.frontier(year, this.scen);
+    for (const id of H.BLOCS) { const b = this.blocs[id]; b.shockG = 0; b.famine = 0; b.events = []; if (id === 'US' && year >= 1945) b.reserve = 0.5; }
+    this.applyShocks();
+    if (this.mode === 'future' || !this.useShocks) this.randomShocks();
+    const wRef = Math.max(...H.BLOCS.map(id => { const b = this.blocs[id]; return b.y * (1 - b.omega) / 0.55; }));
+    this.frontY = Math.max(...H.BLOCS.map(id => this.blocs[id].y));
+    for (const id of H.BLOCS) this.economy(this.blocs[id], wRef);
+    for (const id of H.BLOCS) this.society(this.blocs[id]);
+    for (const id of H.BLOCS) this.politics(this.blocs[id]);
+    this.interBloc();
+    for (const id of H.BLOCS) this.crisis(this.blocs[id]);
+    if (this.crash && ++this.crash.t > this.crash.len + 6) this.crash = null;
+    if (this.oil > 0) this.oil--;
+    this.record();
+  };
+  P.run = function (toYear) { while (this.year < (toYear || this.endYear)) this.step(); };
+
+  /* ---------- Шоки ---------- */
+  P.applyShocks = function () {
+    if (!this.useShocks || this.mode !== 'history') return;
+    const year = this.year;
+    for (const s of H.SHOCKS) {
+      if (s.year !== year) continue;
+      if (s.type === 'war') this.startWar(s.sides[0], s.sides[1], s.until, s.key, true);
+      else if (s.type === 'joinwar') { const w = this.wars.find(w => w.key && (w.key === 'ww1' || w.key === 'ww2') && !w.ended); if (w) { w.sides[s.side].push(s.bloc); this.blocs[s.bloc].war = w; this.emit(s.bloc, 'ev.joinWar', {}, 'war'); } }
+      else if (s.type === 'pandemic') { for (const id of H.BLOCS) { const b = this.blocs[id]; b.pop *= 1 - s.sev; b.shockG -= s.gdp || 0.02; b.debt += s.key === 'covid' ? 0.12 * (b.cap) : 0; } this.emit(null, 'ev.pandemic', { sev: s.sev }, 'shock'); }
+      else if (s.type === 'crash') { this.crash = { sev: s.sev, len: s.len, t: 1 }; this.emit(null, 'ev.crash', { key: s.key }, 'shock'); }
+      else if (s.type === 'oil') { this.oil = 6; this.emit(null, 'ev.oil', {}, 'shock'); }
+      else if (s.type === 'invasion') { const b = this.blocs[s.bloc]; this.startWar([s.bloc], ['JP'], s.until, s.key, true); this.emit(s.bloc, 'ev.invasion', {}, 'war'); }
+      else if (s.type === 'tension') { this.setTension(s.a, s.b, s.val); this.emit(s.b, 'ev.crimea', {}, 'war'); }
+    }
+  };
+  P.randomShocks = function () {
+    const r = this.rnd, year = this.year;
+    if (r() < 0.012) { const sev = 0.004 + r() * 0.02; for (const id of H.BLOCS) { const b = this.blocs[id]; b.pop *= 1 - sev; b.shockG -= 0.03; b.debt += 0.06 * b.cap; } this.emit(null, 'ev.pandemicR', {}, 'shock'); }
+    const meanDebt = H.BLOCS.reduce((s, id) => s + this.blocs[id].debt, 0) / 6;
+    if (!this.crash && r() < 0.018 + 0.03 * clamp(meanDebt - 0.8)) { this.crash = { sev: 0.05 + r() * 0.15, len: 2, t: 1 }; this.emit(null, 'ev.crashR', {}, 'shock'); }
+    if (year > 2025) {
+      this.climate = clamp(this.scen.climate * (year - 2025) / 60, 0, 1.2);
+      if (r() < 0.02 + 0.08 * this.climate) {
+        const id = H.BLOCS[Math.floor(r() * 6)], b = this.blocs[id];
+        b.shockG -= 0.02 + 0.05 * this.climate * (id === 'GS' ? 1.5 : 1); b.famine = id === 'GS' ? 0.3 * this.climate : 0.1 * this.climate;
+        this.emit(id, 'ev.climate', {}, 'shock');
+        // кліматична міграція посилює націоналізм у багатих блоках
+        for (const o of ['US', 'EU']) this.blocs[o].C.ideo.nat += 0.01 * this.climate;
+      }
+    }
+  };
+
+  /* ---------- Економіка ---------- */
+  P.economy = function (b, wRef) {
+    const O = H.ORDERS[b.order], R = H.REGIMES[b.regime], fr = this.front, year = this.year;
+    const capF = 0.25 + b.cap, sovF = b.sov < 0.5 ? 0.65 : 1;
+    const mI = { planned: 1.9, statecap: 1.4, agrarian: 0.45, subsistence: 0.1, laissez: 1.6, welfare: 1.6, neoliberal: 1.6, rentier: 1.5 }[b.order] || 1;
+    const mD = { planned: 0.35, statecap: 1.0, agrarian: 0.4, subsistence: 0.1, rentier: 1.4, neoliberal: 1.2, laissez: 1.1 }[b.order] || 1;
+    b.I += (fr.I - b.I) * clamp(0.075 * mI * Math.pow(0.15 + b.cap, 1.2) * sovF);
+    b.D += (fr.D - b.D) * clamp(0.11 * mD * capF * sovF * (b.I > 0.4 ? 1 : 0.3));
+    b.AI += (fr.A - b.AI) * clamp(0.1 * mD * capF * (b.D > 0.5 ? 1 : 0.2));
+    b.urban += ((0.08 + 0.78 * b.I) - b.urban) * 0.03;
+    const eduT = 0.12 + 0.78 * b.I + 0.1 * b.cap + (b.order === 'planned' ? 0.1 : 0);
+    if (eduT > b.edu) b.edu += (eduT - b.edu) * 0.03;
+    b.edu = clamp(b.edu, 0, 0.97);
+
+    // потенційний рівень життя
+    // планова економіка добре наздоганяє в індустріальну епоху, але не в цифрову
+    const planF = clamp(0.6 * (1 - 3 * fr.D));
+    const catchUp = 0.003 + 0.035 * b.cap * (MARKET.has(b.order) ? 1 : b.order === 'statecap' ? 0.7 : b.order === 'planned' ? planF : 0.25) * (b.sov < 0.5 ? 0.5 : 1);
+    if (b.tfp < 0) b.tfp += -b.tfp * catchUp * (b.convF || 1);
+    let lnPot = this.lnPot(b) + Math.min(0, b.tfp);
+    // фінансова криза — тривалий провал попиту: знижує досяжний рівень на кілька років
+    if (this.crash) {
+      const c = this.crash, depth = c.t <= c.len ? c.sev * c.t / c.len : c.sev * Math.max(0, 1 - (c.t - c.len) / 6);
+      lnPot -= depth * (MARKET.has(b.order) ? (b.id === 'GS' ? 0.7 : 1) : b.order === 'statecap' ? 0.5 : b.order === 'planned' ? 0 : 0.6);
+    }
+    let g = (lnPot - Math.log(b.y)) * 0.06 + b.shockG;
+    if (this.oil > 0 && MARKET.has(b.order) && (b.id === 'US' || b.id === 'EU')) { g -= 0.012; b.defBias += 0.003; }
+    if (b.war) g -= 0.03 * (b.war.intensity || 1);
+    g = clamp(g, -0.3, 0.12);
+    b.y *= Math.exp(g); b.g = g; b.gAvg += (g - b.gAvg) * 0.15;
+    // застій — відставання від світового фронту, що наростає
+    b.gapHist = b.gapHist || [];
+    const gap = Math.log(this.frontY || b.y) - Math.log(b.y);
+    b.gapHist.push(gap); if (b.gapHist.length > 10) b.gapHist.shift();
+    const widening = b.gapHist.length >= 10 && gap - b.gapHist[0] > 0.04;
+    b.stagn = widening || b.gAvg < 0.008 ? b.stagn + 1 : Math.max(0, b.stagn - 2);
+    const popR = 0.004 + 0.016 * (1 - b.urban) + (b.id === 'US' ? 0.005 : 0) - (b.war ? 0.006 * (b.war.intensity || 1) : 0) - b.famine * 0.05;
+    b.pop *= 1 + popR;
+
+    // платформна рента і сила власників платформ
+    const antitrust = b.regime === 'oneparty' ? 0.75 : b.regime === 'technocorp' ? 0 : 0.12 + 0.35 * b.inc * (['socdem', 'green', 'coop'].includes(b.gov) ? 1 : 0.4) + (b.id === 'EU' && year > 2015 ? 0.2 : 0) + 0.25 * (this.scen.policy - 0.5);
+    b.platRent = b.D * this.scen.conc * clamp(1 - antitrust) * (0.4 + 0.6 * b.AI + 0.4 * b.D);
+    const grip = { oneparty: 0.85, autocracy: 0.6, junta: 0.6, theocracy: 0.6 }[b.regime] || 0;
+    b.platPow += (b.platRent * b.digSov * (1 - grip) * (b.techAlly ? 1.4 : 1) - b.platPow) * 0.08;
+    b.autoPress = b.AI * clamp(1 - O.welfare * 3);
+    const target = O.omega + 0.25 * b.platRent * b.digSov + 0.12 * b.autoPress - 0.1 * b.C.org * b.inc - (b.regime === 'council' ? 0.05 : 0);
+    b.omega = clamp(b.omega + (target - b.omega) * 0.06, 0.18, 0.75);
+
+    // добробут більшості і очікування
+    const w = b.y * (1 - b.omega) / 0.55;
+    const ex = 0.1 + 0.5 * b.D + 0.15 * b.urban + 0.15 * b.edu;     // наскільки люди бачать, як живуть деінде
+    // неприйняття втрат: до кращого звикають швидко, з гіршим миряться повільно
+    const adapt = w > b.expect ? 0.1 : 0.035;
+    const ref = w * Math.pow(Math.max(1, wRef / w), 0.3);           // «досяжне» порівняння з багатшими
+    b.expect += adapt * (w * 1.01 - b.expect) + 0.008 * ex * (ref - b.expect);
+    b.w = w; b.matRatio = w / b.expect;
+
+    // надлишок претендентів у еліту
+    const eoT = clamp(0.1 + 1.4 * (b.omega - 0.35) + 0.25 * b.edu + 0.2 * b.D + 6 * (0.025 - b.gAvg));
+    b.eo += (eoT - b.eo) * 0.07;
+
+    // держфінанси
+    const war = b.war ? 0.1 * (b.war.intensity || 1) : 0;
+    const interest = b.order === 'planned' ? 0 : 0.025 * b.debt;
+    const polBias = (['democracy', 'hybrid', 'oligarchy'].includes(b.regime) ? 0.015 : 0.005) + (this.year > 2025 ? (H.AGING[b.id] || 0) * 0.04 * Math.min(1, (this.year - 2025) / 40) : 0);   // виборчий цикл і пенсії тягнуть до дефіцитів
+    b.def = b.defBias + polBias + interest - O.tax * (b.cap - 0.6) * 0.1 + war + (b.cool > 3 ? 0.02 : 0) + O.welfare * 0.04 * b.AI;
+    const infl = this.oil > 0 ? 0.06 : b.order === 'planned' ? 0 : 0.02;   // інфляція «з'їдає» борг
+    b.debt = clamp(b.debt + b.def - (g + infl) * b.debt, 0, 4);
+    b.defBias *= b.war ? 0.995 : 0.97;
+    if (this.oil > 0) b.defBias += 0;
+  };
+
+  P.lnPot = function (b) {
+    const O = H.ORDERS[b.order];
+    let v = 1.064 + 1.9 * b.I + 0.7 * b.D + 0.9 * b.AI + 0.6 * b.edu + O.eff + 0.4 * (b.cap - 0.5) - Math.max(0, b.omega - 0.5) * 1.5;
+    if (b.order === 'planned') v -= 1.2 * Math.max(0, b.I + 2 * this.front.D - 0.8) + 1.2 * Math.max(0, this.front.D - b.D);  // план не встигає за складністю економіки
+    if (b.war) v -= 0.12 * (b.war.intensity || 1);
+    if (b.regime === 'collapse') v -= 0.5;
+    if (b.sov < 0.5) v -= 0.15;                                                   // вилучення колонією / імперією
+    v -= 0.35 * this.climate * (b.id === 'GS' ? 1.4 : b.id === 'RU' || b.id === 'UA' ? 0.6 : 1);
+    // старіння населення після 2025: менше працівників, більше пенсіонерів
+    if (this.year > 2025) v -= (H.AGING[b.id] || 0) * Math.min(1, (this.year - 2025) / 50);
+    return v;
+  };
+
+  /* ---------- Суспільство: потреби, емоції, організація, ідеології ---------- */
+  P.society = function (b) {
+    const R = H.REGIMES[b.regime], O = H.ORDERS[b.order], r = this.rnd;
+    const C = b.C, A = b.A, E = b.E, S = b.S;
+    const surv = R.surv * b.D + R.rep * 0.25;
+    b.surv = surv;
+    const matC = clamp((b.matRatio - 0.75) / 0.35);
+    const inWar = b.war ? 1 : 0, col = b.regime === 'collapse' ? 1 : 0;
+    // потреби
+    C.needs.mat = matC;
+    C.needs.sec = clamp(1 - inWar * 0.45 - col * 0.55 - b.rep * 0.3 - b.autoPress * 0.4 - b.famine - Math.max(0, -b.gAvg) * 8);  // спад = страх безробіття
+    C.needs.status = clamp(1 - (b.omega - 0.25) * 1.6);
+    C.needs.voice = b.inc;
+    C.needs.belong = b.coh;
+    C.needs.meaning = clamp(0.3 + (C.ideo[b.gov] || 0) * 1.5);
+    A.needs.mat = 0.5 + 0.5 * matC;
+    A.needs.sec = C.needs.sec + 0.1;
+    A.needs.status = clamp(1 - b.eo);
+    A.needs.voice = b.inc;
+    A.needs.belong = b.coh;
+    A.needs.meaning = clamp(0.3 + (A.ideo[b.gov] || 0) * 1.5);
+    E.needs.mat = 0.9; E.needs.status = clamp(b.omega / 0.5);
+    E.needs.sec = clamp(1 - C.emo.anger * C.org * (1 - b.rep) * 1.5 - inWar * 0.3 - col * 0.6);
+    E.needs.voice = clamp(1 - b.inc * (['socdem', 'soc', 'coop'].includes(b.gov) ? 0.7 : 0.3));
+    E.needs.belong = b.eCoh; E.needs.meaning = clamp(0.3 + (E.ideo[b.gov] || 0) * 1.5);
+
+    // емоції (з інерцією)
+    const sm = (o, k, v, a = 0.35) => { o[k] += (clamp(v) - o[k]) * a; };
+    const injustice = Math.max(0, b.omega - 0.35) * (0.2 + b.D * 0.8) + b.humil * 0.3 + (b.sov < 0.5 ? 0.2 : 0)
+      + (b.order === 'agrarian' ? 0.15 * (1 - b.urban) : 0)                 // земельний голод селян
+      + 0.4 * b.warDefeat + (b.war ? 0.25 * clamp(b.war.exh[b.id] || 0) * (b.war.sides[1].includes(b.id) ? 0.3 : 1) : 0);   // гнів захисників спрямований на агресора, а не на власну владу
+    const altAppeal = this.altAppeal(b);
+    sm(C.emo, 'anger', (1 - C.needs.mat) * 0.7 + (1 - C.needs.status) * 0.25 + (1 - C.needs.voice) * 0.18 * (0.3 + b.edu) + injustice);
+    sm(C.emo, 'fear', (1 - C.needs.sec) * 0.9 + b.rep * 0.25 + b.autoPress * 0.25);
+    sm(C.emo, 'hope', 0.35 + b.gAvg * 10 + altAppeal * 0.25 - (1 - C.needs.mat) * 0.3 + (b.sov < 0.5 ? -0.1 : 0));
+    sm(C.emo, 'trust', b.legit);
+    sm(C.emo, 'pride', b.coh * 0.5 + b.pride * 0.5 - b.humil * 0.5);
+    sm(A.emo, 'anger', (1 - A.needs.status) * 0.8 + (1 - A.needs.voice) * 0.25 + injustice * 0.6);
+    sm(A.emo, 'fear', (1 - A.needs.sec) * 0.8 + b.rep * 0.3);
+    sm(A.emo, 'hope', 0.4 + b.gAvg * 8 + altAppeal * 0.35 - b.eo * 0.3);
+    sm(A.emo, 'trust', b.legit * (1 - b.eo * 0.4));
+    sm(A.emo, 'pride', C.emo.pride);
+    sm(E.emo, 'fear', (1 - E.needs.sec) + (b.inc > 0.5 && ['socdem', 'soc'].includes(b.gov) ? 0.15 : 0));
+    sm(E.emo, 'anger', (1 - E.needs.voice) * 0.6 + (1 - E.needs.status) * 0.4);
+    sm(E.emo, 'hope', 0.5 + b.gAvg * 8);
+    sm(E.emo, 'trust', b.legit * 0.5 + E.needs.voice * 0.5);
+    sm(E.emo, 'pride', b.pride);
+
+    // організація
+    const orgT = clamp(0.1 + 0.5 * C.emo.anger + 0.35 * b.urban + 0.15 * b.D * (1 - surv) + 0.15 * b.inc + 0.1 * b.edu - 0.25 * C.emo.fear - O.atom - 0.3 * surv);
+    C.org += (orgT - C.org) * 0.07 + (b.strain || 0) * 0.04;   // фронт організовує солдатів
+    const aOrgT = clamp(0.15 + 0.8 * b.eo * A.emo.anger + 0.2 * b.edu + 0.15 * b.D - 0.25 * surv);
+    A.org += (aOrgT - A.org) * 0.08;
+    const loyalT = clamp(0.55 + 0.4 * (1 - b.sfd || 0) * 0.5 + 0.2 * b.legit - 0.35 * b.warDefeat - (b.sov < 0.5 ? 0.1 : 0));
+    S.loyal += (loyalT - S.loyal) * 0.15;
+    S.org = clamp(0.3 + 0.5 * b.cap);
+
+    // згуртованість (асабія) і згуртованість еліт
+    const threat = b.war ? 0.6 : Math.max(...H.BLOCS.filter(o => o !== b.id).map(o => this.getTension(b.id, o))) * 0.4;
+    b.coh = clamp(b.coh + 0.03 * (0.15 + threat * 0.5 + b.pride * 0.2 - (b.omega - 0.3) * 0.8 - b.D * 0.12 - b.coh * 0.5));
+    const eCohT = clamp(0.62 + 0.25 * threat - 0.6 * b.eo - 0.15 * b.D * (1 - surv) - 0.25 * clamp(b.stagn / 15) + (E.emo.fear > 0.6 ? 0.1 : 0));
+    b.eCoh += (eCohT - b.eCoh) * 0.06;
+
+    // ідеології
+    this.drift(b);
+    b.pride *= 0.95; b.humil *= b.sov < 0.5 ? 0.99 : 0.97; b.warDefeat *= 0.75;
+  };
+
+  // наскільки привабливі «чужі моделі» (успішні блоки з іншою ідеологією правлячої групи)
+  P.altAppeal = function (b) {
+    let best = 0;
+    const maxP = Math.max(...H.BLOCS.map(id => this.power(this.blocs[id])));
+    for (const id of H.BLOCS) {
+      const o = this.blocs[id]; if (o === b || o.gov === b.gov) continue;
+      const s = clamp(o.gAvg * 25) * o.legit * Math.sqrt(this.power(o) / maxP);
+      best = Math.max(best, s);
+    }
+    return best;
+  };
+
+  P.drift = function (b) {
+    const C = b.C, A = b.A, E = b.E, av = id => this.avail(id), year = this.year;
+    const maxP = Math.max(...H.BLOCS.map(id => this.power(this.blocs[id])));
+    const exposure = 0.05 + 0.45 * b.D + 0.15 * b.urban + 0.1 * b.edu;
+    const socAppeal = H.BLOCS.some(id => this.blocs[id].gov === 'soc' && this.blocs[id].gAvg > 0.03) ? 0.6 : 0.2;
+    const warThreat = b.war ? 0.6 : 0;
+    const media = 1 + b.D * 0.6;   // соцмережі прискорюють поляризацію гніву й страху
+    const apply = (grp, d, rate) => {
+      // дифузія: «успішні моделі» інших блоків притягують
+      for (const id of H.BLOCS) {
+        const o = this.blocs[id]; if (o === b) continue;
+        const s = clamp(o.gAvg * 25) * o.legit * Math.sqrt(this.power(o) / maxP);
+        d[o.gov] = (d[o.gov] || 0) + 0.012 * exposure * s;
+      }
+      let sum = 0;
+      for (const k of IDEOS) {
+        const a = av(k);
+        let v = grp.ideo[k] + rate * ((d[k] || 0) - grp.ideo[k] * 0.06);
+        v = a <= 0 ? 0 : Math.max(0.004 * a, v);
+        if (a < 1) v = Math.min(v, a * 0.6);
+        grp.ideo[k] = v; sum += v;
+      }
+      for (const k of IDEOS) grp.ideo[k] /= sum;
+    };
+    const dC = {
+      // виснаження війною й земельний голод штовхають до антивоєнного соціалізму («мир, земля, хліб»)
+      soc: av('soc') * C.emo.anger * (C.emo.hope * 0.5 + (b.strain || 0) * 1.2 + b.warDefeat * 0.6 + (b.order === 'agrarian' ? 0.25 : 0)) * 0.6 * (0.4 + socAppeal) * (b.inc > 0.6 ? 0.5 : 1),
+      socdem: (C.emo.anger * 0.5 * (b.inc + 0.2) + 0.15 * C.emo.trust) * 0.45,
+      // масовий націоналізм — явище міського, письменного суспільства
+      nat: (C.emo.anger * C.emo.fear * 0.9 * (1 - (b.strain || 0)) + b.humil * 0.5 + warThreat * 0.3 * (1 - (b.strain || 0) * 2) + (b.sov < 0.5 ? 0.3 : 0)) * media * 0.5 * (0.35 + 0.65 * Math.max(b.urban, b.edu * 0.8)),
+      rel: C.emo.fear * (1 - b.edu) * 0.35,
+      trad: (b.regime === 'autocracy' && b.gov === 'trad' ? 0.25 : 0) * (1 - b.urban) * (1 - b.edu) * (this.year < 1914 ? 1 : 0.5),
+      lib: (C.emo.trust * C.emo.hope * 0.7 + b.inc * 0.15) * 0.5,
+      neolib: av('neolib') * 0.12 * C.emo.trust,
+      tech: av('tech') * b.D * C.emo.hope * 0.18,
+      green: av('green') * (this.climate * 0.6 + b.edu * 0.1),
+      coop: av('coop') * C.emo.anger * C.emo.hope * b.D * 0.15,
+    };
+    apply(C, dC, 0.5);
+    const revFear = C.emo.anger * C.org;
+    const dA = {
+      soc: av('soc') * A.emo.anger * (b.eo + (b.strain || 0)) * 1.0 * (0.4 + socAppeal),
+      nat: (A.emo.anger * A.emo.fear * 0.8 + b.humil * 0.5 + warThreat * 0.3) * media * 0.5,
+      lib: A.emo.hope * 0.4 + b.inc * 0.1,
+      socdem: A.emo.anger * b.inc * 0.3,
+      tech: av('tech') * b.D * 0.4,
+      green: av('green') * (0.15 * b.edu + this.climate * 0.6),
+      coop: av('coop') * A.emo.anger * b.D * 0.3,
+      neolib: av('neolib') * 0.1,
+      rel: A.emo.fear * (1 - b.edu) * 0.2,
+    };
+    apply(A, dA, 0.5);
+    const dE = {
+      nat: revFear * 0.9 + b.humil * 0.3 + warThreat * 0.2,
+      lib: 0.25 + b.inc * 0.25,
+      neolib: av('neolib') * (0.3 + (b.sfd || 0) * 0.6 + (b.order === 'welfare' ? 0.15 : 0)),
+      tech: av('tech') * b.platPow * 1.5,
+      trad: b.gov === 'trad' ? 0.4 * (1 - b.urban) : 0,
+      soc: b.gov === 'soc' && b.regime === 'oneparty' ? 0.7 : 0,
+      socdem: (b.war ? 0.15 : 0) + (b.order === 'welfare' ? 0.1 : 0),
+      rel: 0.05,
+    };
+    apply(E, dE, 0.4);
+  };
+
+  /* ---------- Політика: легітимність, вибори, курс, ерозія ---------- */
+  P.politics = function (b) {
+    const C = b.C, A = b.A, E = b.E, R = H.REGIMES[b.regime], year = this.year, r = this.rnd;
+    b.yrsRegime++; if (b.cool > 0) b.cool--;
+    if (b.regime === 'democracy') b.demYears++;
+    // фінансовий стрес держави
+    const dr = clamp(b.debt / (0.6 + 1.6 * b.cap + (b.reserve || 0) + (b.aid || 0) * 1.5));   // зовнішня допомога розширює фінансові можливості
+    b.aid = (b.aid || 0) * 0.8;
+    b.sfd = clamp(0.75 * dr + 0.25 * clamp(b.def * 5));
+    // легітимність
+    const perf = clamp(0.5 + b.gAvg * 12) * 0.5 + C.needs.mat * 0.5;
+    let proc;
+    switch (b.regime) {
+      case 'democracy': case 'council': proc = b.inc * (0.4 + 0.6 * clamp(b.demYears / 40)); break;  // молода демократія тримається на результатах
+      case 'oligarchy': case 'hybrid': proc = 0.25 + 0.5 * b.inc; break;
+      case 'autocracy': proc = C.ideo.trad + C.ideo.rel * 0.5 + C.ideo.nat * (b.gov === 'nat' ? 0.8 : 0.2); break;
+      case 'oneparty': proc = 0.1 + (C.ideo[b.gov] || 0) * 1.3; break;
+      case 'junta': proc = 0.15 + C.ideo.nat * 0.6; break;
+      case 'theocracy': proc = C.ideo.rel * 1.2; break;
+      case 'technocorp': proc = 0.2 + C.ideo.tech + C.needs.mat * 0.2; break;
+      default: proc = 0;
+    }
+    b.strain = b.war ? clamp((b.war.exh[b.id] || 0) - 0.3) : 0;     // виснаження війною
+    const tgt = 0.15 + 0.4 * perf + 0.3 * clamp(proc) + 0.15 * b.coh + 0.1 * b.pride - 0.2 * b.humil - (b.sov < 0.5 ? 0.25 : 0) - 0.35 * b.warDefeat - 0.35 * b.strain;
+    b.legit += (clamp(tgt) - b.legit) * 0.12;
+
+    if (b.sov < 0.5 || b.regime === 'collapse') return;   // підпорядковані й розпалі блоки не обирають курс
+
+    // вибори
+    if (['democracy', 'hybrid', 'oligarchy', 'technocorp', 'council'].includes(b.regime)) {
+      // оборонна війна: вибори відкладаються (воєнний стан)
+      const defending = b.war && b.war.sides[1].includes(b.id);
+      if (!defending) b.elect--;
+      if (b.elect <= 0) { b.elect = b.regime === 'hybrid' ? 5 : 4; this.election(b); }
+    }
+    // ерозія або відновлення демократії
+    if (b.regime === 'democracy' || b.regime === 'hybrid') {
+      const instStr = clamp(b.demYears / 60) * 0.6 + E.ideo.lib * 0.3 + C.org * 0.2;
+      if (b.gov === 'nat' || b.gov === 'tech') {
+        // радикальні націоналісти з підтримкою еліт руйнують молоду демократію швидко
+        b.inc -= 0.06 * (1 - instStr) * (C.ideo.nat + E.ideo.nat + E.emo.fear * 0.3) * (0.5 + C.emo.anger);
+        if (b.gov === 'nat' && E.ideo.tech > 0.18) { b.techAlly = true; }
+      } else if (LIBERAL.has(b.gov)) b.inc += 0.006 * (0.85 - b.inc);
+      if (b.regime === 'democracy' && b.inc < 0.44) this.transition(b, { regime: 'hybrid' }, 'erosion', this.causes(b));
+      else if (b.regime === 'hybrid' && b.inc > 0.56) this.transition(b, { regime: 'democracy' }, 'redemocratize', this.causes(b));
+      else if (b.regime === 'hybrid' && b.inc < 0.18) this.transition(b, { regime: 'autocracy' }, 'autocratize', this.causes(b));
+    }
+    if (b.regime === 'oligarchy') {
+      // хвилі демократизації: після світових воєн і після 1989 року
+      const wave = (year >= 1918 && year <= 1925 ? 0.02 : 0) + (year >= 1945 && year <= 1952 ? 0.03 : 0) + (year >= 1989 && year <= 1996 ? 0.02 : 0);
+      b.inc += 0.012 * (C.org - 0.25) + 0.002 + wave * (0.5 + C.org);
+      if (b.inc >= 0.5) this.transition(b, { regime: 'democracy' }, 'suffrage', this.causes(b));
+    }
+    if (b.regime === 'technocorp') b.inc = clamp(b.inc - 0.004 + 0.01 * (C.org - 0.4));
+    b.inc = clamp(b.inc, 0.02, 0.97);
+    if (!['democracy', 'hybrid', 'oligarchy', 'technocorp', 'council'].includes(b.regime)) b.inc += (R.inc - b.inc) * 0.2;
+    b.rep += (R.rep - b.rep) * 0.1;
+
+    // реформа «згори» у плановій економіці, що застоюється (Китай 1978): рішення згуртованої верхівки
+    // зміна покоління вождів в однопартійній державі: момент, коли курс переглядають (1953, 1976, 1985)
+    if (b.order === 'planned' && b.regime === 'oneparty' && b.yrsRegime > 15 && r() < 0.06) {
+      const gap = Math.log(this.frontY / b.y);
+      this.emit(b.id, 'ev.succession', {}, 'election');
+      if ((gap > 0.7 || b.stagn > 3) && r() < 0.55) {
+        if (b.eCoh > 0.5) { b.stagn = 0; b.reformed = true; b.legit = clamp(b.legit + 0.1); this.transition(b, { order: 'statecap' }, 'reformAbove', this.causes(b)); return; }
+        if (r() < 0.5) { const ideo = C.ideo.nat + A.ideo.nat > C.ideo.lib + A.ideo.lib ? 'nat' : 'lib'; b.eo *= 0.6; b.y *= 0.92; this.transition(b, { regime: 'hybrid', order: 'neoliberal', gov: ideo, inc: 0.45 }, 'opening', this.causes(b)); return; }
+      }
+      b.yrsRegime = 5;
+    }
+    if (b.order === 'planned' && b.stagn > 5) {
+      const gap = Math.log(this.frontY / b.y);
+      const pr = 0.05 * clamp(b.stagn / 12) + 0.03 * clamp(gap - 1.0);   // застій або усвідомлена відсталість
+      if (r() < pr * b.eCoh) {
+        b.stagn = 0; b.reformed = true; b.legit = clamp(b.legit + 0.1);
+        this.transition(b, { order: 'statecap' }, 'reformAbove', this.causes(b));
+        return;
+      }
+      // розколота верхівка відкриває систему (перебудова) — і часто втрачає контроль
+      if (r() < pr * (1 - b.eCoh) * 1.6 * (0.3 + C.ideo.lib + A.ideo.lib + A.ideo.nat)) {
+        const ideo = C.ideo.nat + A.ideo.nat > C.ideo.lib + A.ideo.lib ? 'nat' : 'lib';
+        b.eo *= 0.6; b.y *= 0.92;
+        this.transition(b, { regime: 'hybrid', order: 'neoliberal', gov: ideo, inc: 0.45 }, 'opening', this.causes(b));
+        return;
+      }
+    }
+    // курс економіки
+    const pref = H.prefOrder(b.gov, b, year);
+    if (pref !== b.order && this.orderFeasible(b, pref)) {
+      if (b.streak.pref === pref) b.streak.n++; else b.streak = { pref, n: 1 };
+      const need = ['democracy', 'council'].includes(b.regime) ? (b.cool > 0 ? 2 : 4) : 2;
+      // старі еліти гальмують перерозподільчі реформи
+      const resist = (pref === 'welfare' || pref === 'commons') ? E.needs.voice * (b.omega - 0.3) : 0;
+      if (b.streak.n >= need && r() > resist) {
+        const from = b.order; b.order = pref; b.streak = { pref: null, n: 0 };
+        this.emit(b.id, 'ev.order', { from, to: pref, gov: b.gov }, 'order');
+        if (pref === 'neoliberal') b.defBias *= 0.6;
+        if (pref === 'welfare') b.cap = clamp(b.cap + 0.05);
+      }
+    } else b.streak = { pref: null, n: 0 };
+    // держава зміцнюється з часом, слабне в розпаді
+    const capT = Math.min(0.88, 0.3 + 0.5 * b.I + 0.1 * b.legit);
+    b.cap = clamp(b.cap + (capT - b.cap) * 0.02 - (b.sfd > 0.8 ? 0.01 : 0));
+  };
+
+  P.orderFeasible = function (b, o) {
+    if (o === 'planned') return b.regime === 'oneparty';
+    if (o === 'commons') return b.D > 0.45 && (b.regime === 'council' || b.C.ideo.coop > 0.15);
+    if (o === 'rentier') return b.D > 0.5 && b.platPow > 0.3;
+    if (o === 'neoliberal') return this.avail('neolib') > 0.5;
+    if (o === 'welfare') return b.cap > 0.3 && b.I > 0.35;
+    if (o === 'agrarian') return b.I < 0.5;
+    return true;
+  };
+
+  P.election = function (b) {
+    const C = b.C, A = b.A, E = b.E, r = this.rnd;
+    const wC = 0.7 * b.inc + 0.1, wA = 0.2, wE = 0.1 + 0.3 * (1 - b.inc);
+    const party = k => ({ trad: 'nat', rel: 'nat', coop: 'socdem', green: b.year > 1990 ? 'green' : 'socdem', soc: b.inc > 0.5 ? 'socdem' : 'soc', neolib: 'lib' }[k] || k);
+    const votes = {};
+    for (const k of IDEOS) {
+      const v = wC * C.ideo[k] + wA * A.ideo[k] + wE * E.ideo[k];
+      const p = party(k); votes[p] = (votes[p] || 0) + v;
+    }
+    // рахунок за результати: при поганих справах правлячі втрачають
+    const incumbent = b.gov === 'neolib' ? 'lib' : b.gov;
+    if (votes[incumbent] != null) {
+      const perf = clamp(0.5 + b.gAvg * 15) * 0.5 + C.needs.mat * 0.5;
+      votes[incumbent] *= (b.regime === 'hybrid' ? 1.5 : 0.75) + 0.6 * perf;
+    }
+    if (b.regime === 'technocorp') votes.tech = (votes.tech || 0) + 0.4;
+    let tot = 0; const keys = Object.keys(votes);
+    for (const k of keys) { votes[k] = Math.pow(votes[k], 3); tot += votes[k]; }
+    let x = r() * tot, win = keys[0];
+    for (const k of keys) { x -= votes[k]; if (x <= 0) { win = k; break; } }
+    // ліберальна перемога у «неоліберальну епоху» — коли еліти тягнуть у цей бік
+    if (win === 'lib' && this.avail('neolib') > 0.8 && E.ideo.neolib > E.ideo.lib * 0.6) win = 'neolib';
+    if (win === 'green' && b.regime !== 'council') win = 'socdem';
+    if (win !== b.gov) {
+      const from = b.gov; b.gov = win;
+      this.emit(b.id, 'ev.election', { from, to: win }, 'election');
+      if (b.regime === 'hybrid' && LIBERAL.has(win)) b.inc += 0.1;
+    }
+  };
+
+  /* ---------- Відносини між блоками: напруга, війни, суверенітет ---------- */
+  P.interBloc = function () {
+    const ids = H.BLOCS, r = this.rnd, year = this.year;
+    const pw = {}; for (const id of ids) pw[id] = this.power(this.blocs[id]);
+    // війни, що тривають
+    for (const w of this.wars) if (!w.ended) this.warYear(w, pw);
+    this.wars = this.wars.filter(w => !w.ended || year - w.endYear < 2);
+    // напруга
+    for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) {
+      const a = this.blocs[ids[i]], b = this.blocs[ids[j]];
+      if (a.sov < 0.5 || b.sov < 0.5) continue;
+      const natA = (a.C.ideo.nat + a.E.ideo.nat) / 2, natB = (b.C.ideo.nat + b.E.ideo.nat) / 2;
+      const ratio = Math.min(pw[a.id], pw[b.id]) / Math.max(pw[a.id], pw[b.id]);
+      const transition = ratio > 0.55 ? 0.25 * ratio : 0;
+      const claim = (b.claim === a.id && IMPERIAL.has(a.gov)) || (a.claim === b.id && IMPERIAL.has(b.gov)) ? 0.55 : 0;
+      const demPeace = H.REGIMES[a.regime].fam === 'democratic' && H.REGIMES[b.regime].fam === 'democratic' ? 0.9 : 0;
+      const trade = MARKET.has(a.order) && MARKET.has(b.order) ? 0.25 * Math.min(a.I, b.I) : 0.05;
+      const geo = { 'EU-RU': 0.15, 'RU-UA': 0.2, 'CN-US': 0.1, 'CN-RU': 0.05 }[pk(a.id, b.id)] || -0.1;
+      const scen = this.mode === 'future' ? (this.scen.tension - 0.5) * 0.4 : 0;
+      const eq = clamp(ideoDist(a.gov, b.gov) * 0.45 + (natA + natB) * 0.5 + transition + claim + geo + scen - demPeace - trade);
+      const k = pk(a.id, b.id);
+      this.tension[k] = clamp((this.tension[k] || 0) + (eq - (this.tension[k] || 0)) * 0.08);
+      // нова війна
+      const busy = a.war || b.war;
+      if (busy || a.regime === 'collapse' || b.regime === 'collapse') continue;
+      const nuke = H.NUKES[a.id] && H.NUKES[b.id] && year >= Math.max(H.NUKES[a.id], H.NUKES[b.id]);
+      let p = clamp((this.tension[k] - 0.62) * 0.25) * (nuke ? 0.03 : 1);
+      if (this.useShocks && this.mode === 'history' && year < 2025 && !claim) p *= 0.15;   // великі війни ХХ ст. задано шоками
+      if (r() < p) {
+        const aggr = natA * pw[a.id] > natB * pw[b.id] ? a : b, def = aggr === a ? b : a;
+        this.startWar([aggr.id], [def.id], null, claim ? 'reconquest' : 'war', false);
+      }
+    }
+    // суверенітет: незалежність, деколонізація
+    for (const id of ids) {
+      const b = this.blocs[id];
+      if (!b.dom) continue;
+      const d = this.blocs[b.dom];
+      if (b.id === 'GS') {
+        const norm = year >= 1945 ? 0.6 : 0.1;   // після 1945 колоніальне правління втрачає міжнародну легітимність
+        const weak = (d.war ? 0.4 : 0) + d.warDefeat * 0.6 + (1 - d.legit) * 0.3 + (d.regime === 'collapse' ? 0.8 : 0);
+        b.sov = clamp(b.sov + 0.012 * (b.A.org * (b.A.ideo.nat + b.A.ideo.soc) * 3 + weak + norm) - 0.004);
+        if (b.sov >= 0.5) { this.liberate(b, 'decolonization'); }
+        continue;
+      }
+      const crisisD = d.regime === 'collapse' || d.warDefeat > 0.4 || d.cool > 4;
+      const p = (crisisD ? 0.6 : year > 1985 && d.stagn > 10 && d.legit < 0.4 ? 0.12 : 0.0005) * clamp(b.C.ideo.nat + b.A.ideo.nat + b.C.ideo.lib + b.A.ideo.lib) * (0.3 + b.coh);
+      if (r() < p) this.liberate(b, d.regime === 'collapse' ? 'independenceWar' : 'independence');
+    }
+  };
+
+  P.liberate = function (b, how) {
+    const d = this.blocs[b.dom];
+    b.sov = Math.max(b.sov, how === 'decolonization' ? 0.6 : 1); b.dom = null; b.cool = 4;
+    const ideo = this.revIdeology(b, true);
+    const target = this.regimeFor(ideo, b);
+    if (how === 'independenceWar') { b.pending = target; this.transition(b, { regime: 'collapse', order: 'subsistence' }, 'independenceWar', { by: ideo }); }
+    else this.transition(b, target, how, { by: ideo });
+  };
+
+  P.startWar = function (sa, sb, until, key, forced) {
+    const w = { sides: [sa.slice(), sb.slice()], start: this.year, until, key, exh: {}, intensity: 1, forced };
+    for (const id of sa.concat(sb)) { if (this.blocs[id]) { this.blocs[id].war = w; w.exh[id] = 0; } }
+    this.wars.push(w);
+    const named = ['ww1', 'ww2', 'invasion2022', 'japan', 'ongoing'].includes(key);
+    this.emit(sa[0] in this.blocs ? sa[0] : sb[0], named ? 'ev.war.' + key : 'ev.war', { a: sa[0], b: sb[0] }, 'war');
+    return w;
+  };
+
+  P.warYear = function (w, pw) {
+    const side = i => w.sides[i].filter(id => this.blocs[id]);
+    const supp = i => {
+      // підтримка союзників: демократії підтримують сторону, що воює проти автократичного нападника
+      let s = 0;
+      for (const id of H.BLOCS) {
+        if (w.sides[0].includes(id) || w.sides[1].includes(id)) continue;
+        const o = this.blocs[id];
+        if (o.sov < 0.5 || o.regime === 'collapse') continue;
+        const target = side(1 - i)[0];
+        if (!target) continue;
+        const friend = side(i).some(x => H.REGIMES[this.blocs[x].regime].fam === 'democratic') && H.REGIMES[o.regime].fam === 'democratic' && LIBERAL.has(o.gov);
+        if (friend && this.getTension(id, target) > 0.4) s += pw[id] * 0.06;
+      }
+      return s;
+    };
+    const P0 = side(0).reduce((s, id) => s + pw[id], 0) + supp(0) + (w.sides[0].includes('JP') ? 0 : 0);
+    let P1 = side(1).reduce((s, id) => s + pw[id], 0) + supp(1);
+    if (w.sides[1].includes('JP')) P1 += pw[side(0)[0]] * 0.9;
+    const tot = P0 + P1 || 1;
+    for (let i = 0; i < 2; i++) for (const id of side(i)) {
+      const b = this.blocs[id], enemyShare = (i === 0 ? P1 : P0) / tot;
+      const defender = i === 1 ? 0.75 : 1;                 // оборона своєї землі дешевша за наступ
+      const aid = i === 0 ? 0 : clamp(supp(1) / Math.max(1, pw[id]));  // допомога союзників покриває частину витрат
+      w.exh[id] = (w.exh[id] || 0) + (0.06 + 0.2 * enemyShare) * defender - 0.04 * b.cap - 0.06 * b.coh - 0.03 * aid;
+      if (aid > 0) { b.debt = Math.max(0, b.debt - 0.07 * aid); b.aid = Math.max(b.aid || 0, aid); }
+      b.coh = clamp(b.coh + (this.year - w.start < 2 ? 0.04 : -0.01));
+      b.pop *= 1 - 0.004 * w.intensity;
+    }
+    const year = this.year;
+    let loser = null;
+    if (w.until && year >= w.until) {
+      // кінець «історичної» війни: поразка того, хто найбільш виснажений або нападав як націоналістична диктатура
+      for (const id of Object.keys(w.exh)) {
+        const b = this.blocs[id]; if (!b) continue;
+        const aggressorFascist = w.key === 'ww2' && b.gov === 'nat' && ['oneparty', 'autocracy', 'junta'].includes(b.regime) && b.id !== 'RU';
+        const defeat = aggressorFascist ? 1 : clamp(w.exh[id] * (1.1 - b.cap) * 1.2);
+        b.warDefeat = Math.max(b.warDefeat, defeat); b.war = null;
+        b.humil = clamp(b.humil + 0.5 * defeat);
+        if (defeat > 0.6) this.emit(id, 'ev.defeat', {}, 'war');
+        else { b.pride = clamp(b.pride + 0.4); }
+        if (aggressorFascist && this.blocs.US.regime === 'democracy') this.occupy(b);
+      }
+      this.endWar(w); return;
+    }
+    for (let i = 0; i < 2; i++) for (const id of side(i)) if (w.exh[id] > 1.2 || this.blocs[id].regime === 'collapse') loser = i;
+    const minExh = Math.min(...Object.values(w.exh));
+    if (loser == null && year - w.start > 2 && this.rnd() < 0.04 + 0.12 * minExh) {
+      // перемир'я без переможця
+      for (const id of Object.keys(w.exh)) { const b = this.blocs[id]; if (b) { b.war = null; b.warDefeat = Math.max(b.warDefeat, 0.2); } }
+      this.emit(side(0)[0] || side(1)[0], 'ev.ceasefire', { a: side(0)[0], b: side(1)[0] }, 'war');
+      this.endWar(w); return;
+    }
+    if (loser != null) {
+      const win = 1 - loser;
+      for (const id of side(loser)) { const b = this.blocs[id]; b.war = null; b.warDefeat = 1; b.humil = clamp(b.humil + 0.4); }
+      for (const id of side(win)) { const b = this.blocs[id]; b.war = null; b.pride = clamp(b.pride + 0.4); b.legit = clamp(b.legit + 0.1); }
+      const L = side(loser)[0], Wn = side(win)[0];
+      this.emit(L || Wn, 'ev.warEnd', { win: Wn || 'JP', lose: L || 'JP' }, 'war');
+      // завоювання: імперський переможець, набагато сильніший, підкоряє того, на кого має «претензію»
+      if (L && Wn) {
+        const lb = this.blocs[L], wb = this.blocs[Wn];
+        // повне підкорення — лише якщо переможений народ розколотий і без союзників; інакше — тяжкий мир
+        const allied = H.BLOCS.some(o => o !== L && o !== Wn && H.REGIMES[this.blocs[o].regime].fam === 'democratic' && this.getTension(o, Wn) > 0.4) && H.REGIMES[lb.regime].fam !== 'autocratic';
+        if (lb.claim === Wn && IMPERIAL.has(wb.gov) && pw[Wn] / pw[L] > 1.6 && (lb.coh < 0.45 || !allied) && this.rnd() < (allied ? 0.4 : 0.85)) this.conquer(lb, wb);
+        else if (lb.claim === Wn) { lb.y *= 0.9; lb.humil = clamp(lb.humil + 0.2); this.emit(L, 'ev.hardPeace', { by: Wn }, 'war'); }
+      }
+      this.endWar(w);
+    }
+  };
+  P.endWar = function (w) {
+    w.ended = true; w.endYear = this.year;
+    for (const id of Object.keys(w.exh)) {
+      const b = this.blocs[id]; if (!b) continue;
+      if (b.war === w) b.war = null;
+      // союзники допомагають відбудові й реструктуризують борги (план Маршалла)
+      if ((b.aid || 0) > 0.15 && b.sov >= 0.5) { b.debt *= 0.55; b.defBias = 0; b.aid = 0.5; b.tfp = Math.min(b.tfp, -0.2); this.emit(id, 'ev.reconstruction', {}, 'war'); }
+    }
+  };
+
+  P.conquer = function (b, d) {
+    b.sov = 0; b.dom = d.id; b.claim = d.id;
+    this.transition(b, { regime: d.regime, order: d.order, gov: d.gov, inc: d.inc }, 'conquered', { by: d.id });
+    b.humil = clamp(b.humil + 0.5);
+  };
+  P.occupy = function (b) {
+    this.transition(b, { regime: 'democracy', order: 'welfare', gov: 'socdem', inc: 0.65 }, 'occupation', {});
+    b.eo *= 0.4; b.debt *= 0.3; b.C.ideo.nat *= 0.4; b.E.ideo.nat *= 0.4; b.A.ideo.nat *= 0.4;
+  };
+
+  /* ---------- Кризи і переходи ---------- */
+  // головні причини тиску на систему — для пояснень у хроніці
+  P.causes = function (b) {
+    const list = [
+      ['mmp', b.mmp || 0], ['emp', b.emp || 0], ['sfd', b.sfd || 0], ['legit', 1 - b.legit],
+      ['anger', b.C.emo.anger], ['fear', b.C.emo.fear], ['war', b.warDefeat], ['foreign', b.sov < 0.5 ? 0.8 : 0],
+      ['platform', b.platPow], ['stagn', clamp(b.stagn / 15)],
+    ].sort((x, y) => y[1] - x[1]).slice(0, 3).filter(x => x[1] > 0.15);
+    return { causes: list.map(x => [x[0], Math.round(x[1] * 100)]) };
+  };
+
+  P.crisis = function (b) {
+    const C = b.C, A = b.A, E = b.E, S = b.S, R = H.REGIMES[b.regime], r = this.rnd;
+    // Турчин: тиск мас × тиск еліт × фінансовий тиск держави
+    b.mmp = clamp((1.05 - b.matRatio) * 3 + 0.25 * b.autoPress + b.famine) * (0.4 + 0.6 * b.urban);
+    b.emp = clamp(b.eo * (0.5 + 0.5 * A.org));
+    // середнє геометричне: усі три тиски підсилюють один одного
+    b.psi = Math.cbrt((b.mmp + 0.1) * (b.emp + 0.1) * (b.sfd + 0.1)) / 1.1;
+    b.mob = C.org * 0.6 + A.org * 0.4;
+    const inst = 0.45 * b.psi + 0.25 * (1 - b.legit) + 0.4 * C.emo.anger * (0.3 + b.mob) + 0.35 * b.warDefeat + 0.3 * (b.strain || 0) + 0.15 * b.humil + (b.order === 'planned' ? 0.05 * clamp(b.stagn / 10) : 0);
+    b.inst = b.war && b.war.sides[1].includes(b.id) ? inst - 0.12 * b.coh : inst;
+    if (b.regime === 'collapse') { this.resolveCollapse(b); return; }
+    if (b.sov < 0.5 || b.cool > 0) return;
+    const thr = R.thr + 0.1 * b.rep * (1 - C.org) + (b.regime === 'democracy' ? -0.08 + 0.12 * clamp(b.demYears / 40) : 0);
+    const p = clamp((b.inst - thr) * 2.2, 0, 0.5);
+    if (r() >= p) return;
+    this.resolveCrisis(b);
+  };
+
+  P.revIdeology = function (b, liberation) {
+    const C = b.C, A = b.A, w = {};
+    for (const k of IDEOS) {
+      if (k === b.gov || k === 'neolib') continue;
+      let v = C.ideo[k] * (0.3 + C.org) + A.ideo[k] * (0.3 + A.org) * 1.5;
+      if (k === 'soc') v *= (liberation ? 0.8 : 1.4) * this.avail('soc');
+      if (k === 'nat') v *= liberation ? 1.6 : 1.2;
+      if (k === 'lib' && b.inc < 0.3) v *= 0.7;
+      if (k === 'trad') v *= 0.4;
+      w[k] = v * v;
+    }
+    let tot = 0; for (const k in w) tot += w[k];
+    let x = this.rnd() * tot;
+    for (const k in w) { x -= w[k]; if (x <= 0) return k; }
+    return 'nat';
+  };
+  P.regimeFor = function (ideo, b) {
+    switch (ideo) {
+      case 'soc': return { regime: 'oneparty', order: 'planned', gov: 'soc' };
+      case 'socdem': return { regime: 'democracy', order: b.I > 0.35 ? 'welfare' : 'laissez', gov: 'socdem', inc: 0.6 };
+      case 'lib': return { regime: 'democracy', order: this.year < 1975 ? (this.year < 1945 ? 'laissez' : 'welfare') : 'neoliberal', gov: 'lib', inc: 0.6 };
+      case 'green': return { regime: 'democracy', order: 'welfare', gov: 'socdem', inc: 0.65 };
+      case 'nat': return { regime: b.inc > 0.4 && this.rnd() < 0.5 ? 'hybrid' : 'oneparty', order: 'statecap', gov: 'nat' };
+      case 'rel': return { regime: 'theocracy', order: b.I < 0.4 ? 'agrarian' : 'statecap', gov: 'rel' };
+      case 'coop': return b.D > 0.4 && b.C.ideo.coop > 0.2 ? { regime: 'council', order: 'commons', gov: 'coop', inc: 0.9 } : { regime: 'democracy', order: 'welfare', gov: 'socdem', inc: 0.65 };
+      case 'tech': return { regime: 'technocorp', order: b.D > 0.5 ? 'rentier' : 'neoliberal', gov: 'tech', inc: 0.3 };
+      case 'trad': return { regime: 'autocracy', order: b.I < 0.45 ? 'agrarian' : 'statecap', gov: 'trad' };
+      default: return { regime: 'junta', order: 'statecap', gov: 'nat' };
+    }
+  };
+
+  P.resolveCrisis = function (b) {
+    const C = b.C, A = b.A, E = b.E, S = b.S, r = this.rnd, year = this.year;
+    const why = this.causes(b);
+    // ефект згуртування навколо прапора: під час оборонної війни суспільство рідше «ламає» владу
+    const rally = b.war && b.war.sides[1].includes(b.id) ? 1 - 0.6 * b.coh : 1;
+    const revForce = C.emo.anger * b.mob * (1 - b.rep * S.loyal * 0.8);
+    const cand = [];
+    cand.push(['muddle', 1.0 * clamp(1 - b.inst)]);
+    if (b.inc > 0.45) cand.push(['reform', 2.6 * b.inc * (0.3 + C.org) * (C.ideo.socdem + C.ideo.lib * 0.4 + C.ideo.green * 0.5 + C.ideo.coop * 0.6 + C.ideo.soc * 0.4) * (0.5 + E.needs.belong * 0.5)]);
+    if (b.order === 'planned' && ['oneparty', 'autocracy'].includes(b.regime)) {
+      cand.push(['reformAbove', 3 * b.eCoh * clamp(b.stagn / 8)]);
+      cand.push(['opening', 2.2 * (1 - b.eCoh) * clamp(b.stagn / 10) * (C.ideo.lib + A.ideo.lib + C.ideo.nat * 0.5) * (0.4 + b.D)]);
+    }
+    if (b.inc > 0.4 && b.regime !== 'technocorp') cand.push(['populist', 2.2 * (C.ideo.nat + A.ideo.nat) * 0.5 * C.emo.anger * (0.5 + b.eo) * rally]);
+    // «кольорова революція»: організоване громадянське суспільство зупиняє узурпацію (2004, 2014 в Україні)
+    if (['hybrid', 'oligarchy', 'autocracy'].includes(b.regime) && b.yrsRegime < 30) cand.push(['protest', 3.0 * C.org * (C.ideo.lib + C.ideo.socdem + A.ideo.lib) * C.emo.anger * (1 - b.rep * S.loyal) * (b.regime === 'autocracy' ? 0.5 : 1)]);
+    if (b.D > 0.5 && b.platPow > 0.35 && !['oneparty'].includes(b.regime)) cand.push(['techCapture', 3.2 * b.platPow * (1 - C.org) * (1 - b.inc * 0.4) * (0.5 + E.ideo.tech)]);
+    if (b.regime === 'technocorp') cand.push(['stateReassert', 1.6 * (C.ideo.nat + E.ideo.nat) * b.cap]);
+    cand.push(['revolution', 2.6 * revForce * (0.5 + A.org) * (b.inc > 0.5 ? 0.25 : 1) * rally]);
+    // реакція: еліти, налякані лівими, разом із націоналістичним рухом беруть владу (Італія 1922, Німеччина 1933)
+    if (b.inc > 0.3) {
+      const instStr = clamp(b.demYears / 60) * 0.6 + E.ideo.lib * 0.3;
+      cand.push(['reaction', 3.0 * (E.ideo.nat + 0.2) * (0.3 + E.emo.fear) * (C.ideo.nat + A.ideo.nat) * (1 - instStr) * (0.5 + C.emo.anger) * rally]);
+    }
+    if (b.inc < 0.7) cand.push(['coup', 1.3 * revForce * E.emo.fear * (1 - b.inc) * (0.3 + S.org) * (b.regime === 'junta' ? 0.2 : 1)]);
+    cand.push(['collapse', (2.2 * (1 - b.cap) * b.sfd * (1 - b.eCoh) + 1.5 * b.warDefeat * (1 - b.cap)) * rally * (1 - clamp(b.aid || 0) * 0.5)]);
+    if (b.regime === 'hybrid' || b.regime === 'autocracy' || b.regime === 'oneparty') cand.push(['crackdown', 1.2 * b.rep * S.loyal]);
+    let tot = 0; for (const c of cand) tot += Math.max(0, c[1]);
+    let x = r() * tot, pick = 'muddle';
+    for (const c of cand) { x -= Math.max(0, c[1]); if (x <= 0) { pick = c[0]; break; } }
+    b.lastCrisis = { year, pick, why };
+
+    switch (pick) {
+      case 'muddle':
+        b.legit = clamp(b.legit - 0.04); b.omega -= 0.01; b.cool = 3;
+        this.emit(b.id, 'ev.muddle', why, 'crisis'); break;
+      case 'crackdown':
+        b.rep = clamp(b.rep + 0.15); C.org *= 0.6; A.org *= 0.6; b.legit = clamp(b.legit - 0.06); b.inc = clamp(b.inc - 0.05); b.cool = 4;
+        this.emit(b.id, 'ev.crackdown', why, 'crisis'); break;
+      case 'reform': {
+        const ideo = C.ideo.coop > 0.2 && b.D > 0.45 ? 'coop' : 'socdem';
+        const order = ideo === 'coop' && this.orderFeasible(b, 'commons') ? 'commons' : 'welfare';
+        b.omega -= 0.06; b.eo *= 0.7; b.legit = clamp(b.legit + 0.2); b.platPow *= 0.6;
+        this.transition(b, { order, gov: ideo === 'coop' ? 'coop' : 'socdem' }, 'reform', why); break;
+      }
+      case 'reformAbove':
+        b.legit = clamp(b.legit + 0.12); b.stagn = 0; b.reformed = true;
+        this.transition(b, { order: 'statecap' }, 'reformAbove', why); break;
+      case 'opening': {
+        const ideo = C.ideo.nat + A.ideo.nat > C.ideo.lib + A.ideo.lib ? 'nat' : 'lib';
+        b.eo *= 0.6;
+        this.transition(b, { regime: 'hybrid', order: 'neoliberal', gov: ideo, inc: 0.42 }, 'opening', why); break;
+      }
+      case 'populist':
+        b.inc = clamp(b.inc - 0.12);
+        this.transition(b, { gov: 'nat', regime: b.inc < 0.44 ? 'hybrid' : b.regime }, 'populist', why); break;
+      case 'techCapture':
+        this.transition(b, { regime: 'technocorp', order: 'rentier', gov: 'tech', inc: clamp(b.inc * 0.6) }, 'techCapture', why); break;
+      case 'stateReassert':
+        b.platPow *= 0.3;
+        this.transition(b, { regime: 'oneparty', order: 'statecap', gov: 'nat' }, 'stateReassert', why); break;
+      case 'revolution': {
+        const ideo = this.revIdeology(b), target = this.regimeFor(ideo, b);
+        b.y *= 0.9; b.eo *= 0.3; b.omega = H.ORDERS[target.order].omega; b.legit = 0.55; b.coh = clamp(b.coh + 0.1);
+        C.org *= 0.7; b.platPow *= 0.3;
+        // громадянська війна, якщо стара еліта згуртована і армія не перейшла на бік повсталих
+        if (b.eCoh > 0.35 && (ideo === 'soc' || ideo === 'nat' || ideo === 'rel') && r() < 0.35 + 0.4 * b.eCoh) {
+          b.pending = target;
+          this.transition(b, { regime: 'collapse', order: 'subsistence' }, 'revolutionCivilWar', Object.assign({ by: ideo }, why));
+        } else this.transition(b, target, 'revolution', Object.assign({ by: ideo }, why));
+        break;
+      }
+      case 'protest':
+        b.legit = clamp(b.legit + 0.1); b.rep *= 0.6;
+        this.transition(b, { regime: 'democracy', gov: C.ideo.socdem > C.ideo.lib ? 'socdem' : 'lib', inc: Math.max(0.58, b.inc + 0.2) }, 'protest', why); break;
+      case 'reaction':
+        b.rep = 0.7; C.org *= 0.6; A.org *= 0.6;
+        this.transition(b, { regime: 'oneparty', gov: 'nat', order: 'statecap' }, 'reaction', why); break;
+      case 'coup':
+        b.rep = 0.8; C.org *= 0.5;
+        this.transition(b, { regime: 'junta', gov: 'nat', order: b.order === 'planned' ? 'statecap' : b.order }, 'coup', why); break;
+      case 'collapse':
+        b.pending = null;
+        this.transition(b, { regime: 'collapse', order: 'subsistence' }, 'collapse', why); break;
+    }
+  };
+
+  P.resolveCollapse = function (b) {
+    b.collapseYrs++;
+    const r = this.rnd, C = b.C, A = b.A;
+    if (b.collapseYrs < 2) return;
+    if (r() > 0.22 + 0.05 * b.collapseYrs) return;
+    let target = b.pending;
+    if (!target) {
+      // хто організованіший — той і збирає країну наново
+      const cand = [
+        ['junta', 0.4 * b.S.org],
+        ['ideo', 0.6 * (C.org + A.org)],
+      ];
+      target = cand[0][1] > cand[1][1] * (0.5 + r()) ? { regime: 'junta', order: 'statecap', gov: 'nat' } : this.regimeFor(this.revIdeology(b), b);
+    }
+    b.pending = null; b.collapseYrs = 0; b.cap = clamp(b.cap * 0.8 + 0.1);
+    b.legit = 0.5; b.coh = clamp(b.coh + 0.15); b.eo *= 0.4;
+    if (target.regime === 'oneparty') b.cap = clamp(b.cap + 0.15);
+    this.transition(b, target, 'rebuild', { by: target.gov });
+  };
+
+  P.transition = function (b, t, why, causes) {
+    const before = H.classify(b), prev = { regime: b.regime, order: b.order, gov: b.gov };
+    if (t.regime) b.regime = t.regime;
+    if (t.order) b.order = t.order;
+    if (t.gov) b.gov = t.gov;
+    if (t.inc != null) b.inc = t.inc;
+    else if (t.regime && t.regime !== prev.regime) {
+      const R = H.REGIMES[b.regime];
+      b.inc = ['democracy', 'hybrid', 'oligarchy', 'council'].includes(b.regime) ? Math.max(R.inc * 0.75, b.inc) : R.inc;
+    }
+    if (b.regime === 'democracy' && b.inc < 0.5) b.inc = 0.52;
+    if (t.regime && t.regime !== prev.regime) { b.yrsRegime = 0; b.demYears = b.regime === 'democracy' ? 0 : b.demYears; }
+    b.cool = 6;
+    const after = H.classify(b);
+    this.emit(b.id, 'tr.' + why, Object.assign({ from: before, to: after, regime: b.regime, order: b.order, gov: b.gov }, causes || {}), 'transition');
+  };
+
+  /* ---------- Запис стану ---------- */
+  P.record = function () {
+    for (const id of H.BLOCS) {
+      const b = this.blocs[id];
+      // підпорядкований блок живе за режимом метрополії
+      if (b.sov < 0.5 && b.dom && b.id !== 'GS') {
+        const d = this.blocs[b.dom];
+        if (d.regime !== 'collapse') { b.regime = d.regime; b.order = d.order; b.gov = d.gov; b.inc = Math.min(d.inc, 0.3); }
+      }
+      const cat = H.classify(b);
+      if (cat !== this.lastCats[id]) this.lastCats[id] = cat;
+      b.cat = cat;
+      b.rec.push({
+        y: this.year, cat, regime: b.regime, order: b.order, gov: b.gov,
+        gdp: +b.y.toFixed(2), inc: +b.inc.toFixed(3), omega: +b.omega.toFixed(3), psi: +(b.psi || 0).toFixed(3), inst: +(b.inst || 0).toFixed(3),
+        legit: +b.legit.toFixed(3), mmp: +(b.mmp || 0).toFixed(3), emp: +(b.emp || 0).toFixed(3), sfd: +(b.sfd || 0).toFixed(3), debt: +b.debt.toFixed(2),
+        anger: +b.C.emo.anger.toFixed(3), fear: +b.C.emo.fear.toFixed(3), hope: +b.C.emo.hope.toFixed(3), trust: +b.C.emo.trust.toFixed(3),
+        org: +b.C.org.toFixed(3), eo: +b.eo.toFixed(3), plat: +b.platPow.toFixed(3), war: !!b.war, sov: +b.sov.toFixed(2),
+      });
+    }
+  };
+
+  /* ---------- Багато прогонів ---------- */
+  // накопичення результатів по одному прогону — щоб інтерфейс міг рахувати частинами
+  H.newEnsemble = function (opts) {
+    const res = { opts, n: 0, years: null, share: {}, paths: {}, firstTF: {}, samples: [], wars: 0, nukeFree: 0 };
+    for (const id of H.BLOCS) { res.share[id] = {}; res.paths[id] = {}; res.firstTF[id] = []; }
+    return res;
+  };
+  H.addRun = function (res, k) {
+    const opts = res.opts;
+    const s = new H.Sim(Object.assign({}, opts, { seed: (opts.seed || 1) * 7919 + k * 104729 }));
+    s.run();
+    if (!res.years) res.years = s.blocs.US.rec.map(x => x.y);
+    for (const id of H.BLOCS) {
+      const rec = s.blocs[id].rec, sh = res.share[id];
+      const path = [];
+      rec.forEach((x, i) => {
+        sh[i] = sh[i] || {}; sh[i][x.cat] = (sh[i][x.cat] || 0) + 1;
+        const pc = x.cat === 'libdem' || x.cat === 'socdem' ? 'democracy' : x.cat;   // ринкова й соціальна демократія — одна гілка
+        if (path[path.length - 1] !== pc) path.push(pc);
+      });
+      const key = path.slice(0, 6).join('>');
+      res.paths[id][key] = (res.paths[id][key] || 0) + 1;
+      const tf = rec.find(x => x.cat === 'technofeudal');
+      res.firstTF[id].push(tf ? tf.y : null);
+    }
+    if (res.samples.length < 3) res.samples.push(s);
+    res.n++;
+    return s;
+  };
+  H.runMany = function (opts, n, onProgress) {
+    const res = H.newEnsemble(opts);
+    for (let k = 0; k < n; k++) { H.addRun(res, k); if (onProgress) onProgress(k + 1); }
+    return res;
+  };
+})(typeof window !== 'undefined' ? (window.H = window.H || {}) : (global.H = global.H || {}));
+
+</script>
+<script>
+/* ============================================================
+   Люди-представники: по четверо в кожному блоці
+   (проста людина, освічений претендент, представник еліти, службовець).
+   Їхні потреби й емоції походять зі стану групи + особисті коливання.
+   Щороку кожен пише рядок у щоденник.
+   ============================================================ */
+(function (H) {
+  'use strict';
+  const clamp = H.clamp;
+
+  // імена: [українською, німецькою]
+  const NAMES = {
+    US: { m: [['Джон', 'John'], ['Френк', 'Frank'], ['Віллі', 'Willie'], ['Маркус', 'Marcus'], ['Хосе', 'José'], ['Тайлер', 'Tyler']], f: [['Мері', 'Mary'], ['Рут', 'Ruth'], ['Долорес', 'Dolores'], ['Кейша', 'Keisha'], ['Ешлі', 'Ashley'], ['Софія', 'Sofia']], s: [['Міллер', 'Miller'], ['Джонсон', 'Johnson'], ['Гарсія', 'García'], ['О\'Браєн', 'O\'Brien'], ['Ковальські', 'Kowalski'], ['Вашингтон', 'Washington']] },
+    EU: { m: [['Ганс', 'Hans'], ['П\'єр', 'Pierre'], ['Джованні', 'Giovanni'], ['Ян', 'Jan'], ['Карлос', 'Carlos'], ['Лукас', 'Lukas']], f: [['Марі', 'Marie'], ['Ельза', 'Elsa'], ['Анна', 'Anna'], ['Лючія', 'Lucia'], ['Агнешка', 'Agnieszka'], ['Лена', 'Lena']], s: [['Шмідт', 'Schmidt'], ['Мартен', 'Martin'], ['Россі', 'Rossi'], ['Новак', 'Nowak'], ['Гарсія', 'García'], ['Янссен', 'Janssen']] },
+    UA: { m: [['Тарас', 'Taras'], ['Іван', 'Iwan'], ['Петро', 'Petro'], ['Олекса', 'Oleksa'], ['Дмитро', 'Dmytro'], ['Андрій', 'Andrij']], f: [['Оксана', 'Oksana'], ['Марія', 'Marija'], ['Ганна', 'Hanna'], ['Леся', 'Lesja'], ['Ірина', 'Iryna'], ['Соломія', 'Solomija']], s: [['Коваленко', 'Kowalenko'], ['Шевчук', 'Schewtschuk'], ['Бондар', 'Bondar'], ['Мельник', 'Melnyk'], ['Ткаченко', 'Tkatschenko'], ['Лисенко', 'Lyssenko']] },
+    RU: { m: [['Іван', 'Iwan'], ['Микола', 'Nikolai'], ['Сергій', 'Sergei'], ['Олексій', 'Alexei'], ['Дмитро', 'Dmitri'], ['Павло', 'Pawel']], f: [['Наталія', 'Natalja'], ['Ольга', 'Olga'], ['Тетяна', 'Tatjana'], ['Олена', 'Jelena'], ['Анна', 'Anna'], ['Віра', 'Wera']], s: [['Іванов', 'Iwanow'], ['Смирнов', 'Smirnow'], ['Кузнєцов', 'Kusnezow'], ['Попов', 'Popow'], ['Соколов', 'Sokolow'], ['Морозов', 'Morosow']] },
+    CN: { m: [['Лі Вей', 'Li Wei'], ['Ван Лун', 'Wang Long'], ['Чжан Мін', 'Zhang Ming'], ['Лю Цян', 'Liu Qiang'], ['Чень Хао', 'Chen Hao'], ['Ян Бо', 'Yang Bo']], f: [['Лі На', 'Li Na'], ['Ван Фан', 'Wang Fang'], ['Чжан Лі', 'Zhang Li'], ['Лю Ін', 'Liu Ying'], ['Чень Цзін', 'Chen Jing'], ['Ян Мей', 'Yang Mei']], s: [['', ''], ['', ''], ['', ''], ['', ''], ['', ''], ['', '']] },
+    GS: { m: [['Раджеш', 'Rajesh'], ['Амаду', 'Amadou'], ['Педру', 'Pedro'], ['Агус', 'Agus'], ['Кофі', 'Kofi'], ['Фарід', 'Farid']], f: [['Прія', 'Priya'], ['Амінат', 'Aminat'], ['Ана', 'Ana'], ['Сіті', 'Siti'], ['Фатіма', 'Fatima'], ['Лусія', 'Lucía']], s: [['Кумар', 'Kumar'], ['Діалло', 'Diallo'], ['Сілва', 'Silva'], ['Сантосо', 'Santoso'], ['Мензах', 'Mensah'], ['Рахман', 'Rahman']] },
+  };
+  H.ROLES = ['C', 'A', 'E', 'S'];
+
+  function pick(r, arr) { return arr[Math.floor(r() * arr.length)]; }
+  function makePerson(r, bloc, role, born, surname) {
+    const N = NAMES[bloc], f = r() < 0.5;
+    const first = pick(r, f ? N.f : N.m);
+    const sur = surname || pick(r, N.s);
+    return { bloc, role, female: f, first, sur, born, dies: born + 62 + Math.floor(r() * 22), mood: { anger: 0.3, fear: 0.3, hope: 0.5, trust: 0.5 }, diary: [], gen: 1, quirk: r() - 0.5 };
+  }
+  H.personName = function (p, lang) {
+    const i = lang === 'de' ? 1 : 0;
+    return (p.first[i] + (p.sur[i] ? ' ' + p.sur[i] : '')).trim();
+  };
+
+  H.People = function (sim) {
+    this.sim = sim;
+    this.r = H.rng((sim.seed || 1) ^ 0x5bd1e995);
+    this.list = [];
+    for (const id of H.BLOCS) for (const role of H.ROLES) {
+      const age = 20 + Math.floor(this.r() * 25);
+      this.list.push(makePerson(this.r, id, role, sim.year - age));
+    }
+    this.lastAI = {};
+    this.update(true);
+  };
+  const P = H.People.prototype;
+
+  P.eraOf = function (b) {
+    if (b.AI > 0.4) return 'ai';
+    if (b.D > 0.4) return 'dig';
+    if (b.I > 0.45 || b.order !== 'agrarian') return b.I > 0.45 ? 'ind' : 'agr';
+    return 'agr';
+  };
+
+  P.update = function (first) {
+    const sim = this.sim, year = sim.year, r = this.r;
+    for (let i = 0; i < this.list.length; i++) {
+      let p = this.list[i];
+      const b = sim.blocs[p.bloc];
+      if (year >= p.dies) {
+        const child = makePerson(r, p.bloc, p.role, year - 18 - Math.floor(r() * 8), p.sur);
+        child.gen = p.gen + 1; child.parent = { first: p.first, sur: p.sur, female: p.female };
+        child.diary.push({ year, key: 'd.inherit', p: { parent: p.first, pf: p.female } });
+        this.list[i] = p = child;
+      }
+      const grp = p.role === 'S' ? null : b[p.role];
+      const e = grp ? grp.emo : { anger: clamp(1 - b.S.loyal), fear: clamp(b.warDefeat + (b.regime === 'collapse' ? 0.6 : 0) + b.sfd * 0.4), hope: clamp(b.cap * 0.6 + b.gAvg * 10), trust: b.legit };
+      const q = p.quirk * 0.25;
+      for (const k of ['anger', 'fear', 'hope', 'trust']) {
+        const target = clamp((e[k] || 0) + (k === 'anger' ? q : k === 'hope' ? -q : 0) + (r() - 0.5) * 0.12);
+        p.mood[k] += (target - p.mood[k]) * (first ? 1 : 0.5);
+      }
+      if (first) continue;
+      p.diary.push(this.entry(p, b));
+      if (p.diary.length > 14) p.diary.shift();
+    }
+  };
+
+  // що людина запише цього року
+  P.entry = function (p, b) {
+    const sim = this.sim, year = sim.year;
+    const era = this.eraOf(b), order = b.order;
+    const base = { role: p.role, era, order, war: !!b.war, rep: b.rep > 0.5, f: p.female };
+    // спершу — великі події свого блоку
+    const evs = sim.log.filter(e => e.year === year && (e.bloc === p.bloc || e.bloc == null || e.p.a === p.bloc || e.p.b === p.bloc));
+    const big = evs.find(e => e.kind === 'transition' && e.bloc === p.bloc) || evs.find(e => e.kind === 'war') || evs.find(e => e.kind === 'shock') || evs.find(e => e.key === 'ev.crackdown');
+    if (big) {
+      base.att = big.p.a === p.bloc;
+      const k = big.key.replace(/^(tr|ev)\./, '');
+      const key = 'd.ev.' + k;
+      if (H.hasText(key + '.' + p.role)) return { year, key: key + '.' + p.role, p: base };
+      if (H.hasText(key)) return { year, key, p: base };
+    }
+    if (b.AI > 0.4 && !this.lastAI[p.bloc + p.role] && p.role === 'C') { this.lastAI[p.bloc + p.role] = true; return { year, key: 'd.ai', p: base }; }
+    // інакше — найсильніша емоція і те, що людина бачить навколо
+    const m = p.mood;
+    let emo = 'trust', best = m.trust * 0.8;
+    for (const k of ['anger', 'fear', 'hope']) if (m[k] > best) { best = m[k]; emo = k; }
+    if (b.regime === 'collapse') return { year, key: 'd.collapse', p: base };
+    const cand = [`d.${emo}.${p.role}.0`, `d.${emo}.${p.role}.1`];
+    const sit = [
+      [b.war, 'war.' + p.role, 2], [b.omega > 0.5 && p.role !== 'E', 'sit.inequality', 1], [b.platPow > 0.4, 'sit.platform.' + (p.role === 'E' ? 'E' : 'X'), 1],
+      [b.rep > 0.6 && p.role !== 'S', 'sit.repression', 1], [b.gAvg > 0.03, 'sit.growth', 1], [b.stagn > 5, 'sit.stagn', 1],
+      [(b.emp || 0) > 0.45 && p.role === 'A', 'sit.elites', 1], [(b.sfd || 0) > 0.5 && p.role === 'S', 'sit.debt', 1],
+      [b.AI > 0.5 && p.role !== 'E', 'sit.ai', 1], [b.AI > 0.5 && p.role === 'E', 'sit.ai.E', 1], [this.sim.climate > 0.4, 'sit.climate', 1],
+    ];
+    for (const [ok, k, w] of sit) if (ok) for (let i = 0; i < w; i++) cand.push('d.' + k);
+    const recent = new Set(p.diary.slice(-3).map(d => d.key));
+    let pool = cand.filter(k => !recent.has(k) && H.hasText(k));
+    if (!pool.length) pool = cand.filter(k => H.hasText(k) && k !== (p.diary.length && p.diary[p.diary.length - 1].key));
+    return { year, key: pool.length ? pool[Math.floor(this.r() * pool.length)] : cand[0], p: base };
+  };
+
+  P.ofBloc = function (id) { return this.list.filter(p => p.bloc === id); };
+})(typeof window !== 'undefined' ? (window.H = window.H || {}) : (global.H = global.H || {}));
+
+</script>
+<script>
+/* ============================================================
+   Інтерфейс: жива симуляція, можливі майбутні, метод
+   ============================================================ */
+(function (H) {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const t = (k, p) => H.t(k, p);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const bn = id => t('b.' + id);
+  const pct = v => Math.round(v * 100);
+  const catHtml = (c, label) => `<span class="catlab" style="--cc:var(--c-${c === 'democracy' ? 'libdem' : c})"><i class="dot"></i>${esc(label || t('cat.' + c))}</span>`;
+  const store = {
+    get(k) { try { return localStorage.getItem('hs.' + k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem('hs.' + k, v); } catch (e) { /* без сховища */ } },
+  };
+
+  const S = {
+    view: 'live', mode: 'history', sim: null, people: null, playing: true, speed: 3, sel: 'UA', filter: 'all', chronSig: '',
+    scen: { ai: 0.5, conc: 0.55, policy: 0.5, climate: 0.4, tension: 0.5 }, fut: null, futBusy: 0, futView: 'chart', bt: null, btBusy: false,
+    spark: {},
+  };
+  const SPEEDS = [1, 3, 8, 20];
+  const KNOBS = ['ai', 'conc', 'policy', 'climate', 'tension'];
+  const PRESETS = {
+    base: { ai: 0.5, conc: 0.55, policy: 0.5, climate: 0.4, tension: 0.5 },
+    tf: { ai: 0.8, conc: 0.85, policy: 0.2, climate: 0.4, tension: 0.5 },
+    reg: { ai: 0.5, conc: 0.4, policy: 0.85, climate: 0.4, tension: 0.4 },
+    storm: { ai: 0.5, conc: 0.55, policy: 0.5, climate: 0.85, tension: 0.85 },
+  };
+
+  /* ---------- підказка ---------- */
+  const tip = $('tip');
+  function showTip(html, x, y) {
+    tip.innerHTML = html; tip.hidden = false;
+    const w = tip.offsetWidth, h = tip.offsetHeight, vw = window.innerWidth, vh = window.innerHeight;
+    let left = x + 14, top = y + 14;
+    if (left + w > vw - 8) left = x - w - 14;
+    if (left < 8) left = 8;
+    if (top + h > vh - 8) top = y - h - 14;
+    tip.style.left = left + 'px'; tip.style.top = Math.max(8, top) + 'px';
+  }
+  function hideTip() { tip.hidden = true; }
+
+  /* ---------- статичні тексти ---------- */
+  function applyStatic() {
+    document.documentElement.lang = H.lang;
+    document.title = t('title');
+    document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+    document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
+    document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
+    document.querySelectorAll('.lang').forEach(b => b.setAttribute('aria-pressed', b.dataset.lang === H.lang));
+    $('speeds').innerHTML = SPEEDS.map(n => `<button class="seg" data-s="${n}" aria-pressed="${n === S.speed}">${esc(t('ctl.yps', { n }))}</button>`).join('');
+    const leg = H.CATS.map(c => `<li>${catHtml(c)}</li>`).join('');
+    $('legendLive').innerHTML = leg; $('legendFut').innerHTML = leg;
+    $('sources').innerHTML = H.SOURCES.map(([lab, url], i) => `<li><a href="${esc(url)}" target="_blank" rel="noopener">${esc(H.hasText('src.' + i) ? t('src.' + i) : lab)}</a></li>`).join('');
+    buildTiles(); buildSliders();
+  }
+
+  /* ==================== ЖИВА СИМУЛЯЦІЯ ==================== */
+  function newSim() {
+    S.sim = new H.Sim({ mode: S.mode });
+    S.people = new H.People(S.sim);
+    S.chronSig = '';
+    buildTimeline();
+    renderLive();
+  }
+  function stepOnce() {
+    const s = S.sim;
+    if (s.year >= s.endYear) { S.playing = false; return false; }
+    s.step(); S.people.update();
+    return true;
+  }
+
+  // плитки блоків будуються один раз — щоб оновлення не «з'їдали» натискання
+  const tileRefs = {};
+  function buildTiles() {
+    const box = $('tiles');
+    box.innerHTML = H.BLOCS.map(id => `<button class="tile" data-b="${id}" aria-pressed="false">
+      <div class="tname"><span>${esc(bn(id))}</span><span class="tgdp"></span></div>
+      <span class="catlab tcat"><i class="dot"></i><span></span></span>
+      <div class="tsub"></div>
+      <div class="meters">
+        <span>${esc(t('ms.psi'))}</span><span class="meter mpsi"><i></i></span><span class="num vpsi"></span>
+        <span>${esc(t('ms.anger'))}</span><span class="meter mang"><i></i></span><span class="num vang"></span>
+        <span>${esc(t('ms.legit'))}</span><span class="meter mleg"><i></i></span><span class="num vleg"></span>
+      </div>
+      <span class="wartag" hidden>⚔ <span>${esc(t('war'))}</span></span>
+    </button>`).join('');
+    for (const el of box.querySelectorAll('.tile')) {
+      const q = s => el.querySelector(s);
+      tileRefs[el.dataset.b] = { el, gdp: q('.tgdp'), cat: q('.tcat span'), sub: q('.tsub'), war: q('.wartag'),
+        mpsi: q('.mpsi'), mang: q('.mang'), mleg: q('.mleg'), vpsi: q('.vpsi'), vang: q('.vang'), vleg: q('.vleg') };
+    }
+    if (S.sim) updateTiles();
+  }
+  function setMeter(m, v, hotAt) { m.firstChild.style.width = Math.round(Math.max(0, Math.min(1, v)) * 100) + '%'; m.classList.toggle('hot', hotAt != null && v >= hotAt); }
+  function updateTiles() {
+    for (const id of H.BLOCS) {
+      const b = S.sim.blocs[id], r = tileRefs[id], x = b.rec[b.rec.length - 1];
+      r.el.style.setProperty('--cc', `var(--c-${x.cat})`);
+      r.el.classList.toggle('sel', id === S.sel); r.el.setAttribute('aria-pressed', id === S.sel);
+      r.gdp.textContent = (x.gdp >= 10 ? Math.round(x.gdp) : x.gdp.toFixed(1)) + ' ' + t('kusd');
+      r.cat.textContent = t('cat.' + x.cat);
+      r.sub.textContent = t('reg.' + x.regime) + ' · ' + t('ord.' + x.order);
+      r.war.hidden = !x.war;
+      setMeter(r.mpsi, x.psi, 0.5); setMeter(r.mang, x.anger, 0.55); setMeter(r.mleg, x.legit);
+      r.vpsi.textContent = pct(x.psi); r.vang.textContent = pct(x.anger); r.vleg.textContent = pct(x.legit);
+    }
+  }
+
+  /* ---------- часова стрічка ---------- */
+  function yearsRange() { return S.mode === 'history' ? [1900, 2025] : [2025, 2100]; }
+  function buildTimeline() {
+    const [y0, y1] = yearsRange(), hist = S.mode === 'history';
+    const ticks = [];
+    for (let y = Math.ceil(y0 / 25) * 25; y <= y1; y += 25) ticks.push(y);
+    $('timeline').innerHTML = `<div class="tl">${H.BLOCS.map(id => `<div class="tlr"><span class="tll">${esc(bn(id))}</span><div class="tlb" data-b="${id}"><svg viewBox="0 0 ${y1 - y0 + 1} ${hist ? 22 : 14}" preserveAspectRatio="none" aria-hidden="true" style="height:${hist ? 22 : 14}px"></svg></div></div>`).join('')}
+      <div class="tlr"><span class="tll"></span><div class="tlaxis">${ticks.map(y => `<span style="left:${(y - y0) / (y1 - y0 + 1) * 100}%">${y}</span>`).join('')}</div></div>
+      ${hist ? `<p class="tlnote">${esc(t('live.model'))} ▬ / ${esc(t('live.real'))} ▁</p>` : ''}</div>`;
+  }
+  function runs(arr, key) {
+    const out = [];
+    for (const x of arr) { const c = key(x); const l = out[out.length - 1]; if (l && l.c === c) l.n++; else out.push({ y: x.y, c, n: 1 }); }
+    return out;
+  }
+  function updateTimeline() {
+    const [y0, y1] = yearsRange(), hist = S.mode === 'history';
+    for (const el of $('timeline').querySelectorAll('.tlb')) {
+      const id = el.dataset.b, rec = S.sim.blocs[id].rec;
+      let s = `<rect x="0" y="0" width="${y1 - y0 + 1}" height="14" style="fill:var(--surface-2)"/>`;
+      for (const r of runs(rec, x => x.cat)) s += `<rect x="${r.y - y0}" y="0" width="${r.n}" height="14" style="fill:var(--c-${r.c});stroke:var(--surface);stroke-width:1.5" vector-effect="non-scaling-stroke"/>`;
+      if (hist) {
+        const real = []; for (let y = y0; y <= y1; y++) real.push({ y, cat: H.historyAt(id, y) });
+        for (const r of runs(real, x => x.cat)) s += `<rect x="${r.y - y0}" y="16" width="${r.n}" height="6" style="fill:var(--c-${r.c});stroke:var(--surface);stroke-width:1.5" vector-effect="non-scaling-stroke"/>`;
+      }
+      el.firstChild.innerHTML = s;
+      el.classList.toggle('sel', id === S.sel);
+    }
+  }
+  $('timeline').addEventListener('mousemove', e => {
+    const el = e.target.closest('.tlb'); if (!el) { hideTip(); return; }
+    const [y0, y1] = yearsRange(), rc = el.getBoundingClientRect();
+    const y = Math.round(y0 + (e.clientX - rc.left) / rc.width * (y1 - y0 + 1) - 0.5), id = el.dataset.b;
+    const x = S.sim.blocs[id].rec.find(r => r.y === y);
+    let h = `<b>${esc(bn(id))}, ${y}</b>`;
+    h += x ? `<div class="tr">${catHtml(x.cat)}<span>${esc(t('live.model'))}</span></div>` : '';
+    if (S.mode === 'history') h += `<div class="tr">${catHtml(H.historyAt(id, Math.max(y0, Math.min(y1, y))))}<span>${esc(t('live.real'))}</span></div>`;
+    showTip(h, e.clientX, e.clientY);
+  });
+  $('timeline').addEventListener('mouseleave', hideTip);
+  $('timeline').addEventListener('click', e => { const el = e.target.closest('.tlb'); if (el) select(el.dataset.b); });
+
+  /* ---------- хроніка ---------- */
+  function evText(e) {
+    const p = e.p || {}, q = { bloc: e.bloc ? bn(e.bloc) : '' };
+    const isBloc = v => H.BLOCS.includes(v) || v === 'JP';
+    for (const k of ['a', 'b', 'win', 'lose']) if (p[k]) q[k] = bn(p[k]);
+    if (p.by) q.by = isBloc(p.by) ? bn(p.by) : t('ideo.' + p.by);
+    if (p.from && !e.key.startsWith('tr.')) {
+      const pre = e.key === 'ev.order' ? 'ord.' : 'ideo.';
+      q.from = t(pre + p.from); q.to = t(pre + p.to);
+    }
+    return t(e.key, q);
+  }
+  function causesText(p) {
+    if (!p || !p.causes || !p.causes.length) return '';
+    return t('live.why') + ': ' + p.causes.map(([c, v]) => `${t('c.' + c)} (${v})`).join(', ');
+  }
+  const FILT = { all: () => true, transition: e => e.kind === 'transition', war: e => e.kind === 'war', shock: e => e.kind === 'shock', politics: e => ['election', 'order', 'crisis'].includes(e.kind) };
+  function updateChron() {
+    const log = S.sim.log, sig = log.length + '|' + S.filter + '|' + H.lang + '|' + S.sim.seed;
+    if (sig === S.chronSig) return;
+    S.chronSig = sig;
+    const list = log.filter(FILT[S.filter]).slice(-250).reverse();
+    document.querySelectorAll('#chronFilter .chip').forEach(c => c.classList.toggle('on', c.dataset.f === S.filter));
+    if (!list.length) { $('chron').innerHTML = `<li class="empty">${esc(t('live.empty'))}</li>`; return; }
+    $('chron').innerHTML = list.map(e => {
+      const p = e.p || {};
+      const shift = e.kind === 'transition' && p.from && p.from !== p.to ? `<div class="shift">${catHtml(p.from)} → ${catHtml(p.to)}</div>` : '';
+      const why = causesText(p);
+      return `<li class="k-${e.kind}"><span class="cy">${e.year}</span><div><div class="ct">${esc(evText(e))}</div>${shift}${why ? `<div class="why">${esc(why)}</div>` : ''}</div></li>`;
+    }).join('');
+  }
+  $('chronFilter').addEventListener('click', e => { const c = e.target.closest('.chip'); if (!c) return; S.filter = c.dataset.f; updateChron(); });
+
+  /* ---------- обраний блок ---------- */
+  const SPARKS = [
+    ['gdp', 'ms.gdp', null], ['omega', 'm.omega', [0, 1]], ['legit', 'm.legit', [0, 1]],
+    ['inc', 'm.inc', [0, 1]], ['psi', 'm.psi', [0, 1]], ['plat', 'm.plat', [0, 1]],
+  ];
+  function fmtVal(k, v) { return k === 'gdp' ? (v >= 10 ? Math.round(v) : v.toFixed(1)) + ' ' + t('kusd') : pct(v) + (k === 'omega' ? '%' : ''); }
+  function sparkSvg(k, rec, range) {
+    const vals = rec.map(x => x[k]);
+    const [y0, y1] = yearsRange();
+    const lo = range ? range[0] : 0, hi = range ? range[1] : Math.max(1, ...vals) * 1.05;
+    const X = y => (y - y0) / (y1 - y0) * 100, Y = v => 40 - (v - lo) / (hi - lo) * 40;
+    const pts = rec.map(x => `${X(x.y).toFixed(2)},${Y(x[k]).toFixed(2)}`).join(' ');
+    S.spark[k] = { rec, lo, hi };
+    return `<svg viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true">
+      <line x1="0" x2="100" y1="40" y2="40" style="stroke:var(--axis)" vector-effect="non-scaling-stroke"/>
+      ${range ? `<line x1="0" x2="100" y1="20" y2="20" style="stroke:var(--grid)" stroke-dasharray="2 3" vector-effect="non-scaling-stroke"/>` : ''}
+      <polyline points="${pts}" fill="none" style="stroke:var(--accent)" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+      <line class="xh" x1="0" x2="0" y1="0" y2="40" style="stroke:var(--ink-2)" vector-effect="non-scaling-stroke" visibility="hidden"/>
+    </svg>`;
+  }
+  function meterRow(label, v, hotAt) {
+    return `<span>${esc(label)}</span><span class="meter${hotAt != null && v >= hotAt ? ' hot' : ''}"><i style="width:${pct(Math.max(0, Math.min(1, v)))}%"></i></span><span class="v">${pct(v)}</span>`;
+  }
+  function cell(v) { v = Math.max(0, Math.min(1, v)); return `<div class="cell"><span class="meter"><i style="width:${pct(Math.max(0, Math.min(1, v)))}%"></i></span><span>${pct(v)}</span></div>`; }
+  function diaryText(d, lang) {
+    const p = Object.assign({ job: t('job.' + (d.p.era || 'ind')) }, d.p);
+    if (d.key === 'd.inherit' && d.p.parent) p.parent = d.p.parent[lang === 'de' ? 1 : 0];
+    return t(d.key, p);
+  }
+  function updateSelected() {
+    const id = S.sel, b = S.sim.blocs[id], x = b.rec[b.rec.length - 1], year = S.sim.year;
+    let h = `<div class="selhead"><h2>${esc(bn(id))}</h2>${catHtml(x.cat)}<p class="desc">${esc(t('catd.' + x.cat))}</p>`;
+    if (S.mode === 'history') h += `<span class="real">${t('sel.real', { cat: catHtml(H.historyAt(id, year)) })}</span>`;
+    h += `<dl class="kv"><dt>${esc(t('sel.regime'))}</dt><dd>${esc(t('reg.' + x.regime))}</dd><dt>${esc(t('sel.order'))}</dt><dd>${esc(t('ord.' + x.order))}</dd><dt>${esc(t('sel.gov'))}</dt><dd>${esc(t('ideo.' + x.gov))}</dd>`;
+    if (b.war) { const foes = b.war.sides.find(sd => !sd.includes(id)) || []; h += `<dt>${esc(t('atWar'))}</dt><dd>⚔ ${esc(foes.map(bn).join(', '))}</dd>`; }
+    h += `</dl></div>`;
+    h += `<div class="sec"><h3>${esc(t('sel.pressure'))}</h3><div class="bars">${meterRow(t('m.mmp'), x.mmp, 0.5)}${meterRow(t('m.emp'), x.emp, 0.5)}${meterRow(t('m.sfd'), x.sfd, 0.5)}${meterRow(t('m.psi'), x.psi, 0.5)}</div></div>`;
+    h += `<div class="sec"><h3>${esc(t('sel.trends'))}</h3><div class="sparks" id="sparks">${SPARKS.map(([k, lab, range]) => `<div class="spark" data-k="${k}"><div class="sl"><span>${esc(t(lab))}</span><b>${esc(fmtVal(k, x[k]))}</b></div>${sparkSvg(k, b.rec, range)}</div>`).join('')}</div></div>`;
+    // групи
+    const G = ['C', 'A', 'E'];
+    h += `<div class="sec"><h3>${esc(t('sel.groups'))}</h3><table class="gtable"><thead><tr><th></th>${G.map(g => `<th>${esc(t('g.' + g))}</th>`).join('')}</tr></thead><tbody>`;
+    for (const n of ['mat', 'sec', 'status', 'voice', 'belong', 'meaning']) h += `<tr><td>${esc(t('n.' + n))}</td>${G.map(g => `<td>${cell(b[g].needs[n])}</td>`).join('')}</tr>`;
+    ['anger', 'fear', 'hope', 'trust'].forEach((e, i) => { h += `<tr${i === 0 ? ' class="sep"' : ''}><td>${esc(t('e.' + e))}</td>${G.map(g => `<td>${cell(b[g].emo[e])}</td>`).join('')}</tr>`; });
+    h += `</tbody></table><p class="muted small" style="margin-top:4px">${esc(t('needsLegend'))}</p></div>`;
+    // ідеї
+    h += `<div class="sec"><h3>${esc(t('sel.ideas'))}</h3><div class="ideas">${G.map(g => {
+      const io = b[g].ideo, sum = Object.values(io).reduce((s, v) => s + v, 0) || 1;
+      const top = Object.entries(io).filter(([, v]) => v > 0.005).sort((a, c) => c[1] - a[1]).slice(0, 5);
+      return `<div><h4>${esc(t('g.' + g))}</h4><div class="bars">${top.map(([k, v]) => `<span class="lab"><span>${esc(t('ideo.' + k))}</span><span class="v">${pct(v / sum)}%</span></span><span class="meter"><i style="width:${pct(v / sum)}%"></i></span>`).join('')}</div></div>`;
+    }).join('')}</div></div>`;
+    // люди
+    h += `<div class="sec"><h3>${esc(t('sel.people'))}</h3><div class="people">${S.people.ofBloc(id).map(p => {
+      const age = year - p.born;
+      const role = t('role.' + p.role, { f: p.female });
+      return `<div class="person"><div class="pn"><b>${esc(H.personName(p, H.lang))}</b><span class="pr">${esc(t('p.age', { n: age }))}${p.gen > 1 ? ' · ' + esc(t('p.gen', { n: p.gen })) : ''}</span></div>
+        <div class="pr">${esc(role)}</div>
+        <div class="mood">${['anger', 'fear', 'hope', 'trust'].map(k => `<div>${esc(t('e.' + k))}<span class="meter${k === 'anger' && p.mood[k] > 0.55 ? ' hot' : ''}"><i style="width:${pct(p.mood[k])}%"></i></span></div>`).join('')}</div>
+        <ol class="diary">${p.diary.slice(-6).reverse().map(d => `<li><span>${d.year}</span>${esc(diaryText(d, H.lang))}</li>`).join('')}</ol></div>`;
+    }).join('')}</div></div>`;
+    $('selected').innerHTML = h;
+  }
+  $('selected').addEventListener('mousemove', e => {
+    const sp = e.target.closest('.spark');
+    document.querySelectorAll('#selected .xh').forEach(l => l.setAttribute('visibility', 'hidden'));
+    if (!sp) { hideTip(); return; }
+    const k = sp.dataset.k, d = S.spark[k], svg = sp.querySelector('svg'), rc = svg.getBoundingClientRect();
+    if (!d) return;
+    const [y0, y1] = yearsRange();
+    const y = Math.round(y0 + (e.clientX - rc.left) / rc.width * (y1 - y0));
+    const x = d.rec.find(r => r.y === y) || d.rec[d.rec.length - 1];
+    const l = svg.querySelector('.xh'); const xx = (x.y - y0) / (y1 - y0) * 100;
+    l.setAttribute('x1', xx); l.setAttribute('x2', xx); l.setAttribute('visibility', 'visible');
+    showTip(`<b>${x.y}</b><div class="tr"><span>${esc(t(SPARKS.find(s => s[0] === k)[1]))}</span><span>${esc(fmtVal(k, x[k]))}</span></div>`, e.clientX, e.clientY);
+  });
+  $('selected').addEventListener('mouseleave', () => { hideTip(); document.querySelectorAll('#selected .xh').forEach(l => l.setAttribute('visibility', 'hidden')); });
+
+  function select(id) { S.sel = id; store.set('sel', id); updateTiles(); updateTimeline(); updateSelected(); }
+  $('tiles').addEventListener('click', e => { const el = e.target.closest('.tile'); if (el) select(el.dataset.b); });
+
+  function renderLive() {
+    const s = S.sim;
+    $('year').textContent = s.year;
+    $('play').textContent = S.playing ? t('ctl.pause') : t('ctl.play');
+    document.querySelectorAll('.mode').forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === S.mode));
+    $('endnote').hidden = s.year < s.endYear;
+    updateTiles(); updateTimeline(); updateChron(); updateSelected();
+  }
+
+  $('play').addEventListener('click', () => {
+    if (S.sim.year >= S.sim.endYear) newSim();
+    S.playing = !S.playing; renderLive();
+  });
+  $('step').addEventListener('click', () => { S.playing = false; stepOnce(); renderLive(); });
+  $('reset').addEventListener('click', () => { newSim(); S.playing = true; renderLive(); });
+  $('speeds').addEventListener('click', e => {
+    const b = e.target.closest('[data-s]'); if (!b) return;
+    S.speed = +b.dataset.s; store.set('speed', S.speed);
+    $('speeds').querySelectorAll('[data-s]').forEach(x => x.setAttribute('aria-pressed', +x.dataset.s === S.speed));
+  });
+  document.querySelectorAll('.mode').forEach(b => b.addEventListener('click', () => {
+    if (S.mode === b.dataset.mode) return;
+    S.mode = b.dataset.mode; store.set('mode', S.mode); newSim(); S.playing = true; renderLive();
+  }));
+
+  let acc = 0, last = 0;
+  function frame(ts) {
+    const dt = last ? Math.min(0.25, (ts - last) / 1000) : 0; last = ts;
+    if (S.playing && S.view === 'live' && S.sim) {
+      acc += dt * S.speed;
+      if (acc >= 1) {
+        const n = Math.min(4, Math.floor(acc)); acc -= n;
+        let any = false; for (let i = 0; i < n; i++) any = stepOnce() || any;
+        if (acc > 4) acc = 0;
+        renderLive();
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  /* ==================== МОЖЛИВІ МАЙБУТНІ ==================== */
+  function buildSliders() {
+    $('presets').innerHTML = Object.keys(PRESETS).map(k => `<button class="chip" data-p="${k}">${esc(t('pr.' + k))}</button>`).join('');
+    $('sliders').innerHTML = KNOBS.map(k => `<div class="slider"><label for="k-${k}"><span>${esc(t('k.' + k))}</span><output id="o-${k}">${pct(S.scen[k])}</output></label>
+      <input type="range" id="k-${k}" data-k="${k}" min="0" max="100" step="5" value="${pct(S.scen[k])}">
+      <div class="ends"><span>${esc(t('k.' + k + '.lo'))}</span><span>${esc(t('k.' + k + '.hi'))}</span></div></div>`).join('');
+    markPreset();
+    $('futToggle').textContent = S.futView === 'chart' ? t('table.view') : t('chart.view');
+  }
+  function markPreset() {
+    $('presets').querySelectorAll('.chip').forEach(c => { const p = PRESETS[c.dataset.p]; c.classList.toggle('on', KNOBS.every(k => Math.abs(p[k] - S.scen[k]) < 0.001)); });
+  }
+  $('sliders').addEventListener('input', e => {
+    const k = e.target.dataset.k; if (!k) return;
+    S.scen[k] = +e.target.value / 100; $('o-' + k).textContent = e.target.value; markPreset();
+  });
+  $('presets').addEventListener('click', e => {
+    const c = e.target.closest('[data-p]'); if (!c) return;
+    Object.assign(S.scen, PRESETS[c.dataset.p]);
+    for (const k of KNOBS) { $('k-' + k).value = pct(S.scen[k]); $('o-' + k).textContent = pct(S.scen[k]); }
+    markPreset(); runFutures();
+  });
+  $('goFut').addEventListener('click', () => runFutures());
+  $('futToggle').addEventListener('click', () => {
+    S.futView = S.futView === 'chart' ? 'table' : 'chart';
+    $('futToggle').textContent = S.futView === 'chart' ? t('table.view') : t('chart.view');
+    renderFut();
+  });
+
+  function runFutures() {
+    const n = +$('nRuns').value, token = ++S.futBusy;
+    const res = H.newEnsemble({ mode: 'future', scen: Object.assign({}, S.scen), seed: 5 });
+    S.fut = res; let k = 0, lastDraw = 0;
+    const prog = $('futProg'); prog.hidden = false; $('goFut').disabled = true;
+    function chunk() {
+      if (token !== S.futBusy) return;
+      const t0 = performance.now();
+      while (k < n && performance.now() - t0 < 35) H.addRun(res, k++);
+      prog.firstChild.style.width = (k / n * 100) + '%';
+      prog.lastChild.textContent = t('fu.running', { n: k, m: n });
+      if (k >= n) { prog.hidden = true; $('goFut').disabled = false; renderFut(); return; }
+      if (k - lastDraw >= 25) { lastDraw = k; renderFut(); }
+      setTimeout(chunk, 0);
+    }
+    chunk();
+  }
+  const shareAt = (res, id, y) => { const i = res.years.indexOf(y); const sh = res.share[id][i] || {}; return Object.entries(sh).map(([c, v]) => [c, v / res.n]).sort((a, b) => b[1] - a[1]); };
+  function renderFut() {
+    const res = S.fut; if (!res || !res.n) return;
+    // головне
+    let h = `<table class="hl"><thead><tr><th></th><th>2050</th><th>2100</th><th>${esc(t('fu.tfEver'))}</th></tr></thead><tbody>`;
+    for (const id of H.BLOCS) {
+      const cellFor = y => shareAt(res, id, y).slice(0, 2).filter((x, i) => i === 0 || x[1] >= 0.15).map(([c, v]) => `${catHtml(c)} <span class="pct">${pct(v)}%</span>`).join('<br>');
+      const tf = res.firstTF[id].filter(x => x).length / res.n;
+      h += `<tr><td><b>${esc(bn(id))}</b></td><td>${cellFor(2050)}</td><td>${cellFor(2100)}</td><td class="pct">${pct(tf)}%</td></tr>`;
+    }
+    $('headline').innerHTML = h + '</tbody></table>';
+    // графіки або таблиця
+    $('multiples').hidden = S.futView !== 'chart'; $('futTable').hidden = S.futView === 'chart';
+    if (S.futView === 'chart') $('multiples').innerHTML = H.BLOCS.map(id => `<div class="mult" data-b="${id}"><h3>${esc(bn(id))}</h3>${stackSvg(res, id)}</div>`).join('');
+    else $('futTable').innerHTML = `<div class="scroll">${H.BLOCS.map(id => {
+      const ys = [2030, 2050, 2075, 2100], used = H.CATS.filter(c => ys.some(y => (res.share[id][res.years.indexOf(y)] || {})[c]));
+      return `<table class="ftable"><caption>${esc(bn(id))} — ${esc(t('fu.share'))}</caption><thead><tr><th></th>${ys.map(y => `<th>${y}</th>`).join('')}</tr></thead><tbody>${used.map(c => `<tr><td>${catHtml(c)}</td>${ys.map(y => `<td>${pct(((res.share[id][res.years.indexOf(y)] || {})[c] || 0) / res.n)}%</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+    }).join('')}</div>`;
+    // шляхи
+    $('paths').innerHTML = H.BLOCS.map(id => {
+      const top = Object.entries(res.paths[id]).sort((a, b) => b[1] - a[1]).slice(0, 4);
+      return `<div><h3>${esc(bn(id))}</h3><ol>${top.map(([k, v]) => `<li><b>${pct(v / res.n)}%</b><span class="pathseq">${k.split('>').map(c => catHtml(c)).join(' › ')}</span></li>`).join('')}</ol></div>`;
+    }).join('');
+  }
+  const MW = 320, MH = 168, ML = 34, MR = 8, MT = 6, MB = 22;
+  function stackSvg(res, id) {
+    const ys = res.years, n = res.n, y0 = ys[0], y1 = ys[ys.length - 1];
+    const X = y => ML + (y - y0) / (y1 - y0) * (MW - ML - MR), Y = v => MT + (1 - v) * (MH - MT - MB);
+    const base = ys.map(() => 0);
+    let paths = '';
+    for (const c of H.CATS) {
+      const top = ys.map((y, i) => base[i] + ((res.share[id][i] || {})[c] || 0) / n);
+      if (top.every((v, i) => v - base[i] < 1e-9)) continue;
+      const up = ys.map((y, i) => `${X(y).toFixed(1)},${Y(top[i]).toFixed(1)}`);
+      const dn = ys.map((y, i) => `${X(y).toFixed(1)},${Y(base[i]).toFixed(1)}`).reverse();
+      paths += `<path d="M${up.join('L')}L${dn.join('L')}Z" style="fill:var(--c-${c});stroke:var(--surface);stroke-width:1.2;stroke-linejoin:round"/>`;
+      for (let i = 0; i < ys.length; i++) base[i] = top[i];
+    }
+    let axis = '';
+    for (const v of [0, 0.5, 1]) axis += `<line x1="${ML}" x2="${MW - MR}" y1="${Y(v)}" y2="${Y(v)}" style="stroke:var(--grid)"/><text x="${ML - 5}" y="${Y(v) + 3.5}" text-anchor="end" style="fill:var(--muted);font-size:10px">${pct(v)}%</text>`;
+    for (const y of [2025, 2050, 2075, 2100]) axis += `<text x="${X(y)}" y="${MH - 6}" text-anchor="${y === 2025 ? 'start' : y === 2100 ? 'end' : 'middle'}" style="fill:var(--muted);font-size:10px">${y}</text>`;
+    return `<svg viewBox="0 0 ${MW} ${MH}" role="img" aria-label="${esc(bn(id))}">${axis}${paths}
+      <line x1="${ML}" x2="${MW - MR}" y1="${Y(0)}" y2="${Y(0)}" style="stroke:var(--axis)"/>
+      <line class="xh" x1="0" x2="0" y1="${MT}" y2="${Y(0)}" style="stroke:var(--ink);stroke-width:1" visibility="hidden"/>
+      <rect class="hit" x="${ML}" y="0" width="${MW - ML - MR}" height="${MH - MB + 4}" fill="transparent"/></svg>`;
+  }
+  $('multiples').addEventListener('mousemove', e => {
+    const m = e.target.closest('.mult'); const res = S.fut;
+    document.querySelectorAll('#multiples .xh').forEach(l => l.setAttribute('visibility', 'hidden'));
+    if (!m || !res) { hideTip(); return; }
+    const svg = m.querySelector('svg'), rc = svg.getBoundingClientRect();
+    const vx = (e.clientX - rc.left) / rc.width * MW;
+    const ys = res.years, y0 = ys[0], y1 = ys[ys.length - 1];
+    const y = Math.max(y0, Math.min(y1, Math.round(y0 + (vx - ML) / (MW - ML - MR) * (y1 - y0))));
+    const xx = ML + (y - y0) / (y1 - y0) * (MW - ML - MR), l = svg.querySelector('.xh');
+    l.setAttribute('x1', xx); l.setAttribute('x2', xx); l.setAttribute('visibility', 'visible');
+    const id = m.dataset.b, rows = shareAt(res, id, y);
+    showTip(`<b>${esc(bn(id))}, ${y}</b>${rows.map(([c, v]) => `<div class="tr">${catHtml(c)}<span>${pct(v)}%</span></div>`).join('')}`, e.clientX, e.clientY);
+  });
+  $('multiples').addEventListener('mouseleave', () => { hideTip(); document.querySelectorAll('#multiples .xh').forEach(l => l.setAttribute('visibility', 'hidden')); });
+
+  /* ==================== ПЕРЕВІРКА НА ІСТОРІЇ ==================== */
+  const BT_N = 60;
+  function runBacktest() {
+    if (S.btBusy) return;
+    S.btBusy = true;
+    const T = H.TURNS, hit = T.map(() => 0), elig = T.map(() => 0);
+    let acc = 0, accF = 0, cnt = 0, k = 0;
+    const base = { a: 0, f: 0, c: 0 };
+    for (const id of H.BLOCS) { const st = H.historyAt(id, 1900); for (let y = 1900; y <= 2025; y++) { const a = H.historyAt(id, y); base.a += st === a ? 1 : 0; base.f += H.polFam(st) === H.polFam(a) ? 1 : 0; base.c++; } }
+    function chunk() {
+      const t0 = performance.now();
+      while (k < BT_N && performance.now() - t0 < 35) {
+        const s = new H.Sim({ mode: 'history', seed: k * 977 + 13 }); s.run(); k++;
+        T.forEach((tt, i) => { const r = H.checkTurn(tt, s); if (r != null) { elig[i]++; if (r) hit[i]++; } });
+        for (const id of H.BLOCS) for (const x of s.blocs[id].rec) { const a = H.historyAt(id, x.y); acc += x.cat === a ? 1 : 0; accF += H.polFam(x.cat) === H.polFam(a) ? 1 : 0; cnt++; }
+      }
+      S.bt = { k, T, hit, elig, acc: acc / cnt, accF: accF / cnt, base: base.a / base.c, baseF: base.f / base.c };
+      renderBacktest();
+      if (k < BT_N) setTimeout(chunk, 0); else S.btBusy = false;
+    }
+    chunk();
+  }
+  function renderBacktest() {
+    const b = S.bt; if (!b) return;
+    let h = b.k < BT_N ? `<p class="muted">${esc(t('me.bt.running', { n: b.k, m: BT_N }))}</p>` : '';
+    h += `<div class="scroll"><table class="bt"><thead><tr><th>${esc(t('me.bt.event'))}</th><th>${esc(t('me.bt.window'))}</th><th>${esc(t('me.bt.share'))}</th></tr></thead><tbody>`;
+    b.T.forEach((tt, i) => {
+      const v = b.elig[i] ? b.hit[i] / b.elig[i] : 0;
+      h += `<tr><td>${esc(t('turn.' + tt.id))} <span class="muted small">· ${esc(bn(tt.bloc))}</span></td><td class="n">${tt.from}–${tt.to}</td><td class="n"><span class="meter"><i style="width:${pct(v)}%"></i></span>${pct(v)}%</td></tr>`;
+    });
+    h += `</tbody></table></div><p>${t('me.bt.acc', { a: pct(b.acc), b: pct(b.base), c: pct(b.accF), d: pct(b.baseF) })}</p><p class="muted">${esc(t('me.bt.read'))}</p>`;
+    $('backtest').innerHTML = h;
+  }
+
+  /* ==================== НАВІГАЦІЯ ==================== */
+  function route() {
+    const v = (location.hash || '#live').slice(1);
+    S.view = ['live', 'futures', 'method'].includes(v) ? v : 'live';
+    for (const x of ['live', 'futures', 'method']) $('view-' + x).hidden = x !== S.view;
+    document.querySelectorAll('.navl').forEach(a => { a.classList.toggle('on', a.dataset.view === S.view); a.setAttribute('aria-current', a.dataset.view === S.view ? 'page' : 'false'); });
+    hideTip();
+    if (S.view === 'futures' && !S.fut) runFutures();
+    if (S.view === 'method' && !S.bt) runBacktest();
+  }
+  window.addEventListener('hashchange', route);
+
+  document.querySelectorAll('.lang').forEach(b => b.addEventListener('click', () => {
+    H.lang = b.dataset.lang; store.set('lang', H.lang);
+    applyStatic(); buildTimeline(); S.chronSig = ''; renderLive(); renderFut(); renderBacktest();
+  }));
+
+  /* ---------- старт ---------- */
+  const sl = store.get('lang'); if (sl === 'uk' || sl === 'de') H.lang = sl;
+  else if ((navigator.language || '').toLowerCase().startsWith('de')) H.lang = 'de';
+  const sm = store.get('mode'); if (sm === 'history' || sm === 'future') S.mode = sm;
+  const ss = +store.get('speed'); if (SPEEDS.includes(ss)) S.speed = ss;
+  const sb = store.get('sel'); if (H.BLOCS.includes(sb)) S.sel = sb;
+  applyStatic();
+  newSim();
+  route();
+  requestAnimationFrame(frame);
+})(window.H);
+
+</script>
+</body>
+</html>

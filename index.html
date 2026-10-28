@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<title>Шляхи людства</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <h1 data-i18n="title">Шляхи людства</h1>
+    <p class="sub" data-i18n="subtitle"></p>
+  </div>
+  <nav class="nav" role="tablist">
+    <a href="#live" class="navl" data-view="live" data-i18n="nav.live"></a>
+    <a href="#futures" class="navl" data-view="futures" data-i18n="nav.futures"></a>
+    <a href="#method" class="navl" data-view="method" data-i18n="nav.method"></a>
+  </nav>
+  <div class="langs" role="group" aria-label="Мова / Sprache">
+    <button class="seg lang" data-lang="uk" lang="uk">UK</button>
+    <button class="seg lang" data-lang="de" lang="de">DE</button>
+  </div>
+</header>
+
+<main>
+  <!-- ============ СИМУЛЯЦІЯ ============ -->
+  <section class="view" id="view-live">
+    <div class="toolbar">
+      <div class="segs" role="group">
+        <button class="seg mode" data-mode="history" data-i18n="mode.history"></button>
+        <button class="seg mode" data-mode="future" data-i18n="mode.future"></button>
+      </div>
+      <div class="year" id="year" aria-live="polite">1900</div>
+      <div class="ctls">
+        <button class="btn primary" id="play"></button>
+        <button class="btn" id="step" data-i18n="ctl.step"></button>
+        <div class="segs" role="group" id="speeds" data-i18n-aria="ctl.speed"></div>
+        <button class="btn" id="reset" data-i18n="ctl.new"></button>
+      </div>
+    </div>
+    <p class="intro" data-i18n="live.intro"></p>
+    <p class="endnote" id="endnote" hidden data-i18n="live.end"></p>
+
+    <div class="live">
+      <div class="col-main">
+        <div class="tiles" id="tiles"></div>
+        <section class="card">
+          <div class="cardhead">
+            <h2 data-i18n="live.timeline"></h2>
+          </div>
+          <div class="timeline" id="timeline"></div>
+          <ul class="legend" id="legendLive"></ul>
+        </section>
+        <section class="card">
+          <div class="cardhead">
+            <h2 data-i18n="live.chron"></h2>
+            <div class="chips" id="chronFilter">
+              <button class="chip" data-f="all" data-i18n="f.all"></button>
+              <button class="chip" data-f="transition" data-i18n="f.transition"></button>
+              <button class="chip" data-f="war" data-i18n="f.war"></button>
+              <button class="chip" data-f="shock" data-i18n="f.shock"></button>
+              <button class="chip" data-f="politics" data-i18n="f.politics"></button>
+            </div>
+          </div>
+          <ol class="chron" id="chron"></ol>
+        </section>
+      </div>
+      <aside class="col-side card" id="selected"></aside>
+    </div>
+  </section>
+
+  <!-- ============ МОЖЛИВІ МАЙБУТНІ ============ -->
+  <section class="view" id="view-futures" hidden>
+    <p class="intro" data-i18n="fu.intro"></p>
+    <div class="futgrid">
+      <section class="card knobs">
+        <h2 data-i18n="fu.knobs"></h2>
+        <div class="presets" id="presets"></div>
+        <div id="sliders"></div>
+        <div class="runrow">
+          <label for="nRuns" data-i18n="fu.runs"></label>
+          <select id="nRuns"><option value="100">100</option><option value="200" selected>200</option><option value="400">400</option></select>
+          <button class="btn primary" id="goFut" data-i18n="fu.go"></button>
+        </div>
+        <div class="progress" id="futProg" hidden><i></i><span></span></div>
+        <p class="muted small" data-i18n="fu.note"></p>
+      </section>
+      <section class="card headline">
+        <h2 data-i18n="fu.headline"></h2>
+        <div id="headline"></div>
+      </section>
+    </div>
+    <section class="card">
+      <div class="cardhead">
+        <ul class="legend" id="legendFut"></ul>
+        <button class="btn small" id="futToggle"></button>
+      </div>
+      <div class="multiples" id="multiples"></div>
+      <div id="futTable" hidden></div>
+    </section>
+    <section class="card">
+      <h2 data-i18n="fu.paths"></h2>
+      <p class="muted small" data-i18n="fu.pathHint"></p>
+      <div class="paths" id="paths"></div>
+    </section>
+  </section>
+
+  <!-- ============ МЕТОД ============ -->
+  <section class="view" id="view-method" hidden>
+    <article class="prose">
+      <h2 data-i18n="me.what.h"></h2>
+      <p data-i18n="me.what.p"></p>
+      <h2 data-i18n="me.how.h"></h2>
+      <p data-i18n-html="me.how.1"></p>
+      <p data-i18n-html="me.how.2"></p>
+      <p data-i18n-html="me.how.3"></p>
+      <p data-i18n-html="me.how.4"></p>
+      <p data-i18n-html="me.how.5"></p>
+      <p data-i18n-html="me.how.6"></p>
+      <h2 data-i18n="me.tf.h"></h2>
+      <div class="debate">
+        <p data-i18n-html="me.tf.pro"></p>
+        <p data-i18n-html="me.tf.con"></p>
+      </div>
+      <p data-i18n-html="me.tf.model"></p>
+      <h2 data-i18n="me.bt.h"></h2>
+      <p data-i18n="me.bt.p"></p>
+      <div id="backtest"></div>
+      <h2 data-i18n="me.lim.h"></h2>
+      <ul>
+        <li data-i18n="me.lim.1"></li><li data-i18n="me.lim.2"></li><li data-i18n="me.lim.3"></li>
+        <li data-i18n="me.lim.4"></li><li data-i18n="me.lim.5"></li><li data-i18n="me.lim.6"></li>
+      </ul>
+      <h2 data-i18n="me.src.h"></h2>
+      <p data-i18n="me.theory"></p>
+      <ul id="sources"></ul>
+    </article>
+  </section>
+</main>
+
+<div class="tip" id="tip" role="tooltip" hidden></div>
+
+<script src="js/i18n.js"></script>
+<script src="js/data.js"></script>
+<script src="js/model.js"></script>
+<script src="js/people.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>
