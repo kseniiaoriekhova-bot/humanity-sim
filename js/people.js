@@ -26,6 +26,12 @@
     const sur = surname || pick(r, N.s);
     return { bloc, role, female: f, first, sur, born, dies: born + 62 + Math.floor(r() * 22), mood: { anger: 0.3, fear: 0.3, hope: 0.5, trust: 0.5 }, diary: [], gen: 1, quirk: r() - 0.5 };
   }
+  // ім'я для медійної персони: [українською, німецькою]
+  H.randomName = function (bloc, r) {
+    const N = NAMES[bloc] || NAMES.EU, f = r() < 0.5;
+    const a = pick(r, f ? N.f : N.m), s = pick(r, N.s);
+    return [(a[0] + ' ' + s[0]).trim(), (a[1] + ' ' + s[1]).trim()];
+  };
   H.personName = function (p, lang) {
     const i = lang === 'de' ? 1 : 0;
     return (p.first[i] + (p.sur[i] ? ' ' + p.sur[i] : '')).trim();
@@ -82,9 +88,10 @@
     const base = { role: p.role, era, order, war: !!b.war, rep: b.rep > 0.5, f: p.female };
     // спершу — великі події свого блоку
     const evs = sim.log.filter(e => e.year === year && (e.bloc === p.bloc || e.bloc == null || e.p.a === p.bloc || e.p.b === p.bloc));
-    const big = evs.find(e => e.kind === 'transition' && e.bloc === p.bloc) || evs.find(e => e.kind === 'war') || evs.find(e => e.kind === 'shock') || evs.find(e => e.key === 'ev.crackdown');
+    const big = evs.find(e => e.kind === 'transition' && e.bloc === p.bloc) || evs.find(e => e.kind === 'war') || evs.find(e => e.kind === 'shock') || evs.find(e => e.key === 'ev.crackdown') || evs.find(e => e.key === 'ev.persona');
     if (big) {
       base.att = big.p.a === p.bloc;
+      if (big.p.name) base.name = big.p.name;
       const k = big.key.replace(/^(tr|ev)\./, '');
       const key = 'd.ev.' + k;
       if (H.hasText(key + '.' + p.role)) return { year, key: key + '.' + p.role, p: base };

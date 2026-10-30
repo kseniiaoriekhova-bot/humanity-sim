@@ -52,6 +52,12 @@
     this.rnd = H.rng(this.seed);
     this.useShocks = opts.shocks !== false;
     this.scen = Object.assign({ ai: 0.5, conc: 0.55, climate: 0.4, tension: 0.5, policy: 0.5 }, opts.scen || {});
+    // додаткові умови сценарію (діють лише в режимі «майбутнє»); окремий генератор випадковості,
+    // щоб умови не змінювали решту перебігу, поки не почнуть діяти
+    this.conds = opts.conds || [];
+    this.condMode = Array.isArray(opts.conds);   // з умовами: потепління задається лише умовою
+    this.crnd = H.rng((this.seed ^ 0x9e3779b9) >>> 0);
+    this.randPersonas = [];
     this.year = this.mode === 'history' ? 1900 : 2025;
     this.endYear = opts.endYear || (this.mode === 'history' ? 2025 : 2100);
     const start = this.mode === 'history' ? H.START_1900 : H.START_2025;
@@ -105,6 +111,47 @@
     return e;
   };
   P.avail = function (id) { return H.ideoAvail(id, this.year); };
+  // сила умови для блоку b (або будь-де, якщо b не задано) у поточному році
+  P.cs = function (id, b) {
+    if (this.mode !== 'future') return 0;
+    let s = 0;
+    for (const c of this.conds) {
+      if (c.on === false || c.id !== id || this.year < (c.from || 2025)) continue;
+      if (c.len && this.year >= (c.from || 2025) + c.len) continue;
+      if (b && c.blocs && c.blocs.length && !c.blocs.includes(b.id)) continue;
+      s += c.str;
+    }
+    return Math.min(1.5, s);
+  };
+  // активні медійні персони в блоці: задані користувачем + ті, що з'явилися самі
+  P.personas = function (b) {
+    if (this.mode !== 'future') return [];
+    const out = [];
+    for (const c of this.conds) if (c.id === 'persona' && c.on !== false && c.blocs && c.blocs[0] === b.id && this.year >= c.from && this.year < c.from + (c.len || 8)) out.push({ name: c.name, ideo: c.ideo, str: c.str, user: true });
+    for (const p of this.randPersonas) if (p.bloc === b.id && this.year < p.until) out.push(p);
+    return out;
+  };
+  P.mediaStep = function () {
+    if (this.mode !== 'future') return;
+    const year = this.year, r = this.crnd;
+    for (const c of this.conds) if (c.id === 'persona' && c.on !== false && c.blocs && c.blocs[0]) {
+      if (year === c.from) this.emit(c.blocs[0], 'ev.persona', { name: c.name, by: c.ideo }, 'media');
+      if (year === c.from + (c.len || 8)) this.emit(c.blocs[0], 'ev.personaEnd', { name: c.name, by: c.ideo }, 'media');
+    }
+    this.randPersonas = this.randPersonas.filter(p => { if (year >= p.until) { this.emit(p.bloc, 'ev.personaEnd', { name: p.name, by: p.ideo }, 'media'); return false; } return true; });
+    for (const id of H.BLOCS) {
+      const b = this.blocs[id], k = this.cs('celebs', b);
+      if (!k || b.regime === 'collapse' || this.randPersonas.some(p => p.bloc === id) || r() > 0.05 * k * (1 - 0.7 * b.rep)) continue;   // цензура придушує незалежні голоси
+      // голосніше звучать ті, хто мобілізує гнів (популісти) або надію
+      const w = IDEOS.map(i => [i, b.C.ideo[i] * (['nat', 'soc', 'rel', 'tech'].includes(i) ? 1 + 2 * b.C.emo.anger : 1 + b.C.emo.hope) * (this.avail(i) > 0.5 ? 1 : 0)]);
+      let x = r() * w.reduce((s, v) => s + v[1], 0), ideo = 'nat';
+      for (const [i, v] of w) { x -= v; if (x <= 0) { ideo = i; break; } }
+      const name = H.randomName ? H.randomName(id, r) : ['', ''];
+      const p = { bloc: id, ideo, str: (0.3 + 0.6 * r()) * (1 - 0.5 * b.rep), until: year + 4 + Math.floor(r() * 10), name };
+      this.randPersonas.push(p);
+      this.emit(id, 'ev.persona', { name, by: ideo }, 'media');
+    }
+  };
   P.power = function (b) {
     return Math.pow(b.pop, 0.55) * Math.pow(b.y, 0.8) * (0.3 + b.cap) * (b.regime === 'collapse' ? 0.3 : 1) * (b.war ? 1.4 : 1);
   };
@@ -116,6 +163,7 @@
     this.front = H.frontier(year, this.scen);
     for (const id of H.BLOCS) { const b = this.blocs[id]; b.shockG = 0; b.famine = 0; b.events = []; if (id === 'US' && year >= 1945) b.reserve = 0.5; }
     this.applyShocks();
+    this.mediaStep();
     if (this.mode === 'future' || !this.useShocks) this.randomShocks();
     const wRef = Math.max(...H.BLOCS.map(id => { const b = this.blocs[id]; return b.y * (1 - b.omega) / 0.55; }));
     this.frontY = Math.max(...H.BLOCS.map(id => this.blocs[id].y));
@@ -147,17 +195,21 @@
   };
   P.randomShocks = function () {
     const r = this.rnd, year = this.year;
-    if (r() < 0.012) { const sev = 0.004 + r() * 0.02; for (const id of H.BLOCS) { const b = this.blocs[id]; b.pop *= 1 - sev; b.shockG -= 0.03; b.debt += 0.06 * b.cap; } this.emit(null, 'ev.pandemicR', {}, 'shock'); }
+    if (r() < 0.012 * (1 + 4 * this.cs('pandemics'))) { const sev = 0.004 + r() * 0.02; for (const id of H.BLOCS) { const b = this.blocs[id]; b.pop *= 1 - sev; b.shockG -= 0.03; b.debt += 0.06 * b.cap; } this.emit(null, 'ev.pandemicR', {}, 'shock'); }
     const meanDebt = H.BLOCS.reduce((s, id) => s + this.blocs[id].debt, 0) / 6;
-    if (!this.crash && r() < 0.018 + 0.03 * clamp(meanDebt - 0.8)) { this.crash = { sev: 0.05 + r() * 0.15, len: 2, t: 1 }; this.emit(null, 'ev.crashR', {}, 'shock'); }
+    const mk = this.cs('market');
+    if (!this.crash && r() < 0.018 + 0.03 * clamp(meanDebt - 0.8) + 0.035 * mk) { this.crash = { sev: (0.05 + r() * 0.15) * (1 + 0.8 * mk), len: 2, t: 1 }; this.emit(null, 'ev.crashR', {}, 'shock'); }
     if (year > 2025) {
-      this.climate = clamp(this.scen.climate * (year - 2025) / 60, 0, 1.2);
+      const ws = this.conds.filter(c => c.id === 'warming' && c.on !== false);
+      const cut = 1 - 0.4 * this.cs('energy');   // дешева чиста енергія сповільнює подальше потепління
+      if (ws.length || this.condMode) this.climate = clamp(ws.reduce((s, c) => s + c.str * Math.max(0, year - (c.from || 2025)), 0) / 60 * cut, 0, 1.2);
+      else this.climate = clamp(this.scen.climate * (year - 2025) / 60, 0, 1.2);
       if (r() < 0.02 + 0.08 * this.climate) {
         const id = H.BLOCS[Math.floor(r() * 6)], b = this.blocs[id];
         b.shockG -= 0.02 + 0.05 * this.climate * (id === 'GS' ? 1.5 : 1); b.famine = id === 'GS' ? 0.3 * this.climate : 0.1 * this.climate;
         this.emit(id, 'ev.climate', {}, 'shock');
         // кліматична міграція посилює націоналізм у багатих блоках
-        for (const o of ['US', 'EU']) this.blocs[o].C.ideo.nat += 0.01 * this.climate;
+        for (const o of ['US', 'EU']) this.blocs[o].C.ideo.nat += 0.01 * this.climate * (1 + this.cs('migration'));
       }
     }
   };
@@ -187,7 +239,8 @@
       const c = this.crash, depth = c.t <= c.len ? c.sev * c.t / c.len : c.sev * Math.max(0, 1 - (c.t - c.len) / 6);
       lnPot -= depth * (MARKET.has(b.order) ? (b.id === 'GS' ? 0.7 : 1) : b.order === 'statecap' ? 0.5 : b.order === 'planned' ? 0 : 0.6);
     }
-    let g = (lnPot - Math.log(b.y)) * 0.06 + b.shockG;
+    const kAds = this.cs('ads', b), kMk = this.cs('market', b), kUbi = this.cs('ubi', b), kUn = this.cs('unions', b), kOpen = this.cs('openai');
+    let g = (lnPot - Math.log(b.y)) * 0.06 + b.shockG + 0.002 * kAds + (MARKET.has(b.order) ? 0.003 * kMk : 0);
     if (this.oil > 0 && MARKET.has(b.order) && (b.id === 'US' || b.id === 'EU')) { g -= 0.012; b.defBias += 0.003; }
     if (b.war) g -= 0.03 * (b.war.intensity || 1);
     g = clamp(g, -0.3, 0.12);
@@ -203,31 +256,32 @@
 
     // платформна рента і сила власників платформ
     const antitrust = b.regime === 'oneparty' ? 0.75 : b.regime === 'technocorp' ? 0 : 0.12 + 0.35 * b.inc * (['socdem', 'green', 'coop'].includes(b.gov) ? 1 : 0.4) + (b.id === 'EU' && year > 2015 ? 0.2 : 0) + 0.25 * (this.scen.policy - 0.5);
-    b.platRent = b.D * this.scen.conc * clamp(1 - antitrust) * (0.4 + 0.6 * b.AI + 0.4 * b.D);
+    b.platRent = b.D * this.scen.conc * clamp(1 - antitrust) * (0.4 + 0.6 * b.AI + 0.4 * b.D) * (1 + 0.8 * kAds) * (1 - 0.6 * kOpen);   // реклама годує платформи, відкритий ШІ підриває монополії
     const grip = { oneparty: 0.85, autocracy: 0.6, junta: 0.6, theocracy: 0.6 }[b.regime] || 0;
     b.platPow += (b.platRent * b.digSov * (1 - grip) * (b.techAlly ? 1.4 : 1) - b.platPow) * 0.08;
-    b.autoPress = b.AI * clamp(1 - O.welfare * 3);
-    const target = O.omega + 0.25 * b.platRent * b.digSov + 0.12 * b.autoPress - 0.1 * b.C.org * b.inc - (b.regime === 'council' ? 0.05 : 0);
+    b.autoPress = b.AI * clamp(1 - O.welfare * 3) * (1 - 0.6 * Math.min(1, kUbi));
+    const target = O.omega + 0.25 * b.platRent * b.digSov + 0.12 * b.autoPress - 0.1 * b.C.org * b.inc - (b.regime === 'council' ? 0.05 : 0) + 0.08 * kMk - 0.05 * kUbi - 0.06 * kUn;
     b.omega = clamp(b.omega + (target - b.omega) * 0.06, 0.18, 0.75);
 
     // добробут більшості і очікування
-    const w = b.y * (1 - b.omega) / 0.55;
+    const w = b.y * (1 - b.omega) / 0.55 * (1 + 0.15 * kUbi);   // базовий дохід піднімає «підлогу»
     const ex = 0.1 + 0.5 * b.D + 0.15 * b.urban + 0.15 * b.edu;     // наскільки люди бачать, як живуть деінде
     // неприйняття втрат: до кращого звикають швидко, з гіршим миряться повільно
     const adapt = w > b.expect ? 0.1 : 0.035;
     const ref = w * Math.pow(Math.max(1, wRef / w), 0.3);           // «досяжне» порівняння з багатшими
     b.expect += adapt * (w * 1.01 - b.expect) + 0.008 * ex * (ref - b.expect);
+    if (kAds) b.expect += 0.012 * kAds * (w * 1.2 - b.expect);   // реклама роздуває бажання понад досяжне
     b.w = w; b.matRatio = w / b.expect;
 
     // надлишок претендентів у еліту
-    const eoT = clamp(0.1 + 1.4 * (b.omega - 0.35) + 0.25 * b.edu + 0.2 * b.D + 6 * (0.025 - b.gAvg));
+    const eoT = clamp(0.1 + 1.4 * (b.omega - 0.35) + 0.25 * b.edu + 0.2 * b.D + 6 * (0.025 - b.gAvg) + 0.12 * kMk);   // біржові статки множать претендентів
     b.eo += (eoT - b.eo) * 0.07;
 
     // держфінанси
     const war = b.war ? 0.1 * (b.war.intensity || 1) : 0;
     const interest = b.order === 'planned' ? 0 : 0.025 * b.debt;
     const polBias = (['democracy', 'hybrid', 'oligarchy'].includes(b.regime) ? 0.015 : 0.005) + (this.year > 2025 ? (H.AGING[b.id] || 0) * 0.04 * Math.min(1, (this.year - 2025) / 40) : 0);   // виборчий цикл і пенсії тягнуть до дефіцитів
-    b.def = b.defBias + polBias + interest - O.tax * (b.cap - 0.6) * 0.1 + war + (b.cool > 3 ? 0.02 : 0) + O.welfare * 0.04 * b.AI;
+    b.def = b.defBias + polBias + interest - O.tax * (b.cap - 0.6) * 0.1 + war + (b.cool > 3 ? 0.02 : 0) + O.welfare * 0.04 * b.AI + 0.03 * kUbi + 0.012 * this.climate * (b.id === 'GS' ? 1.5 : 1);   // витрати на адаптацію й відбудову
     const infl = this.oil > 0 ? 0.06 : b.order === 'planned' ? 0 : 0.02;   // інфляція «з'їдає» борг
     b.debt = clamp(b.debt + b.def - (g + infl) * b.debt, 0, 4);
     b.defBias *= b.war ? 0.995 : 0.97;
@@ -243,7 +297,11 @@
     if (b.sov < 0.5) v -= 0.15;                                                   // вилучення колонією / імперією
     v -= 0.35 * this.climate * (b.id === 'GS' ? 1.4 : b.id === 'RU' || b.id === 'UA' ? 0.6 : 1);
     // старіння населення після 2025: менше працівників, більше пенсіонерів
-    if (this.year > 2025) v -= (H.AGING[b.id] || 0) * Math.min(1, (this.year - 2025) / 50);
+    const kMig = this.cs('migration'), recv = b.id === 'US' || b.id === 'EU';
+    if (this.year > 2025) v -= (H.AGING[b.id] || 0) * Math.min(1, (this.year - 2025) / 50) * (recv ? 1 - 0.5 * kMig : 1);
+    if (kMig) v += recv ? 0.04 * kMig : b.id === 'GS' ? -0.03 * kMig : 0;   // працівники приїжджають / «відтік мізків»
+    const kEn = this.cs('energy');
+    if (kEn) v += 0.12 * kEn * (b.id === 'RU' ? -0.9 : 1);                     // петродержава втрачає ренту
     return v;
   };
 
@@ -279,9 +337,12 @@
       + (b.order === 'agrarian' ? 0.15 * (1 - b.urban) : 0)                 // земельний голод селян
       + 0.4 * b.warDefeat + (b.war ? 0.25 * clamp(b.war.exh[b.id] || 0) * (b.war.sides[1].includes(b.id) ? 0.3 : 1) : 0);   // гнів захисників спрямований на агресора, а не на власну владу
     const altAppeal = this.altAppeal(b);
-    sm(C.emo, 'anger', (1 - C.needs.mat) * 0.7 + (1 - C.needs.status) * 0.25 + (1 - C.needs.voice) * 0.18 * (0.3 + b.edu) + injustice);
+    const kAdsS = this.cs('ads', b), kUnS = this.cs('unions', b), pers = this.personas(b);
+    let pAnger = 0, pHope = 0, pMob = 0;
+    for (const p of pers) { if (['nat', 'soc', 'rel', 'tech', 'trad'].includes(p.ideo)) pAnger += 0.1 * p.str; else pHope += 0.1 * p.str; pMob += 0.12 * p.str; }
+    sm(C.emo, 'anger', (1 - C.needs.mat) * 0.7 + (1 - C.needs.status) * 0.25 + (1 - C.needs.voice) * 0.18 * (0.3 + b.edu) + injustice + pAnger);
     sm(C.emo, 'fear', (1 - C.needs.sec) * 0.9 + b.rep * 0.25 + b.autoPress * 0.25);
-    sm(C.emo, 'hope', 0.35 + b.gAvg * 10 + altAppeal * 0.25 - (1 - C.needs.mat) * 0.3 + (b.sov < 0.5 ? -0.1 : 0));
+    sm(C.emo, 'hope', 0.35 + pHope + b.gAvg * 10 + altAppeal * 0.25 - (1 - C.needs.mat) * 0.3 + (b.sov < 0.5 ? -0.1 : 0));
     sm(C.emo, 'trust', b.legit);
     sm(C.emo, 'pride', b.coh * 0.5 + b.pride * 0.5 - b.humil * 0.5);
     sm(A.emo, 'anger', (1 - A.needs.status) * 0.8 + (1 - A.needs.voice) * 0.25 + injustice * 0.6);
@@ -296,7 +357,7 @@
     sm(E.emo, 'pride', b.pride);
 
     // організація
-    const orgT = clamp(0.1 + 0.5 * C.emo.anger + 0.35 * b.urban + 0.15 * b.D * (1 - surv) + 0.15 * b.inc + 0.1 * b.edu - 0.25 * C.emo.fear - O.atom - 0.3 * surv);
+    const orgT = clamp(0.1 + 0.5 * C.emo.anger + 0.35 * b.urban + 0.15 * b.D * (1 - surv) + 0.15 * b.inc + 0.1 * b.edu - 0.25 * C.emo.fear - O.atom - 0.3 * surv - 0.12 * kAdsS + 0.2 * kUnS + pMob);
     C.org += (orgT - C.org) * 0.07 + (b.strain || 0) * 0.04;   // фронт організовує солдатів
     const aOrgT = clamp(0.15 + 0.8 * b.eo * A.emo.anger + 0.2 * b.edu + 0.15 * b.D - 0.25 * surv);
     A.org += (aOrgT - A.org) * 0.08;
@@ -306,7 +367,7 @@
 
     // згуртованість (асабія) і згуртованість еліт
     const threat = b.war ? 0.6 : Math.max(...H.BLOCS.filter(o => o !== b.id).map(o => this.getTension(b.id, o))) * 0.4;
-    b.coh = clamp(b.coh + 0.03 * (0.15 + threat * 0.5 + b.pride * 0.2 - (b.omega - 0.3) * 0.8 - b.D * 0.12 - b.coh * 0.5));
+    b.coh = clamp(b.coh + 0.03 * (0.15 + threat * 0.5 + b.pride * 0.2 - (b.omega - 0.3) * 0.8 - b.D * 0.12 - b.coh * 0.5 - 0.12 * kAdsS - ((b.id === 'US' || b.id === 'EU') ? 0.08 * this.cs('migration') : 0)));
     const eCohT = clamp(0.62 + 0.25 * threat - 0.6 * b.eo - 0.15 * b.D * (1 - surv) - 0.25 * clamp(b.stagn / 15) + (E.emo.fear > 0.6 ? 0.1 : 0));
     b.eCoh += (eCohT - b.eCoh) * 0.06;
 
@@ -333,7 +394,10 @@
     const exposure = 0.05 + 0.45 * b.D + 0.15 * b.urban + 0.1 * b.edu;
     const socAppeal = H.BLOCS.some(id => this.blocs[id].gov === 'soc' && this.blocs[id].gAvg > 0.03) ? 0.6 : 0.2;
     const warThreat = b.war ? 0.6 : 0;
-    const media = 1 + b.D * 0.6;   // соцмережі прискорюють поляризацію гніву й страху
+    const kAds = this.cs('ads', b), kUn = this.cs('unions', b), kMig = this.cs('migration'), recv = b.id === 'US' || b.id === 'EU';
+    const media = (1 + b.D * 0.6) * (1 + 0.8 * kAds);   // соцмережі й рекламні стрічки прискорюють поляризацію гніву й страху
+    const pers = this.personas(b);
+    const boost = (d, f) => { for (const p of pers) d[p.ideo] = (d[p.ideo] || 0) + f * p.str * this.avail(p.ideo); };
     const apply = (grp, d, rate) => {
       // дифузія: «успішні моделі» інших блоків притягують
       for (const id of H.BLOCS) {
@@ -362,9 +426,15 @@
       lib: (C.emo.trust * C.emo.hope * 0.7 + b.inc * 0.15) * 0.5,
       neolib: av('neolib') * 0.12 * C.emo.trust,
       tech: av('tech') * b.D * C.emo.hope * 0.18,
-      green: av('green') * (this.climate * 0.6 + b.edu * 0.1),
+      green: av('green') * (this.climate * 0.3 + b.edu * 0.1),
+      // кліматичні лиха лякають: частина людей шукає захисту в «своїх кордонах»
+      climFear: 0,
       coop: av('coop') * C.emo.anger * C.emo.hope * b.D * 0.15,
     };
+    delete dC.climFear; dC.nat += this.climate * 0.25 * C.emo.fear;
+    dC.tech += 0.05 * kAds * av('tech'); dC.socdem += 0.2 * kUn; dC.coop += 0.05 * kUn * av('coop');
+    if (recv && kMig) dC.nat += kMig * (0.05 + 0.15 * C.emo.fear);
+    boost(dC, 0.35);
     apply(C, dC, 0.5);
     const revFear = C.emo.anger * C.org;
     const dA = {
@@ -373,11 +443,12 @@
       lib: A.emo.hope * 0.4 + b.inc * 0.1,
       socdem: A.emo.anger * b.inc * 0.3,
       tech: av('tech') * b.D * 0.4,
-      green: av('green') * (0.15 * b.edu + this.climate * 0.6),
+      green: av('green') * (0.15 * b.edu + this.climate * 0.35),
       coop: av('coop') * A.emo.anger * b.D * 0.3,
       neolib: av('neolib') * 0.1,
       rel: A.emo.fear * (1 - b.edu) * 0.2,
     };
+    boost(dA, 0.25);
     apply(A, dA, 0.5);
     const dE = {
       nat: revFear * 0.9 + b.humil * 0.3 + warThreat * 0.2,
@@ -416,7 +487,9 @@
     }
     b.strain = b.war ? clamp((b.war.exh[b.id] || 0) - 0.3) : 0;     // виснаження війною
     const tgt = 0.15 + 0.4 * perf + 0.3 * clamp(proc) + 0.15 * b.coh + 0.1 * b.pride - 0.2 * b.humil - (b.sov < 0.5 ? 0.25 : 0) - 0.35 * b.warDefeat - 0.35 * b.strain;
-    b.legit += (clamp(tgt) - b.legit) * 0.12;
+    let pl = 0;
+    for (const p of this.personas(b)) pl += p.ideo === b.gov ? 0.05 * p.str : -0.08 * p.str;
+    b.legit += (clamp(tgt + pl) - b.legit) * 0.12;
 
     if (b.sov < 0.5 || b.regime === 'collapse') return;   // підпорядковані й розпалі блоки не обирають курс
 
@@ -522,6 +595,7 @@
       votes[incumbent] *= (b.regime === 'hybrid' ? 1.5 : 0.75) + 0.6 * perf;
     }
     if (b.regime === 'technocorp') votes.tech = (votes.tech || 0) + 0.4;
+    for (const p of this.personas(b)) { const k = party(p.ideo); votes[k] = (votes[k] || 0) + 0.12 * p.str * wC; }
     let tot = 0; const keys = Object.keys(votes);
     for (const k of keys) { votes[k] = Math.pow(votes[k], 3); tot += votes[k]; }
     let x = r() * tot, win = keys[0];

@@ -16,17 +16,19 @@
 
   const S = {
     view: 'live', mode: 'history', sim: null, people: null, playing: true, speed: 3, sel: 'UA', filter: 'all', chronSig: '',
-    scen: { ai: 0.5, conc: 0.55, policy: 0.5, climate: 0.4, tension: 0.5 }, fut: null, futBusy: 0, futView: 'chart', bt: null, btBusy: false,
+    scen: { ai: 0.5, conc: 0.55, policy: 0.5, climate: 0.4, tension: 0.5 }, conds: [], futSig: '', fut: null, futBusy: 0, futView: 'chart', bt: null, btBusy: false,
     spark: {},
   };
   const SPEEDS = [1, 3, 8, 20];
-  const KNOBS = ['ai', 'conc', 'policy', 'climate', 'tension'];
+  const KNOBS = ['ai', 'conc', 'policy', 'tension'];
+  const W = (str, extra) => [{ id: 'warming', str }].concat(extra || []);
   const PRESETS = {
-    base: { ai: 0.5, conc: 0.55, policy: 0.5, climate: 0.4, tension: 0.5 },
-    tf: { ai: 0.8, conc: 0.85, policy: 0.2, climate: 0.4, tension: 0.5 },
-    reg: { ai: 0.5, conc: 0.4, policy: 0.85, climate: 0.4, tension: 0.4 },
-    storm: { ai: 0.5, conc: 0.55, policy: 0.5, climate: 0.85, tension: 0.85 },
+    base: { scen: { ai: 0.5, conc: 0.55, policy: 0.5, tension: 0.5 }, conds: W(0.4) },
+    tf: { scen: { ai: 0.8, conc: 0.85, policy: 0.2, tension: 0.5 }, conds: W(0.4, [{ id: 'ads', str: 0.7 }, { id: 'market', str: 0.6 }]) },
+    reg: { scen: { ai: 0.5, conc: 0.4, policy: 0.85, tension: 0.4 }, conds: W(0.4, [{ id: 'openai', str: 0.6 }, { id: 'unions', str: 0.4 }]) },
+    storm: { scen: { ai: 0.5, conc: 0.55, policy: 0.5, tension: 0.85 }, conds: W(0.85, [{ id: 'migration', str: 0.6 }, { id: 'pandemics', str: 0.5 }]) },
   };
+
 
   /* ---------- підказка ---------- */
   const tip = $('tip');
@@ -58,7 +60,8 @@
 
   /* ==================== ЖИВА СИМУЛЯЦІЯ ==================== */
   function newSim() {
-    S.sim = new H.Sim({ mode: S.mode });
+    S.sim = new H.Sim(S.mode === 'future' ? { mode: 'future', scen: S.scen, conds: S.conds } : { mode: S.mode });
+    if (S.mode === 'future') S.sim.scen = S.scen;   // зміни повзунків діють одразу
     S.people = new H.People(S.sim);
     S.chronSig = '';
     buildTimeline();
@@ -156,17 +159,19 @@
     const isBloc = v => H.BLOCS.includes(v) || v === 'JP';
     for (const k of ['a', 'b', 'win', 'lose']) if (p[k]) q[k] = bn(p[k]);
     if (p.by) q.by = isBloc(p.by) ? bn(p.by) : t('ideo.' + p.by);
+    if ('name' in p) q.name = personaName(p.name);
     if (p.from && !e.key.startsWith('tr.')) {
       const pre = e.key === 'ev.order' ? 'ord.' : 'ideo.';
       q.from = t(pre + p.from); q.to = t(pre + p.to);
     }
     return t(e.key, q);
   }
+  function personaName(n) { const s = Array.isArray(n) ? n[H.lang === 'de' ? 1 : 0] : n; return s ? '«' + s + '»' : t('persona.anon'); }
   function causesText(p) {
     if (!p || !p.causes || !p.causes.length) return '';
     return t('live.why') + ': ' + p.causes.map(([c, v]) => `${t('c.' + c)} (${v})`).join(', ');
   }
-  const FILT = { all: () => true, transition: e => e.kind === 'transition', war: e => e.kind === 'war', shock: e => e.kind === 'shock', politics: e => ['election', 'order', 'crisis'].includes(e.kind) };
+  const FILT = { all: () => true, transition: e => e.kind === 'transition', war: e => e.kind === 'war', shock: e => e.kind === 'shock', politics: e => ['election', 'order', 'crisis', 'media'].includes(e.kind) };
   function updateChron() {
     const log = S.sim.log, sig = log.length + '|' + S.filter + '|' + H.lang + '|' + S.sim.seed;
     if (sig === S.chronSig) return;
@@ -210,6 +215,7 @@
   function diaryText(d, lang) {
     const p = Object.assign({ job: t('job.' + (d.p.era || 'ind')) }, d.p);
     if (d.key === 'd.inherit' && d.p.parent) p.parent = d.p.parent[lang === 'de' ? 1 : 0];
+    if ('name' in d.p) p.name = personaName(d.p.name);
     return t(d.key, p);
   }
   function updateSelected() {
@@ -234,6 +240,10 @@
       return `<div><h4>${esc(t('g.' + g))}</h4><div class="bars">${top.map(([k, v]) => `<span class="lab"><span>${esc(t('ideo.' + k))}</span><span class="v">${pct(v / sum)}%</span></span><span class="meter"><i style="width:${pct(v / sum)}%"></i></span>`).join('')}</div></div>`;
     }).join('')}</div></div>`;
     // люди
+    if (S.mode === 'future') {
+      const ps = S.sim.personas(b);
+      h += `<div class="sec"><h3>${esc(t('sel.media'))}</h3>${ps.length ? `<ul class="plist">${ps.map(p => `<li><b>${esc(personaName(p.name))}</b> — ${esc(t('ideo.' + p.ideo))} · ${esc(t('sel.mediaReach', { n: pct(p.str) }))}${p.user ? ` · <span class="muted">${esc(t('sel.mediaUser'))}</span>` : ''}</li>`).join('')}</ul>` : `<p class="muted small">${esc(t('sel.mediaNone'))}</p>`}</div>`;
+    }
     h += `<div class="sec"><h3>${esc(t('sel.people'))}</h3><div class="people">${S.people.ofBloc(id).map(p => {
       const age = year - p.born;
       const role = t('role.' + p.role, { f: p.female });
@@ -284,7 +294,7 @@
   });
   document.querySelectorAll('.mode').forEach(b => b.addEventListener('click', () => {
     if (S.mode === b.dataset.mode) return;
-    S.mode = b.dataset.mode; store.set('mode', S.mode); newSim(); S.playing = true; renderLive();
+    S.mode = b.dataset.mode; store.set('mode', S.mode); newSim(); S.playing = true; placeScenario(); renderLive();
   }));
 
   let acc = 0, last = 0;
@@ -303,26 +313,118 @@
   }
 
   /* ==================== МОЖЛИВІ МАЙБУТНІ ==================== */
+  /* ---------- сценарій: базові припущення й додаткові умови ---------- */
+  const defConds = () => [{ id: 'warming', str: 0.4, from: 2025, on: true, blocs: [] }];
+  function condFrom(def) {
+    const live = S.view === 'live' && S.mode === 'future' && S.sim;
+    const y = live ? Math.max(2025, S.sim.year + 1) : 2025;
+    return Math.max(y, def.from || 2025);
+  }
+  function makeCond(id) {
+    const d = H.CONDS.find(c => c.id === id);
+    const c = { id, str: d.str, from: condFrom(d), on: true, blocs: [] };
+    if (d.scope === 'one') Object.assign(c, { blocs: [S.sel || d.bloc], ideo: d.ideo, len: d.len, name: '' });
+    return c;
+  }
+  function saveScen() { store.set('scen', JSON.stringify({ scen: S.scen, conds: S.conds })); markStale(); }
+  function markStale() {
+    const stale = S.fut && S.futSig !== scenSig();
+    $('futStale').hidden = !stale;
+  }
+  const scenSig = () => JSON.stringify([S.scen, S.conds]);
   function buildSliders() {
     $('presets').innerHTML = Object.keys(PRESETS).map(k => `<button class="chip" data-p="${k}">${esc(t('pr.' + k))}</button>`).join('');
     $('sliders').innerHTML = KNOBS.map(k => `<div class="slider"><label for="k-${k}"><span>${esc(t('k.' + k))}</span><output id="o-${k}">${pct(S.scen[k])}</output></label>
       <input type="range" id="k-${k}" data-k="${k}" min="0" max="100" step="5" value="${pct(S.scen[k])}">
       <div class="ends"><span>${esc(t('k.' + k + '.lo'))}</span><span>${esc(t('k.' + k + '.hi'))}</span></div></div>`).join('');
+    buildConds();
     markPreset();
     $('futToggle').textContent = S.futView === 'chart' ? t('table.view') : t('chart.view');
   }
+  function buildConds() {
+    const used = new Set(S.conds.map(c => c.id));
+    $('addCond').innerHTML = `<option value="">${esc(t('sc.add'))}</option>` + H.CONDS.filter(d => d.multi || !used.has(d.id)).map(d => `<option value="${d.id}">${esc(t('cond.' + d.id))}</option>`).join('');
+    if (!S.conds.length) { $('conds').innerHTML = `<p class="muted small">${esc(t('sc.none'))}</p>`; return; }
+    $('conds').innerHTML = S.conds.map((c, i) => {
+      const d = H.CONDS.find(x => x.id === c.id); if (!d) return '';
+      let h = `<div class="cond${c.on === false ? ' off' : ''}" data-i="${i}">
+        <div class="ch"><label class="sw"><input type="checkbox" data-f="on"${c.on === false ? '' : ' checked'} aria-label="${esc(t('sc.on'))}"><b>${esc(t('cond.' + c.id))}</b></label>
+        <button class="x" data-act="del" aria-label="${esc(t('sc.del'))}" title="${esc(t('sc.del'))}">✕</button></div>
+        <p class="cd">${esc(t('cond.' + c.id + '.d'))}</p>`;
+      if (d.scope === 'one') {
+        h += `<div class="cgrid">
+          <label>${esc(t('sc.name'))}<input type="text" data-f="name" maxlength="40" value="${esc(c.name || '')}" placeholder="${esc(t('sc.namePh'))}"></label>
+          <label>${esc(t('sc.bloc'))}<select data-f="bloc">${H.BLOCS.map(id => `<option value="${id}"${c.blocs[0] === id ? ' selected' : ''}>${esc(bn(id))}</option>`).join('')}</select></label>
+          <label class="wide">${esc(t('sc.ideo'))}<select data-f="ideo">${H.IDEOS.map(k => `<option value="${k}"${c.ideo === k ? ' selected' : ''}>${esc(t('ideo.' + k))}</option>`).join('')}</select></label>
+        </div>`;
+      }
+      h += `<div class="slider small"><label><span>${esc(t(d.scope === 'one' ? 'sc.reach' : 'sc.str'))}</span><output>${pct(c.str)}</output></label>
+        <input type="range" data-f="str" min="5" max="100" step="5" value="${pct(c.str)}"></div>
+        <div class="cgrid">
+          <label>${esc(t('sc.from'))}<input type="number" data-f="from" min="2025" max="2099" step="1" value="${c.from}"></label>`;
+      if (d.scope === 'one') h += `<label>${esc(t('sc.len'))}<select data-f="len">${[4, 8, 12, 20, 40].map(n => `<option value="${n}"${c.len === n ? ' selected' : ''}>${esc(t('sc.years', { n }))}</option>`).join('')}</select></label>`;
+      h += `</div>`;
+      if (d.scope === 'blocs') {
+        const all = !c.blocs || !c.blocs.length;
+        h += `<div class="where"><span class="muted small">${esc(t('sc.where'))}:</span><div class="chips"><button class="chip${all ? ' on' : ''}" data-act="all">${esc(t('sc.everywhere'))}</button>${H.BLOCS.map(id => `<button class="chip${!all && c.blocs.includes(id) ? ' on' : ''}" data-act="bloc" data-b="${id}">${esc(bn(id))}</button>`).join('')}</div></div>`;
+      } else if (d.scope === 'global') h += `<p class="muted small">${esc(t('sc.global'))}</p>`;
+      return h + `</div>`;
+    }).join('');
+  }
   function markPreset() {
-    $('presets').querySelectorAll('.chip').forEach(c => { const p = PRESETS[c.dataset.p]; c.classList.toggle('on', KNOBS.every(k => Math.abs(p[k] - S.scen[k]) < 0.001)); });
+    const sig = JSON.stringify(S.conds.map(c => [c.id, c.str, c.from, c.on !== false, (c.blocs || []).join()]));
+    $('presets').querySelectorAll('.chip').forEach(c => {
+      const p = PRESETS[c.dataset.p];
+      const pc = JSON.stringify(p.conds.map(x => [x.id, x.str, x.from || 2025, true, (x.blocs || []).join()]));
+      c.classList.toggle('on', KNOBS.every(k => Math.abs(p.scen[k] - S.scen[k]) < 0.001) && pc === sig);
+    });
   }
   $('sliders').addEventListener('input', e => {
     const k = e.target.dataset.k; if (!k) return;
-    S.scen[k] = +e.target.value / 100; $('o-' + k).textContent = e.target.value; markPreset();
+    S.scen[k] = +e.target.value / 100; $('o-' + k).textContent = e.target.value; markPreset(); saveScen();
   });
   $('presets').addEventListener('click', e => {
     const c = e.target.closest('[data-p]'); if (!c) return;
-    Object.assign(S.scen, PRESETS[c.dataset.p]);
-    for (const k of KNOBS) { $('k-' + k).value = pct(S.scen[k]); $('o-' + k).textContent = pct(S.scen[k]); }
-    markPreset(); runFutures();
+    const p = PRESETS[c.dataset.p];
+    Object.assign(S.scen, p.scen);
+    S.conds.splice(0, S.conds.length, ...p.conds.map(x => Object.assign({ on: true, blocs: [], from: 2025 }, x)));
+    buildSliders(); saveScen();
+    if (S.view === 'futures') runFutures();
+  });
+  const condAt = el => { const box = el.closest('.cond'); return box ? S.conds[+box.dataset.i] : null; };
+  $('conds').addEventListener('input', e => {
+    const c = condAt(e.target), f = e.target.dataset.f; if (!c || !f) return;
+    if (f === 'str') { c.str = +e.target.value / 100; e.target.parentNode.querySelector('output').textContent = e.target.value; }
+    else if (f === 'name') c.name = e.target.value.trim();
+    else if (f === 'from') { const v = Math.round(+e.target.value); if (v >= 2025 && v <= 2099) c.from = v; }
+    else return;
+    markPreset(); saveScen();
+  });
+  $('conds').addEventListener('change', e => {
+    const c = condAt(e.target), f = e.target.dataset.f; if (!c || !f) return;
+    if (f === 'on') { c.on = e.target.checked; e.target.closest('.cond').classList.toggle('off', !c.on); }
+    else if (f === 'bloc') c.blocs = [e.target.value];
+    else if (f === 'ideo') c.ideo = e.target.value;
+    else if (f === 'len') c.len = +e.target.value;
+    else if (f === 'from') { e.target.value = c.from; }
+    markPreset(); saveScen();
+  });
+  $('conds').addEventListener('click', e => {
+    const btn = e.target.closest('[data-act]'); if (!btn) return;
+    const i = +btn.closest('.cond').dataset.i, c = S.conds[i];
+    if (btn.dataset.act === 'del') S.conds.splice(i, 1);
+    else if (btn.dataset.act === 'all') c.blocs = [];
+    else if (btn.dataset.act === 'bloc') {
+      const id = btn.dataset.b; c.blocs = c.blocs || [];
+      c.blocs = c.blocs.includes(id) ? c.blocs.filter(x => x !== id) : c.blocs.concat(id);
+      if (c.blocs.length === H.BLOCS.length) c.blocs = [];
+    }
+    buildConds(); markPreset(); saveScen();
+  });
+  $('addCond').addEventListener('change', e => {
+    const id = e.target.value; if (!id) return;
+    S.conds.push(makeCond(id)); buildConds(); markPreset(); saveScen();
+    const last = $('conds').lastElementChild; if (last && last.scrollIntoView) last.scrollIntoView({ block: 'nearest' });
   });
   $('goFut').addEventListener('click', () => runFutures());
   $('futToggle').addEventListener('click', () => {
@@ -333,8 +435,8 @@
 
   function runFutures() {
     const n = +$('nRuns').value, token = ++S.futBusy;
-    const res = H.newEnsemble({ mode: 'future', scen: Object.assign({}, S.scen), seed: 5 });
-    S.fut = res; let k = 0, lastDraw = 0;
+    const res = H.newEnsemble({ mode: 'future', scen: Object.assign({}, S.scen), conds: JSON.parse(JSON.stringify(S.conds)), seed: 5 });
+    S.fut = res; S.futSig = scenSig(); markStale(); let k = 0, lastDraw = 0;
     const prog = $('futProg'); prog.hidden = false; $('goFut').disabled = true;
     function chunk() {
       if (token !== S.futBusy) return;
@@ -444,12 +546,17 @@
   }
 
   /* ==================== НАВІГАЦІЯ ==================== */
+  function placeScenario() {
+    const slot = S.view === 'live' ? $('scenSlotLive') : $('scenSlotFut');
+    if ($('scenario').parentNode !== slot) slot.appendChild($('scenario'));
+    $('liveScen').hidden = S.mode !== 'future';
+  }
   function route() {
     const v = (location.hash || '#live').slice(1);
     S.view = ['live', 'futures', 'method'].includes(v) ? v : 'live';
     for (const x of ['live', 'futures', 'method']) $('view-' + x).hidden = x !== S.view;
     document.querySelectorAll('.navl').forEach(a => { a.classList.toggle('on', a.dataset.view === S.view); a.setAttribute('aria-current', a.dataset.view === S.view ? 'page' : 'false'); });
-    hideTip();
+    hideTip(); placeScenario();
     if (S.view === 'futures' && !S.fut) runFutures();
     if (S.view === 'method' && !S.bt) runBacktest();
   }
@@ -466,6 +573,11 @@
   const sm = store.get('mode'); if (sm === 'history' || sm === 'future') S.mode = sm;
   const ss = +store.get('speed'); if (SPEEDS.includes(ss)) S.speed = ss;
   const sb = store.get('sel'); if (H.BLOCS.includes(sb)) S.sel = sb;
+  try {
+    const sc = JSON.parse(store.get('scen') || 'null');
+    if (sc && sc.scen && Array.isArray(sc.conds)) { for (const k of KNOBS) if (typeof sc.scen[k] === 'number') S.scen[k] = sc.scen[k]; S.conds = sc.conds.filter(c => H.CONDS.some(d => d.id === c.id)); }
+    else S.conds = defConds();
+  } catch (e) { S.conds = defConds(); }
   applyStatic();
   newSim();
   route();

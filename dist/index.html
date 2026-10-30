@@ -232,6 +232,34 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 .ftable th:first-child, .ftable td:first-child { text-align: left; }
 .scroll { overflow-x: auto; }
 
+.sch { font-size: 13px; color: var(--ink-2); font-weight: 650; text-transform: uppercase; letter-spacing: .04em; margin: 14px 0 8px; }
+.cond { border: 1px solid var(--grid); border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; background: var(--surface); }
+.cond.off { opacity: .55; }
+.cond .ch { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.cond .sw { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; }
+.cond .sw input { accent-color: var(--ink); width: 16px; height: 16px; margin: 0; flex: none; }
+.cond .x { border: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: 14px; padding: 2px 4px; border-radius: 6px; }
+.cond .x:hover { background: var(--surface-2); color: var(--ink); }
+.cond .cd { font-size: 12.5px; color: var(--ink-2); margin: 4px 0 8px; line-height: 1.4; }
+.cond .slider { margin-bottom: 8px; }
+.cgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+.cgrid label { display: flex; flex-direction: column; gap: 3px; font-size: 12px; color: var(--ink-2); min-width: 0; }
+.cgrid .wide { grid-column: 1 / -1; }
+.cgrid input, .cgrid select, .addcond { border: 1px solid var(--ring); border-radius: 7px; padding: 5px 7px; background: var(--surface); font-size: 13.5px; color: var(--ink); width: 100%; min-width: 0; }
+.addcond { margin: 2px 0 12px; font-weight: 550; cursor: pointer; }
+.where { display: flex; flex-direction: column; gap: 4px; }
+.where .chip { font-size: 12px; padding: 2px 8px; }
+.stale { font-size: 13px; color: var(--warn); margin: 0 0 6px; }
+.scenlive { margin-bottom: 14px; }
+.scenlive summary { cursor: pointer; font-weight: 650; }
+.scenlive[open] summary { margin-bottom: 6px; }
+.scenlive #sliders { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0 24px; }
+.scenlive #conds { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 10px; align-items: start; margin-bottom: 10px; }
+.scenlive #conds .cond { margin-bottom: 0; }
+.scenlive .addcond { max-width: 360px; }
+.plist { list-style: none; margin: 0; padding: 0; font-size: 13px; }
+.plist li { padding: 3px 0; }
+
 /* ---------- метод ---------- */
 .prose { max-width: 860px; margin: 0 auto; background: var(--surface); border: 1px solid var(--ring); border-radius: var(--radius); padding: 24px 28px; }
 .prose h2 { font-size: 18px; margin: 26px 0 8px; }
@@ -317,6 +345,11 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
     </div>
     <p class="intro" data-i18n="live.intro"></p>
     <p class="endnote" id="endnote" hidden data-i18n="live.end"></p>
+    <details class="card scenlive" id="liveScen" hidden>
+      <summary data-i18n="sc.live"></summary>
+      <p class="muted small" data-i18n="sc.liveNote"></p>
+      <div id="scenSlotLive"></div>
+    </details>
 
     <div class="live">
       <div class="col-main">
@@ -351,9 +384,18 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
     <p class="intro" data-i18n="fu.intro"></p>
     <div class="futgrid">
       <section class="card knobs">
-        <h2 data-i18n="fu.knobs"></h2>
-        <div class="presets" id="presets"></div>
-        <div id="sliders"></div>
+        <h2 data-i18n="sc.title"></h2>
+        <div id="scenSlotFut">
+          <div id="scenario">
+            <div class="presets" id="presets"></div>
+            <h3 class="sch" data-i18n="sc.base"></h3>
+            <div id="sliders"></div>
+            <h3 class="sch" data-i18n="sc.conds"></h3>
+            <div id="conds"></div>
+            <select id="addCond" class="addcond"></select>
+          </div>
+        </div>
+        <p class="stale" id="futStale" hidden data-i18n="sc.stale"></p>
         <div class="runrow">
           <label for="nRuns" data-i18n="fu.runs"></label>
           <select id="nRuns"><option value="100">100</option><option value="200" selected>200</option><option value="400">400</option></select>
@@ -400,6 +442,8 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
         <p data-i18n-html="me.tf.con"></p>
       </div>
       <p data-i18n-html="me.tf.model"></p>
+      <h2 data-i18n="me.cond.h"></h2>
+      <p data-i18n="me.cond.p"></p>
       <h2 data-i18n="me.bt.h"></h2>
       <p data-i18n="me.bt.p"></p>
       <div id="backtest"></div>
@@ -685,6 +729,42 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
     'me.theory': 'Теоретичні опори: Пітер Турчин (структурно-демографічна теорія), Ібн Хальдун (згуртованість і її втрата), Дарон Аджемоглу та Джеймс Робінсон (інклюзивні й екстрактивні інституції), Макс Вебер (легітимність).',
     'src.0': 'Maddison Project Database 2023 (ВВП на особу)', 'src.2': 'World Inequality Database (частка верхніх 10%)', 'src.3': 'МВФ, Fiscal Monitor, квітень 2026 (держборг)',
     'src.4': 'П. Турчин, структурно-демографічна теорія', 'src.5': 'Я. Варуфакіс, «Technofeudalism» (огляд Г. Ловінка)', 'src.6': 'Є. Морозов, критика технофеодалізму (Jacobin)', 'src.7': 'С. Дюран відповідає Морозову (Verso)',
+    // умови сценарію
+    'sc.title': 'Сценарій', 'sc.base': 'Базові припущення', 'sc.conds': 'Додаткові умови', 'sc.add': '+ Додати умову…',
+    'sc.live': 'Сценарій і умови', 'sc.liveNote': 'Зміни діють із наступного року цього прогону. Ті самі умови використовуються на сторінці «Можливі майбутні».',
+    'sc.str': 'Сила', 'sc.reach': 'Охоплення', 'sc.from': 'З року', 'sc.len': 'Скільки років', 'sc.where': 'Де діє', 'sc.everywhere': 'Усюди', 'sc.global': 'Діє на весь світ',
+    'sc.name': 'Ім\'я', 'sc.namePh': 'наприклад, «Блогер X»', 'sc.ideo': 'Яку ідею просуває', 'sc.bloc': 'Де', 'sc.del': 'Прибрати умову', 'sc.on': 'Увімкнено',
+    'sc.none': 'Додаткових умов немає — світ розвивається лише за базовими припущеннями.', 'sc.years': '{n} р.',
+    'sc.stale': 'Умови змінено — порахуйте ще раз.',
+    'cond.warming': 'Глобальне потепління',
+    'cond.warming.d': 'Посухи, спека й повені б\'ють по врожаях і зростанню (найсильніше — по Глобальному Півдню), додають державі витрат, лякають людей і підсилюють і зелені, і націоналістичні ідеї.',
+    'cond.ads': 'Реклама й економіка уваги',
+    'cond.ads.d': 'Рекламні стрічки роздувають бажання понад досяжне (більше відносної бідності), годують платформи рентою, прискорюють поляризацію гніву й страху і розпорошують людей — їм важче самоорганізуватися.',
+    'cond.market': 'Вплив біржі (фінансіалізація)',
+    'cond.market.d': 'Трохи швидше зростання, але статки власників активів ростуть швидше за зарплати, з\'являється більше претендентів на еліту, а фінансові кризи стають частішими й глибшими — для всього світу.',
+    'cond.persona': 'Медійна персона',
+    'cond.persona.d': 'Впливова людина з великою аудиторією в одному блоці: поширює свою ідею серед людей і освічених, мобілізує гнів або надію, підтримує або підриває владу і додає голосів «своїй» партії.',
+    'cond.celebs': 'Харизматичні персони з\'являються самі',
+    'cond.celebs.d': 'Час від часу в обраних блоках виникають блогери, телеведучі чи лідери думок. Голосніше звучать ті, хто мобілізує гнів; кожен впливає кілька років.',
+    'cond.ubi': 'Безумовний базовий дохід',
+    'cond.ubi.d': 'Піднімає «підлогу» добробуту, пом\'якшує страх автоматизації й нерівність, але коштує державі грошей (дефіцит і борг).',
+    'cond.unions': 'Сильні профспілки й низова організація',
+    'cond.unions.d': 'Прості люди краще організовані: більше тиску на перерозподіл, менша частка верхніх 10%, більше соціал-демократичних і кооперативних ідей.',
+    'cond.migration': 'Масова міграція',
+    'cond.migration.d': 'Люди їдуть із Глобального Півдня до США та Європи: там менше гальмує старіння й більше працівників, але слабне згуртованість і росте націоналізм; Південь втрачає фахівців.',
+    'cond.energy': 'Дешева чиста енергія',
+    'cond.energy.d': 'Технологічний прорив в енергетиці: вищий добробут і повільніше потепління, але Росія як петродержава втрачає ренту.',
+    'cond.openai': 'Відкритий ШІ',
+    'cond.openai.d': 'Потужні моделі ШІ доступні всім відкрито: платформам важче тримати монополію і збирати ренту.',
+    'cond.pandemics': 'Частіші пандемії',
+    'cond.pandemics.d': 'Нові хвороби з\'являються вдвічі–вп\'ятеро частіше: втрати населення, спади й борги.',
+    'sel.media': 'Медійні персони', 'sel.mediaNone': 'Немає впливових медійних персон.', 'sel.mediaUser': 'задано вами', 'sel.mediaReach': 'охоплення {n}%',
+    'ev.persona': '{bloc}: впливовою стає медійна персона {name} — просуває «{by}».',
+    'ev.personaEnd': '{bloc}: вплив медійної персони {name} згасає.',
+    'd.ev.persona': 'Усі довкола обговорюють новий ефір: {name}. Сперечаємося навіть у родині.',
+    'persona.anon': 'без імені',
+    'me.cond.h': 'Умови сценарію',
+    'me.cond.p': 'На сторінці «Можливі майбутні» (і в режимі «Майбутнє» на сторінці симуляції) можна додавати умови: глобальне потепління, рекламу й економіку уваги, вплив біржі, медійних персон, базовий дохід, профспілки, міграцію, дешеву енергію, відкритий ШІ, пандемії. Кожна умова має силу, рік початку і (де це має сенс) блоки, де вона діє. Опис під назвою умови пояснює, на які механізми моделі вона впливає. Це припущення, а не виміряні ефекти: їхня сила підібрана так, щоб наслідки були помітні, але не вирішували все самі.',
     'table.view': 'Показати таблицею', 'chart.view': 'Показати графіком',
   };
 
@@ -938,6 +1018,41 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
     'me.theory': 'Theoretische Grundlagen: Peter Turchin (strukturell-demografische Theorie), Ibn Chaldun (Zusammenhalt und sein Verlust), Daron Acemoglu und James Robinson (inklusive und extraktive Institutionen), Max Weber (Legitimität).',
     'src.0': 'Maddison Project Database 2023 (BIP pro Kopf)', 'src.2': 'World Inequality Database (Anteil der oberen 10 %)', 'src.3': 'IWF, Fiscal Monitor, April 2026 (Staatsschulden)',
     'src.4': 'P. Turchin, strukturell-demografische Theorie', 'src.5': 'Y. Varoufakis, „Technofeudalism“ (Rezension von G. Lovink)', 'src.6': 'E. Morozov, Kritik am Technofeudalismus (Jacobin)', 'src.7': 'C. Durand antwortet Morozov (Verso)',
+    'sc.title': 'Szenario', 'sc.base': 'Grundannahmen', 'sc.conds': 'Zusätzliche Bedingungen', 'sc.add': '+ Bedingung hinzufügen…',
+    'sc.live': 'Szenario und Bedingungen', 'sc.liveNote': 'Änderungen wirken ab dem nächsten Jahr dieses Laufs. Dieselben Bedingungen gelten auch auf der Seite „Mögliche Zukünfte“.',
+    'sc.str': 'Stärke', 'sc.reach': 'Reichweite', 'sc.from': 'Ab Jahr', 'sc.len': 'Wie viele Jahre', 'sc.where': 'Wo sie wirkt', 'sc.everywhere': 'Überall', 'sc.global': 'Wirkt weltweit',
+    'sc.name': 'Name', 'sc.namePh': 'z. B. „Blogger X“', 'sc.ideo': 'Welche Idee sie vertritt', 'sc.bloc': 'Wo', 'sc.del': 'Bedingung entfernen', 'sc.on': 'Aktiv',
+    'sc.none': 'Keine zusätzlichen Bedingungen – die Welt entwickelt sich nur nach den Grundannahmen.', 'sc.years': '{n} J.',
+    'sc.stale': 'Bedingungen geändert – bitte neu berechnen.',
+    'cond.warming': 'Erderwärmung',
+    'cond.warming.d': 'Dürren, Hitze und Fluten treffen Ernten und Wachstum (am stärksten den Globalen Süden), kosten den Staat Geld, machen Menschen Angst und stärken sowohl grüne als auch nationalistische Ideen.',
+    'cond.ads': 'Werbung und Aufmerksamkeitsökonomie',
+    'cond.ads.d': 'Werbe-Feeds blähen Wünsche über das Erreichbare hinaus auf (mehr relative Armut), füttern Plattformen mit Rente, beschleunigen die Polarisierung von Wut und Angst und vereinzeln die Menschen – Selbstorganisation fällt schwerer.',
+    'cond.market': 'Einfluss der Börse (Finanzialisierung)',
+    'cond.market.d': 'Etwas schnelleres Wachstum, aber Vermögen der Kapitalbesitzer wachsen schneller als Löhne, es gibt mehr Elitenanwärter, und Finanzkrisen werden häufiger und tiefer – weltweit.',
+    'cond.persona': 'Medienpersönlichkeit',
+    'cond.persona.d': 'Eine einflussreiche Person mit großem Publikum in einem Block: verbreitet ihre Idee unter einfachen Leuten und Gebildeten, mobilisiert Wut oder Hoffnung, stützt oder untergräbt die Regierung und bringt „ihrer“ Partei Stimmen.',
+    'cond.celebs': 'Charismatische Persönlichkeiten entstehen von selbst',
+    'cond.celebs.d': 'Ab und zu tauchen in den gewählten Blöcken Bloggerinnen, Moderatoren oder Meinungsführer auf. Lauter sind jene, die Wut mobilisieren; jede wirkt einige Jahre.',
+    'cond.ubi': 'Bedingungsloses Grundeinkommen',
+    'cond.ubi.d': 'Hebt den „Boden“ des Wohlstands, dämpft die Angst vor Automatisierung und die Ungleichheit, kostet den Staat aber Geld (Defizit und Schulden).',
+    'cond.unions': 'Starke Gewerkschaften und Basisorganisation',
+    'cond.unions.d': 'Einfache Leute sind besser organisiert: mehr Druck auf Umverteilung, kleinerer Anteil der oberen 10 %, mehr sozialdemokratische und genossenschaftliche Ideen.',
+    'cond.migration': 'Massenmigration',
+    'cond.migration.d': 'Menschen ziehen aus dem Globalen Süden in die USA und nach Europa: Dort bremst die Alterung weniger und es gibt mehr Arbeitskräfte, aber der Zusammenhalt sinkt und der Nationalismus wächst; der Süden verliert Fachkräfte.',
+    'cond.energy': 'Billige saubere Energie',
+    'cond.energy.d': 'Technologischer Durchbruch bei der Energie: mehr Wohlstand und langsamere Erwärmung, aber Russland verliert als Petrostaat seine Rente.',
+    'cond.openai': 'Offene KI',
+    'cond.openai.d': 'Leistungsfähige KI-Modelle sind für alle offen verfügbar: Plattformen können Monopole und Renten schwerer halten.',
+    'cond.pandemics': 'Häufigere Pandemien',
+    'cond.pandemics.d': 'Neue Krankheiten treten zwei- bis fünfmal so oft auf: Bevölkerungsverluste, Einbrüche und Schulden.',
+    'sel.media': 'Medienpersönlichkeiten', 'sel.mediaNone': 'Keine einflussreichen Medienpersönlichkeiten.', 'sel.mediaUser': 'von dir festgelegt', 'sel.mediaReach': 'Reichweite {n} %',
+    'ev.persona': '{bloc}: Die Medienpersönlichkeit {name} wird einflussreich – sie vertritt „{by}“.',
+    'ev.personaEnd': '{bloc}: Der Einfluss der Medienpersönlichkeit {name} schwindet.',
+    'd.ev.persona': 'Alle reden über die neue Sendung: {name}. Sogar in der Familie wird gestritten.',
+    'persona.anon': 'ohne Namen',
+    'me.cond.h': 'Szenario-Bedingungen',
+    'me.cond.p': 'Auf der Seite „Mögliche Zukünfte“ (und im Modus „Zukunft“ der Simulation) lassen sich Bedingungen hinzufügen: Erderwärmung, Werbung und Aufmerksamkeitsökonomie, Einfluss der Börse, Medienpersönlichkeiten, Grundeinkommen, Gewerkschaften, Migration, billige Energie, offene KI, Pandemien. Jede Bedingung hat eine Stärke, ein Startjahr und (wo sinnvoll) die Blöcke, in denen sie wirkt. Die Beschreibung unter dem Namen erklärt, auf welche Mechanismen des Modells sie wirkt. Das sind Annahmen, keine gemessenen Effekte: Ihre Stärke ist so gewählt, dass die Folgen sichtbar sind, aber nicht alles allein entscheiden.',
     'table.view': 'Als Tabelle zeigen', 'chart.view': 'Als Grafik zeigen',
   };
 
@@ -1181,6 +1296,23 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
     return { I, D, A };
   };
 
+  /* ---------- Умови сценарію (режим «майбутнє») ----------
+     scope: global — діє на весь світ; blocs — можна обрати блоки; one — один блок (медійна персона)
+     multi — можна додати кілька разів */
+  H.CONDS = [
+    { id: 'warming', scope: 'global', str: 0.4 },
+    { id: 'ads', scope: 'blocs', str: 0.6 },
+    { id: 'market', scope: 'blocs', str: 0.6 },
+    { id: 'persona', scope: 'one', multi: true, str: 0.7, len: 8, ideo: 'nat', bloc: 'US' },
+    { id: 'celebs', scope: 'blocs', str: 0.6 },
+    { id: 'ubi', scope: 'blocs', str: 0.6, from: 2035 },
+    { id: 'unions', scope: 'blocs', str: 0.6 },
+    { id: 'migration', scope: 'global', str: 0.5 },
+    { id: 'energy', scope: 'global', str: 0.6, from: 2040 },
+    { id: 'openai', scope: 'global', str: 0.6 },
+    { id: 'pandemics', scope: 'global', str: 0.5 },
+  ];
+
   /* ---------- Джерела ---------- */
   H.SOURCES = [
     ['Maddison Project Database 2023 (ВВП на особу)', 'https://www.rug.nl/ggdc/historicaldevelopment/maddison/'],
@@ -1276,6 +1408,12 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
     this.rnd = H.rng(this.seed);
     this.useShocks = opts.shocks !== false;
     this.scen = Object.assign({ ai: 0.5, conc: 0.55, climate: 0.4, tension: 0.5, policy: 0.5 }, opts.scen || {});
+    // додаткові умови сценарію (діють лише в режимі «майбутнє»); окремий генератор випадковості,
+    // щоб умови не змінювали решту перебігу, поки не почнуть діяти
+    this.conds = opts.conds || [];
+    this.condMode = Array.isArray(opts.conds);   // з умовами: потепління задається лише умовою
+    this.crnd = H.rng((this.seed ^ 0x9e3779b9) >>> 0);
+    this.randPersonas = [];
     this.year = this.mode === 'history' ? 1900 : 2025;
     this.endYear = opts.endYear || (this.mode === 'history' ? 2025 : 2100);
     const start = this.mode === 'history' ? H.START_1900 : H.START_2025;
@@ -1329,6 +1467,47 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
     return e;
   };
   P.avail = function (id) { return H.ideoAvail(id, this.year); };
+  // сила умови для блоку b (або будь-де, якщо b не задано) у поточному році
+  P.cs = function (id, b) {
+    if (this.mode !== 'future') return 0;
+    let s = 0;
+    for (const c of this.conds) {
+      if (c.on === false || c.id !== id || this.year < (c.from || 2025)) continue;
+      if (c.len && this.year >= (c.from || 2025) + c.len) continue;
+      if (b && c.blocs && c.blocs.length && !c.blocs.includes(b.id)) continue;
+      s += c.str;
+    }
+    return Math.min(1.5, s);
+  };
+  // активні медійні персони в блоці: задані користувачем + ті, що з'явилися самі
+  P.personas = function (b) {
+    if (this.mode !== 'future') return [];
+    const out = [];
+    for (const c of this.conds) if (c.id === 'persona' && c.on !== false && c.blocs && c.blocs[0] === b.id && this.year >= c.from && this.year < c.from + (c.len || 8)) out.push({ name: c.name, ideo: c.ideo, str: c.str, user: true });
+    for (const p of this.randPersonas) if (p.bloc === b.id && this.year < p.until) out.push(p);
+    return out;
+  };
+  P.mediaStep = function () {
+    if (this.mode !== 'future') return;
+    const year = this.year, r = this.crnd;
+    for (const c of this.conds) if (c.id === 'persona' && c.on !== false && c.blocs && c.blocs[0]) {
+      if (year === c.from) this.emit(c.blocs[0], 'ev.persona', { name: c.name, by: c.ideo }, 'media');
+      if (year === c.from + (c.len || 8)) this.emit(c.blocs[0], 'ev.personaEnd', { name: c.name, by: c.ideo }, 'media');
+    }
+    this.randPersonas = this.randPersonas.filter(p => { if (year >= p.until) { this.emit(p.bloc, 'ev.personaEnd', { name: p.name, by: p.ideo }, 'media'); return false; } return true; });
+    for (const id of H.BLOCS) {
+      const b = this.blocs[id], k = this.cs('celebs', b);
+      if (!k || b.regime === 'collapse' || this.randPersonas.some(p => p.bloc === id) || r() > 0.05 * k * (1 - 0.7 * b.rep)) continue;   // цензура придушує незалежні голоси
+      // голосніше звучать ті, хто мобілізує гнів (популісти) або надію
+      const w = IDEOS.map(i => [i, b.C.ideo[i] * (['nat', 'soc', 'rel', 'tech'].includes(i) ? 1 + 2 * b.C.emo.anger : 1 + b.C.emo.hope) * (this.avail(i) > 0.5 ? 1 : 0)]);
+      let x = r() * w.reduce((s, v) => s + v[1], 0), ideo = 'nat';
+      for (const [i, v] of w) { x -= v; if (x <= 0) { ideo = i; break; } }
+      const name = H.randomName ? H.randomName(id, r) : ['', ''];
+      const p = { bloc: id, ideo, str: (0.3 + 0.6 * r()) * (1 - 0.5 * b.rep), until: year + 4 + Math.floor(r() * 10), name };
+      this.randPersonas.push(p);
+      this.emit(id, 'ev.persona', { name, by: ideo }, 'media');
+    }
+  };
   P.power = function (b) {
     return Math.pow(b.pop, 0.55) * Math.pow(b.y, 0.8) * (0.3 + b.cap) * (b.regime === 'collapse' ? 0.3 : 1) * (b.war ? 1.4 : 1);
   };
@@ -1340,6 +1519,7 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
     this.front = H.frontier(year, this.scen);
     for (const id of H.BLOCS) { const b = this.blocs[id]; b.shockG = 0; b.famine = 0; b.events = []; if (id === 'US' && year >= 1945) b.reserve = 0.5; }
     this.applyShocks();
+    this.mediaStep();
     if (this.mode === 'future' || !this.useShocks) this.randomShocks();
     const wRef = Math.max(...H.BLOCS.map(id => { const b = this.blocs[id]; return b.y * (1 - b.omega) / 0.55; }));
     this.frontY = Math.max(...H.BLOCS.map(id => this.blocs[id].y));
@@ -1371,17 +1551,21 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
   };
   P.randomShocks = function () {
     const r = this.rnd, year = this.year;
-    if (r() < 0.012) { const sev = 0.004 + r() * 0.02; for (const id of H.BLOCS) { const b = this.blocs[id]; b.pop *= 1 - sev; b.shockG -= 0.03; b.debt += 0.06 * b.cap; } this.emit(null, 'ev.pandemicR', {}, 'shock'); }
+    if (r() < 0.012 * (1 + 4 * this.cs('pandemics'))) { const sev = 0.004 + r() * 0.02; for (const id of H.BLOCS) { const b = this.blocs[id]; b.pop *= 1 - sev; b.shockG -= 0.03; b.debt += 0.06 * b.cap; } this.emit(null, 'ev.pandemicR', {}, 'shock'); }
     const meanDebt = H.BLOCS.reduce((s, id) => s + this.blocs[id].debt, 0) / 6;
-    if (!this.crash && r() < 0.018 + 0.03 * clamp(meanDebt - 0.8)) { this.crash = { sev: 0.05 + r() * 0.15, len: 2, t: 1 }; this.emit(null, 'ev.crashR', {}, 'shock'); }
+    const mk = this.cs('market');
+    if (!this.crash && r() < 0.018 + 0.03 * clamp(meanDebt - 0.8) + 0.035 * mk) { this.crash = { sev: (0.05 + r() * 0.15) * (1 + 0.8 * mk), len: 2, t: 1 }; this.emit(null, 'ev.crashR', {}, 'shock'); }
     if (year > 2025) {
-      this.climate = clamp(this.scen.climate * (year - 2025) / 60, 0, 1.2);
+      const ws = this.conds.filter(c => c.id === 'warming' && c.on !== false);
+      const cut = 1 - 0.4 * this.cs('energy');   // дешева чиста енергія сповільнює подальше потепління
+      if (ws.length || this.condMode) this.climate = clamp(ws.reduce((s, c) => s + c.str * Math.max(0, year - (c.from || 2025)), 0) / 60 * cut, 0, 1.2);
+      else this.climate = clamp(this.scen.climate * (year - 2025) / 60, 0, 1.2);
       if (r() < 0.02 + 0.08 * this.climate) {
         const id = H.BLOCS[Math.floor(r() * 6)], b = this.blocs[id];
         b.shockG -= 0.02 + 0.05 * this.climate * (id === 'GS' ? 1.5 : 1); b.famine = id === 'GS' ? 0.3 * this.climate : 0.1 * this.climate;
         this.emit(id, 'ev.climate', {}, 'shock');
         // кліматична міграція посилює націоналізм у багатих блоках
-        for (const o of ['US', 'EU']) this.blocs[o].C.ideo.nat += 0.01 * this.climate;
+        for (const o of ['US', 'EU']) this.blocs[o].C.ideo.nat += 0.01 * this.climate * (1 + this.cs('migration'));
       }
     }
   };
@@ -1411,7 +1595,8 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
       const c = this.crash, depth = c.t <= c.len ? c.sev * c.t / c.len : c.sev * Math.max(0, 1 - (c.t - c.len) / 6);
       lnPot -= depth * (MARKET.has(b.order) ? (b.id === 'GS' ? 0.7 : 1) : b.order === 'statecap' ? 0.5 : b.order === 'planned' ? 0 : 0.6);
     }
-    let g = (lnPot - Math.log(b.y)) * 0.06 + b.shockG;
+    const kAds = this.cs('ads', b), kMk = this.cs('market', b), kUbi = this.cs('ubi', b), kUn = this.cs('unions', b), kOpen = this.cs('openai');
+    let g = (lnPot - Math.log(b.y)) * 0.06 + b.shockG + 0.002 * kAds + (MARKET.has(b.order) ? 0.003 * kMk : 0);
     if (this.oil > 0 && MARKET.has(b.order) && (b.id === 'US' || b.id === 'EU')) { g -= 0.012; b.defBias += 0.003; }
     if (b.war) g -= 0.03 * (b.war.intensity || 1);
     g = clamp(g, -0.3, 0.12);
@@ -1427,31 +1612,32 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 
     // платформна рента і сила власників платформ
     const antitrust = b.regime === 'oneparty' ? 0.75 : b.regime === 'technocorp' ? 0 : 0.12 + 0.35 * b.inc * (['socdem', 'green', 'coop'].includes(b.gov) ? 1 : 0.4) + (b.id === 'EU' && year > 2015 ? 0.2 : 0) + 0.25 * (this.scen.policy - 0.5);
-    b.platRent = b.D * this.scen.conc * clamp(1 - antitrust) * (0.4 + 0.6 * b.AI + 0.4 * b.D);
+    b.platRent = b.D * this.scen.conc * clamp(1 - antitrust) * (0.4 + 0.6 * b.AI + 0.4 * b.D) * (1 + 0.8 * kAds) * (1 - 0.6 * kOpen);   // реклама годує платформи, відкритий ШІ підриває монополії
     const grip = { oneparty: 0.85, autocracy: 0.6, junta: 0.6, theocracy: 0.6 }[b.regime] || 0;
     b.platPow += (b.platRent * b.digSov * (1 - grip) * (b.techAlly ? 1.4 : 1) - b.platPow) * 0.08;
-    b.autoPress = b.AI * clamp(1 - O.welfare * 3);
-    const target = O.omega + 0.25 * b.platRent * b.digSov + 0.12 * b.autoPress - 0.1 * b.C.org * b.inc - (b.regime === 'council' ? 0.05 : 0);
+    b.autoPress = b.AI * clamp(1 - O.welfare * 3) * (1 - 0.6 * Math.min(1, kUbi));
+    const target = O.omega + 0.25 * b.platRent * b.digSov + 0.12 * b.autoPress - 0.1 * b.C.org * b.inc - (b.regime === 'council' ? 0.05 : 0) + 0.08 * kMk - 0.05 * kUbi - 0.06 * kUn;
     b.omega = clamp(b.omega + (target - b.omega) * 0.06, 0.18, 0.75);
 
     // добробут більшості і очікування
-    const w = b.y * (1 - b.omega) / 0.55;
+    const w = b.y * (1 - b.omega) / 0.55 * (1 + 0.15 * kUbi);   // базовий дохід піднімає «підлогу»
     const ex = 0.1 + 0.5 * b.D + 0.15 * b.urban + 0.15 * b.edu;     // наскільки люди бачать, як живуть деінде
     // неприйняття втрат: до кращого звикають швидко, з гіршим миряться повільно
     const adapt = w > b.expect ? 0.1 : 0.035;
     const ref = w * Math.pow(Math.max(1, wRef / w), 0.3);           // «досяжне» порівняння з багатшими
     b.expect += adapt * (w * 1.01 - b.expect) + 0.008 * ex * (ref - b.expect);
+    if (kAds) b.expect += 0.012 * kAds * (w * 1.2 - b.expect);   // реклама роздуває бажання понад досяжне
     b.w = w; b.matRatio = w / b.expect;
 
     // надлишок претендентів у еліту
-    const eoT = clamp(0.1 + 1.4 * (b.omega - 0.35) + 0.25 * b.edu + 0.2 * b.D + 6 * (0.025 - b.gAvg));
+    const eoT = clamp(0.1 + 1.4 * (b.omega - 0.35) + 0.25 * b.edu + 0.2 * b.D + 6 * (0.025 - b.gAvg) + 0.12 * kMk);   // біржові статки множать претендентів
     b.eo += (eoT - b.eo) * 0.07;
 
     // держфінанси
     const war = b.war ? 0.1 * (b.war.intensity || 1) : 0;
     const interest = b.order === 'planned' ? 0 : 0.025 * b.debt;
     const polBias = (['democracy', 'hybrid', 'oligarchy'].includes(b.regime) ? 0.015 : 0.005) + (this.year > 2025 ? (H.AGING[b.id] || 0) * 0.04 * Math.min(1, (this.year - 2025) / 40) : 0);   // виборчий цикл і пенсії тягнуть до дефіцитів
-    b.def = b.defBias + polBias + interest - O.tax * (b.cap - 0.6) * 0.1 + war + (b.cool > 3 ? 0.02 : 0) + O.welfare * 0.04 * b.AI;
+    b.def = b.defBias + polBias + interest - O.tax * (b.cap - 0.6) * 0.1 + war + (b.cool > 3 ? 0.02 : 0) + O.welfare * 0.04 * b.AI + 0.03 * kUbi + 0.012 * this.climate * (b.id === 'GS' ? 1.5 : 1);   // витрати на адаптацію й відбудову
     const infl = this.oil > 0 ? 0.06 : b.order === 'planned' ? 0 : 0.02;   // інфляція «з'їдає» борг
     b.debt = clamp(b.debt + b.def - (g + infl) * b.debt, 0, 4);
     b.defBias *= b.war ? 0.995 : 0.97;
@@ -1467,7 +1653,11 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
     if (b.sov < 0.5) v -= 0.15;                                                   // вилучення колонією / імперією
     v -= 0.35 * this.climate * (b.id === 'GS' ? 1.4 : b.id === 'RU' || b.id === 'UA' ? 0.6 : 1);
     // старіння населення після 2025: менше працівників, більше пенсіонерів
-    if (this.year > 2025) v -= (H.AGING[b.id] || 0) * Math.min(1, (this.year - 2025) / 50);
+    const kMig = this.cs('migration'), recv = b.id === 'US' || b.id === 'EU';
+    if (this.year > 2025) v -= (H.AGING[b.id] || 0) * Math.min(1, (this.year - 2025) / 50) * (recv ? 1 - 0.5 * kMig : 1);
+    if (kMig) v += recv ? 0.04 * kMig : b.id === 'GS' ? -0.03 * kMig : 0;   // працівники приїжджають / «відтік мізків»
+    const kEn = this.cs('energy');
+    if (kEn) v += 0.12 * kEn * (b.id === 'RU' ? -0.9 : 1);                     // петродержава втрачає ренту
     return v;
   };
 
@@ -1503,9 +1693,12 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
       + (b.order === 'agrarian' ? 0.15 * (1 - b.urban) : 0)                 // земельний голод селян
       + 0.4 * b.warDefeat + (b.war ? 0.25 * clamp(b.war.exh[b.id] || 0) * (b.war.sides[1].includes(b.id) ? 0.3 : 1) : 0);   // гнів захисників спрямований на агресора, а не на власну владу
     const altAppeal = this.altAppeal(b);
-    sm(C.emo, 'anger', (1 - C.needs.mat) * 0.7 + (1 - C.needs.status) * 0.25 + (1 - C.needs.voice) * 0.18 * (0.3 + b.edu) + injustice);
+    const kAdsS = this.cs('ads', b), kUnS = this.cs('unions', b), pers = this.personas(b);
+    let pAnger = 0, pHope = 0, pMob = 0;
+    for (const p of pers) { if (['nat', 'soc', 'rel', 'tech', 'trad'].includes(p.ideo)) pAnger += 0.1 * p.str; else pHope += 0.1 * p.str; pMob += 0.12 * p.str; }
+    sm(C.emo, 'anger', (1 - C.needs.mat) * 0.7 + (1 - C.needs.status) * 0.25 + (1 - C.needs.voice) * 0.18 * (0.3 + b.edu) + injustice + pAnger);
     sm(C.emo, 'fear', (1 - C.needs.sec) * 0.9 + b.rep * 0.25 + b.autoPress * 0.25);
-    sm(C.emo, 'hope', 0.35 + b.gAvg * 10 + altAppeal * 0.25 - (1 - C.needs.mat) * 0.3 + (b.sov < 0.5 ? -0.1 : 0));
+    sm(C.emo, 'hope', 0.35 + pHope + b.gAvg * 10 + altAppeal * 0.25 - (1 - C.needs.mat) * 0.3 + (b.sov < 0.5 ? -0.1 : 0));
     sm(C.emo, 'trust', b.legit);
     sm(C.emo, 'pride', b.coh * 0.5 + b.pride * 0.5 - b.humil * 0.5);
     sm(A.emo, 'anger', (1 - A.needs.status) * 0.8 + (1 - A.needs.voice) * 0.25 + injustice * 0.6);
@@ -1520,7 +1713,7 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
     sm(E.emo, 'pride', b.pride);
 
     // організація
-    const orgT = clamp(0.1 + 0.5 * C.emo.anger + 0.35 * b.urban + 0.15 * b.D * (1 - surv) + 0.15 * b.inc + 0.1 * b.edu - 0.25 * C.emo.fear - O.atom - 0.3 * surv);
+    const orgT = clamp(0.1 + 0.5 * C.emo.anger + 0.35 * b.urban + 0.15 * b.D * (1 - surv) + 0.15 * b.inc + 0.1 * b.edu - 0.25 * C.emo.fear - O.atom - 0.3 * surv - 0.12 * kAdsS + 0.2 * kUnS + pMob);
     C.org += (orgT - C.org) * 0.07 + (b.strain || 0) * 0.04;   // фронт організовує солдатів
     const aOrgT = clamp(0.15 + 0.8 * b.eo * A.emo.anger + 0.2 * b.edu + 0.15 * b.D - 0.25 * surv);
     A.org += (aOrgT - A.org) * 0.08;
@@ -1530,7 +1723,7 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 
     // згуртованість (асабія) і згуртованість еліт
     const threat = b.war ? 0.6 : Math.max(...H.BLOCS.filter(o => o !== b.id).map(o => this.getTension(b.id, o))) * 0.4;
-    b.coh = clamp(b.coh + 0.03 * (0.15 + threat * 0.5 + b.pride * 0.2 - (b.omega - 0.3) * 0.8 - b.D * 0.12 - b.coh * 0.5));
+    b.coh = clamp(b.coh + 0.03 * (0.15 + threat * 0.5 + b.pride * 0.2 - (b.omega - 0.3) * 0.8 - b.D * 0.12 - b.coh * 0.5 - 0.12 * kAdsS - ((b.id === 'US' || b.id === 'EU') ? 0.08 * this.cs('migration') : 0)));
     const eCohT = clamp(0.62 + 0.25 * threat - 0.6 * b.eo - 0.15 * b.D * (1 - surv) - 0.25 * clamp(b.stagn / 15) + (E.emo.fear > 0.6 ? 0.1 : 0));
     b.eCoh += (eCohT - b.eCoh) * 0.06;
 
@@ -1557,7 +1750,10 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
     const exposure = 0.05 + 0.45 * b.D + 0.15 * b.urban + 0.1 * b.edu;
     const socAppeal = H.BLOCS.some(id => this.blocs[id].gov === 'soc' && this.blocs[id].gAvg > 0.03) ? 0.6 : 0.2;
     const warThreat = b.war ? 0.6 : 0;
-    const media = 1 + b.D * 0.6;   // соцмережі прискорюють поляризацію гніву й страху
+    const kAds = this.cs('ads', b), kUn = this.cs('unions', b), kMig = this.cs('migration'), recv = b.id === 'US' || b.id === 'EU';
+    const media = (1 + b.D * 0.6) * (1 + 0.8 * kAds);   // соцмережі й рекламні стрічки прискорюють поляризацію гніву й страху
+    const pers = this.personas(b);
+    const boost = (d, f) => { for (const p of pers) d[p.ideo] = (d[p.ideo] || 0) + f * p.str * this.avail(p.ideo); };
     const apply = (grp, d, rate) => {
       // дифузія: «успішні моделі» інших блоків притягують
       for (const id of H.BLOCS) {
@@ -1586,9 +1782,15 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
       lib: (C.emo.trust * C.emo.hope * 0.7 + b.inc * 0.15) * 0.5,
       neolib: av('neolib') * 0.12 * C.emo.trust,
       tech: av('tech') * b.D * C.emo.hope * 0.18,
-      green: av('green') * (this.climate * 0.6 + b.edu * 0.1),
+      green: av('green') * (this.climate * 0.3 + b.edu * 0.1),
+      // кліматичні лиха лякають: частина людей шукає захисту в «своїх кордонах»
+      climFear: 0,
       coop: av('coop') * C.emo.anger * C.emo.hope * b.D * 0.15,
     };
+    delete dC.climFear; dC.nat += this.climate * 0.25 * C.emo.fear;
+    dC.tech += 0.05 * kAds * av('tech'); dC.socdem += 0.2 * kUn; dC.coop += 0.05 * kUn * av('coop');
+    if (recv && kMig) dC.nat += kMig * (0.05 + 0.15 * C.emo.fear);
+    boost(dC, 0.35);
     apply(C, dC, 0.5);
     const revFear = C.emo.anger * C.org;
     const dA = {
@@ -1597,11 +1799,12 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
       lib: A.emo.hope * 0.4 + b.inc * 0.1,
       socdem: A.emo.anger * b.inc * 0.3,
       tech: av('tech') * b.D * 0.4,
-      green: av('green') * (0.15 * b.edu + this.climate * 0.6),
+      green: av('green') * (0.15 * b.edu + this.climate * 0.35),
       coop: av('coop') * A.emo.anger * b.D * 0.3,
       neolib: av('neolib') * 0.1,
       rel: A.emo.fear * (1 - b.edu) * 0.2,
     };
+    boost(dA, 0.25);
     apply(A, dA, 0.5);
     const dE = {
       nat: revFear * 0.9 + b.humil * 0.3 + warThreat * 0.2,
@@ -1640,7 +1843,9 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
     }
     b.strain = b.war ? clamp((b.war.exh[b.id] || 0) - 0.3) : 0;     // виснаження війною
     const tgt = 0.15 + 0.4 * perf + 0.3 * clamp(proc) + 0.15 * b.coh + 0.1 * b.pride - 0.2 * b.humil - (b.sov < 0.5 ? 0.25 : 0) - 0.35 * b.warDefeat - 0.35 * b.strain;
-    b.legit += (clamp(tgt) - b.legit) * 0.12;
+    let pl = 0;
+    for (const p of this.personas(b)) pl += p.ideo === b.gov ? 0.05 * p.str : -0.08 * p.str;
+    b.legit += (clamp(tgt + pl) - b.legit) * 0.12;
 
     if (b.sov < 0.5 || b.regime === 'collapse') return;   // підпорядковані й розпалі блоки не обирають курс
 
@@ -1746,6 +1951,7 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
       votes[incumbent] *= (b.regime === 'hybrid' ? 1.5 : 0.75) + 0.6 * perf;
     }
     if (b.regime === 'technocorp') votes.tech = (votes.tech || 0) + 0.4;
+    for (const p of this.personas(b)) { const k = party(p.ideo); votes[k] = (votes[k] || 0) + 0.12 * p.str * wC; }
     let tot = 0; const keys = Object.keys(votes);
     for (const k of keys) { votes[k] = Math.pow(votes[k], 3); tot += votes[k]; }
     let x = r() * tot, win = keys[0];
@@ -2191,6 +2397,12 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
     const sur = surname || pick(r, N.s);
     return { bloc, role, female: f, first, sur, born, dies: born + 62 + Math.floor(r() * 22), mood: { anger: 0.3, fear: 0.3, hope: 0.5, trust: 0.5 }, diary: [], gen: 1, quirk: r() - 0.5 };
   }
+  // ім'я для медійної персони: [українською, німецькою]
+  H.randomName = function (bloc, r) {
+    const N = NAMES[bloc] || NAMES.EU, f = r() < 0.5;
+    const a = pick(r, f ? N.f : N.m), s = pick(r, N.s);
+    return [(a[0] + ' ' + s[0]).trim(), (a[1] + ' ' + s[1]).trim()];
+  };
   H.personName = function (p, lang) {
     const i = lang === 'de' ? 1 : 0;
     return (p.first[i] + (p.sur[i] ? ' ' + p.sur[i] : '')).trim();
@@ -2247,9 +2459,10 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
     const base = { role: p.role, era, order, war: !!b.war, rep: b.rep > 0.5, f: p.female };
     // спершу — великі події свого блоку
     const evs = sim.log.filter(e => e.year === year && (e.bloc === p.bloc || e.bloc == null || e.p.a === p.bloc || e.p.b === p.bloc));
-    const big = evs.find(e => e.kind === 'transition' && e.bloc === p.bloc) || evs.find(e => e.kind === 'war') || evs.find(e => e.kind === 'shock') || evs.find(e => e.key === 'ev.crackdown');
+    const big = evs.find(e => e.kind === 'transition' && e.bloc === p.bloc) || evs.find(e => e.kind === 'war') || evs.find(e => e.kind === 'shock') || evs.find(e => e.key === 'ev.crackdown') || evs.find(e => e.key === 'ev.persona');
     if (big) {
       base.att = big.p.a === p.bloc;
+      if (big.p.name) base.name = big.p.name;
       const k = big.key.replace(/^(tr|ev)\./, '');
       const key = 'd.ev.' + k;
       if (H.hasText(key + '.' + p.role)) return { year, key: key + '.' + p.role, p: base };
@@ -2298,17 +2511,19 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 
   const S = {
     view: 'live', mode: 'history', sim: null, people: null, playing: true, speed: 3, sel: 'UA', filter: 'all', chronSig: '',
-    scen: { ai: 0.5, conc: 0.55, policy: 0.5, climate: 0.4, tension: 0.5 }, fut: null, futBusy: 0, futView: 'chart', bt: null, btBusy: false,
+    scen: { ai: 0.5, conc: 0.55, policy: 0.5, climate: 0.4, tension: 0.5 }, conds: [], futSig: '', fut: null, futBusy: 0, futView: 'chart', bt: null, btBusy: false,
     spark: {},
   };
   const SPEEDS = [1, 3, 8, 20];
-  const KNOBS = ['ai', 'conc', 'policy', 'climate', 'tension'];
+  const KNOBS = ['ai', 'conc', 'policy', 'tension'];
+  const W = (str, extra) => [{ id: 'warming', str }].concat(extra || []);
   const PRESETS = {
-    base: { ai: 0.5, conc: 0.55, policy: 0.5, climate: 0.4, tension: 0.5 },
-    tf: { ai: 0.8, conc: 0.85, policy: 0.2, climate: 0.4, tension: 0.5 },
-    reg: { ai: 0.5, conc: 0.4, policy: 0.85, climate: 0.4, tension: 0.4 },
-    storm: { ai: 0.5, conc: 0.55, policy: 0.5, climate: 0.85, tension: 0.85 },
+    base: { scen: { ai: 0.5, conc: 0.55, policy: 0.5, tension: 0.5 }, conds: W(0.4) },
+    tf: { scen: { ai: 0.8, conc: 0.85, policy: 0.2, tension: 0.5 }, conds: W(0.4, [{ id: 'ads', str: 0.7 }, { id: 'market', str: 0.6 }]) },
+    reg: { scen: { ai: 0.5, conc: 0.4, policy: 0.85, tension: 0.4 }, conds: W(0.4, [{ id: 'openai', str: 0.6 }, { id: 'unions', str: 0.4 }]) },
+    storm: { scen: { ai: 0.5, conc: 0.55, policy: 0.5, tension: 0.85 }, conds: W(0.85, [{ id: 'migration', str: 0.6 }, { id: 'pandemics', str: 0.5 }]) },
   };
+
 
   /* ---------- підказка ---------- */
   const tip = $('tip');
@@ -2340,7 +2555,8 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 
   /* ==================== ЖИВА СИМУЛЯЦІЯ ==================== */
   function newSim() {
-    S.sim = new H.Sim({ mode: S.mode });
+    S.sim = new H.Sim(S.mode === 'future' ? { mode: 'future', scen: S.scen, conds: S.conds } : { mode: S.mode });
+    if (S.mode === 'future') S.sim.scen = S.scen;   // зміни повзунків діють одразу
     S.people = new H.People(S.sim);
     S.chronSig = '';
     buildTimeline();
@@ -2438,17 +2654,19 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
     const isBloc = v => H.BLOCS.includes(v) || v === 'JP';
     for (const k of ['a', 'b', 'win', 'lose']) if (p[k]) q[k] = bn(p[k]);
     if (p.by) q.by = isBloc(p.by) ? bn(p.by) : t('ideo.' + p.by);
+    if ('name' in p) q.name = personaName(p.name);
     if (p.from && !e.key.startsWith('tr.')) {
       const pre = e.key === 'ev.order' ? 'ord.' : 'ideo.';
       q.from = t(pre + p.from); q.to = t(pre + p.to);
     }
     return t(e.key, q);
   }
+  function personaName(n) { const s = Array.isArray(n) ? n[H.lang === 'de' ? 1 : 0] : n; return s ? '«' + s + '»' : t('persona.anon'); }
   function causesText(p) {
     if (!p || !p.causes || !p.causes.length) return '';
     return t('live.why') + ': ' + p.causes.map(([c, v]) => `${t('c.' + c)} (${v})`).join(', ');
   }
-  const FILT = { all: () => true, transition: e => e.kind === 'transition', war: e => e.kind === 'war', shock: e => e.kind === 'shock', politics: e => ['election', 'order', 'crisis'].includes(e.kind) };
+  const FILT = { all: () => true, transition: e => e.kind === 'transition', war: e => e.kind === 'war', shock: e => e.kind === 'shock', politics: e => ['election', 'order', 'crisis', 'media'].includes(e.kind) };
   function updateChron() {
     const log = S.sim.log, sig = log.length + '|' + S.filter + '|' + H.lang + '|' + S.sim.seed;
     if (sig === S.chronSig) return;
@@ -2492,6 +2710,7 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
   function diaryText(d, lang) {
     const p = Object.assign({ job: t('job.' + (d.p.era || 'ind')) }, d.p);
     if (d.key === 'd.inherit' && d.p.parent) p.parent = d.p.parent[lang === 'de' ? 1 : 0];
+    if ('name' in d.p) p.name = personaName(d.p.name);
     return t(d.key, p);
   }
   function updateSelected() {
@@ -2516,6 +2735,10 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
       return `<div><h4>${esc(t('g.' + g))}</h4><div class="bars">${top.map(([k, v]) => `<span class="lab"><span>${esc(t('ideo.' + k))}</span><span class="v">${pct(v / sum)}%</span></span><span class="meter"><i style="width:${pct(v / sum)}%"></i></span>`).join('')}</div></div>`;
     }).join('')}</div></div>`;
     // люди
+    if (S.mode === 'future') {
+      const ps = S.sim.personas(b);
+      h += `<div class="sec"><h3>${esc(t('sel.media'))}</h3>${ps.length ? `<ul class="plist">${ps.map(p => `<li><b>${esc(personaName(p.name))}</b> — ${esc(t('ideo.' + p.ideo))} · ${esc(t('sel.mediaReach', { n: pct(p.str) }))}${p.user ? ` · <span class="muted">${esc(t('sel.mediaUser'))}</span>` : ''}</li>`).join('')}</ul>` : `<p class="muted small">${esc(t('sel.mediaNone'))}</p>`}</div>`;
+    }
     h += `<div class="sec"><h3>${esc(t('sel.people'))}</h3><div class="people">${S.people.ofBloc(id).map(p => {
       const age = year - p.born;
       const role = t('role.' + p.role, { f: p.female });
@@ -2566,7 +2789,7 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
   });
   document.querySelectorAll('.mode').forEach(b => b.addEventListener('click', () => {
     if (S.mode === b.dataset.mode) return;
-    S.mode = b.dataset.mode; store.set('mode', S.mode); newSim(); S.playing = true; renderLive();
+    S.mode = b.dataset.mode; store.set('mode', S.mode); newSim(); S.playing = true; placeScenario(); renderLive();
   }));
 
   let acc = 0, last = 0;
@@ -2585,26 +2808,118 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
   }
 
   /* ==================== МОЖЛИВІ МАЙБУТНІ ==================== */
+  /* ---------- сценарій: базові припущення й додаткові умови ---------- */
+  const defConds = () => [{ id: 'warming', str: 0.4, from: 2025, on: true, blocs: [] }];
+  function condFrom(def) {
+    const live = S.view === 'live' && S.mode === 'future' && S.sim;
+    const y = live ? Math.max(2025, S.sim.year + 1) : 2025;
+    return Math.max(y, def.from || 2025);
+  }
+  function makeCond(id) {
+    const d = H.CONDS.find(c => c.id === id);
+    const c = { id, str: d.str, from: condFrom(d), on: true, blocs: [] };
+    if (d.scope === 'one') Object.assign(c, { blocs: [S.sel || d.bloc], ideo: d.ideo, len: d.len, name: '' });
+    return c;
+  }
+  function saveScen() { store.set('scen', JSON.stringify({ scen: S.scen, conds: S.conds })); markStale(); }
+  function markStale() {
+    const stale = S.fut && S.futSig !== scenSig();
+    $('futStale').hidden = !stale;
+  }
+  const scenSig = () => JSON.stringify([S.scen, S.conds]);
   function buildSliders() {
     $('presets').innerHTML = Object.keys(PRESETS).map(k => `<button class="chip" data-p="${k}">${esc(t('pr.' + k))}</button>`).join('');
     $('sliders').innerHTML = KNOBS.map(k => `<div class="slider"><label for="k-${k}"><span>${esc(t('k.' + k))}</span><output id="o-${k}">${pct(S.scen[k])}</output></label>
       <input type="range" id="k-${k}" data-k="${k}" min="0" max="100" step="5" value="${pct(S.scen[k])}">
       <div class="ends"><span>${esc(t('k.' + k + '.lo'))}</span><span>${esc(t('k.' + k + '.hi'))}</span></div></div>`).join('');
+    buildConds();
     markPreset();
     $('futToggle').textContent = S.futView === 'chart' ? t('table.view') : t('chart.view');
   }
+  function buildConds() {
+    const used = new Set(S.conds.map(c => c.id));
+    $('addCond').innerHTML = `<option value="">${esc(t('sc.add'))}</option>` + H.CONDS.filter(d => d.multi || !used.has(d.id)).map(d => `<option value="${d.id}">${esc(t('cond.' + d.id))}</option>`).join('');
+    if (!S.conds.length) { $('conds').innerHTML = `<p class="muted small">${esc(t('sc.none'))}</p>`; return; }
+    $('conds').innerHTML = S.conds.map((c, i) => {
+      const d = H.CONDS.find(x => x.id === c.id); if (!d) return '';
+      let h = `<div class="cond${c.on === false ? ' off' : ''}" data-i="${i}">
+        <div class="ch"><label class="sw"><input type="checkbox" data-f="on"${c.on === false ? '' : ' checked'} aria-label="${esc(t('sc.on'))}"><b>${esc(t('cond.' + c.id))}</b></label>
+        <button class="x" data-act="del" aria-label="${esc(t('sc.del'))}" title="${esc(t('sc.del'))}">✕</button></div>
+        <p class="cd">${esc(t('cond.' + c.id + '.d'))}</p>`;
+      if (d.scope === 'one') {
+        h += `<div class="cgrid">
+          <label>${esc(t('sc.name'))}<input type="text" data-f="name" maxlength="40" value="${esc(c.name || '')}" placeholder="${esc(t('sc.namePh'))}"></label>
+          <label>${esc(t('sc.bloc'))}<select data-f="bloc">${H.BLOCS.map(id => `<option value="${id}"${c.blocs[0] === id ? ' selected' : ''}>${esc(bn(id))}</option>`).join('')}</select></label>
+          <label class="wide">${esc(t('sc.ideo'))}<select data-f="ideo">${H.IDEOS.map(k => `<option value="${k}"${c.ideo === k ? ' selected' : ''}>${esc(t('ideo.' + k))}</option>`).join('')}</select></label>
+        </div>`;
+      }
+      h += `<div class="slider small"><label><span>${esc(t(d.scope === 'one' ? 'sc.reach' : 'sc.str'))}</span><output>${pct(c.str)}</output></label>
+        <input type="range" data-f="str" min="5" max="100" step="5" value="${pct(c.str)}"></div>
+        <div class="cgrid">
+          <label>${esc(t('sc.from'))}<input type="number" data-f="from" min="2025" max="2099" step="1" value="${c.from}"></label>`;
+      if (d.scope === 'one') h += `<label>${esc(t('sc.len'))}<select data-f="len">${[4, 8, 12, 20, 40].map(n => `<option value="${n}"${c.len === n ? ' selected' : ''}>${esc(t('sc.years', { n }))}</option>`).join('')}</select></label>`;
+      h += `</div>`;
+      if (d.scope === 'blocs') {
+        const all = !c.blocs || !c.blocs.length;
+        h += `<div class="where"><span class="muted small">${esc(t('sc.where'))}:</span><div class="chips"><button class="chip${all ? ' on' : ''}" data-act="all">${esc(t('sc.everywhere'))}</button>${H.BLOCS.map(id => `<button class="chip${!all && c.blocs.includes(id) ? ' on' : ''}" data-act="bloc" data-b="${id}">${esc(bn(id))}</button>`).join('')}</div></div>`;
+      } else if (d.scope === 'global') h += `<p class="muted small">${esc(t('sc.global'))}</p>`;
+      return h + `</div>`;
+    }).join('');
+  }
   function markPreset() {
-    $('presets').querySelectorAll('.chip').forEach(c => { const p = PRESETS[c.dataset.p]; c.classList.toggle('on', KNOBS.every(k => Math.abs(p[k] - S.scen[k]) < 0.001)); });
+    const sig = JSON.stringify(S.conds.map(c => [c.id, c.str, c.from, c.on !== false, (c.blocs || []).join()]));
+    $('presets').querySelectorAll('.chip').forEach(c => {
+      const p = PRESETS[c.dataset.p];
+      const pc = JSON.stringify(p.conds.map(x => [x.id, x.str, x.from || 2025, true, (x.blocs || []).join()]));
+      c.classList.toggle('on', KNOBS.every(k => Math.abs(p.scen[k] - S.scen[k]) < 0.001) && pc === sig);
+    });
   }
   $('sliders').addEventListener('input', e => {
     const k = e.target.dataset.k; if (!k) return;
-    S.scen[k] = +e.target.value / 100; $('o-' + k).textContent = e.target.value; markPreset();
+    S.scen[k] = +e.target.value / 100; $('o-' + k).textContent = e.target.value; markPreset(); saveScen();
   });
   $('presets').addEventListener('click', e => {
     const c = e.target.closest('[data-p]'); if (!c) return;
-    Object.assign(S.scen, PRESETS[c.dataset.p]);
-    for (const k of KNOBS) { $('k-' + k).value = pct(S.scen[k]); $('o-' + k).textContent = pct(S.scen[k]); }
-    markPreset(); runFutures();
+    const p = PRESETS[c.dataset.p];
+    Object.assign(S.scen, p.scen);
+    S.conds.splice(0, S.conds.length, ...p.conds.map(x => Object.assign({ on: true, blocs: [], from: 2025 }, x)));
+    buildSliders(); saveScen();
+    if (S.view === 'futures') runFutures();
+  });
+  const condAt = el => { const box = el.closest('.cond'); return box ? S.conds[+box.dataset.i] : null; };
+  $('conds').addEventListener('input', e => {
+    const c = condAt(e.target), f = e.target.dataset.f; if (!c || !f) return;
+    if (f === 'str') { c.str = +e.target.value / 100; e.target.parentNode.querySelector('output').textContent = e.target.value; }
+    else if (f === 'name') c.name = e.target.value.trim();
+    else if (f === 'from') { const v = Math.round(+e.target.value); if (v >= 2025 && v <= 2099) c.from = v; }
+    else return;
+    markPreset(); saveScen();
+  });
+  $('conds').addEventListener('change', e => {
+    const c = condAt(e.target), f = e.target.dataset.f; if (!c || !f) return;
+    if (f === 'on') { c.on = e.target.checked; e.target.closest('.cond').classList.toggle('off', !c.on); }
+    else if (f === 'bloc') c.blocs = [e.target.value];
+    else if (f === 'ideo') c.ideo = e.target.value;
+    else if (f === 'len') c.len = +e.target.value;
+    else if (f === 'from') { e.target.value = c.from; }
+    markPreset(); saveScen();
+  });
+  $('conds').addEventListener('click', e => {
+    const btn = e.target.closest('[data-act]'); if (!btn) return;
+    const i = +btn.closest('.cond').dataset.i, c = S.conds[i];
+    if (btn.dataset.act === 'del') S.conds.splice(i, 1);
+    else if (btn.dataset.act === 'all') c.blocs = [];
+    else if (btn.dataset.act === 'bloc') {
+      const id = btn.dataset.b; c.blocs = c.blocs || [];
+      c.blocs = c.blocs.includes(id) ? c.blocs.filter(x => x !== id) : c.blocs.concat(id);
+      if (c.blocs.length === H.BLOCS.length) c.blocs = [];
+    }
+    buildConds(); markPreset(); saveScen();
+  });
+  $('addCond').addEventListener('change', e => {
+    const id = e.target.value; if (!id) return;
+    S.conds.push(makeCond(id)); buildConds(); markPreset(); saveScen();
+    const last = $('conds').lastElementChild; if (last && last.scrollIntoView) last.scrollIntoView({ block: 'nearest' });
   });
   $('goFut').addEventListener('click', () => runFutures());
   $('futToggle').addEventListener('click', () => {
@@ -2615,8 +2930,8 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 
   function runFutures() {
     const n = +$('nRuns').value, token = ++S.futBusy;
-    const res = H.newEnsemble({ mode: 'future', scen: Object.assign({}, S.scen), seed: 5 });
-    S.fut = res; let k = 0, lastDraw = 0;
+    const res = H.newEnsemble({ mode: 'future', scen: Object.assign({}, S.scen), conds: JSON.parse(JSON.stringify(S.conds)), seed: 5 });
+    S.fut = res; S.futSig = scenSig(); markStale(); let k = 0, lastDraw = 0;
     const prog = $('futProg'); prog.hidden = false; $('goFut').disabled = true;
     function chunk() {
       if (token !== S.futBusy) return;
@@ -2726,12 +3041,17 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
   }
 
   /* ==================== НАВІГАЦІЯ ==================== */
+  function placeScenario() {
+    const slot = S.view === 'live' ? $('scenSlotLive') : $('scenSlotFut');
+    if ($('scenario').parentNode !== slot) slot.appendChild($('scenario'));
+    $('liveScen').hidden = S.mode !== 'future';
+  }
   function route() {
     const v = (location.hash || '#live').slice(1);
     S.view = ['live', 'futures', 'method'].includes(v) ? v : 'live';
     for (const x of ['live', 'futures', 'method']) $('view-' + x).hidden = x !== S.view;
     document.querySelectorAll('.navl').forEach(a => { a.classList.toggle('on', a.dataset.view === S.view); a.setAttribute('aria-current', a.dataset.view === S.view ? 'page' : 'false'); });
-    hideTip();
+    hideTip(); placeScenario();
     if (S.view === 'futures' && !S.fut) runFutures();
     if (S.view === 'method' && !S.bt) runBacktest();
   }
@@ -2748,6 +3068,11 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
   const sm = store.get('mode'); if (sm === 'history' || sm === 'future') S.mode = sm;
   const ss = +store.get('speed'); if (SPEEDS.includes(ss)) S.speed = ss;
   const sb = store.get('sel'); if (H.BLOCS.includes(sb)) S.sel = sb;
+  try {
+    const sc = JSON.parse(store.get('scen') || 'null');
+    if (sc && sc.scen && Array.isArray(sc.conds)) { for (const k of KNOBS) if (typeof sc.scen[k] === 'number') S.scen[k] = sc.scen[k]; S.conds = sc.conds.filter(c => H.CONDS.some(d => d.id === c.id)); }
+    else S.conds = defConds();
+  } catch (e) { S.conds = defConds(); }
   applyStatic();
   newSim();
   route();

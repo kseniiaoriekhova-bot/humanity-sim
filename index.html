@@ -41,6 +41,11 @@
     </div>
     <p class="intro" data-i18n="live.intro"></p>
     <p class="endnote" id="endnote" hidden data-i18n="live.end"></p>
+    <details class="card scenlive" id="liveScen" hidden>
+      <summary data-i18n="sc.live"></summary>
+      <p class="muted small" data-i18n="sc.liveNote"></p>
+      <div id="scenSlotLive"></div>
+    </details>
 
     <div class="live">
       <div class="col-main">
@@ -75,9 +80,18 @@
     <p class="intro" data-i18n="fu.intro"></p>
     <div class="futgrid">
       <section class="card knobs">
-        <h2 data-i18n="fu.knobs"></h2>
-        <div class="presets" id="presets"></div>
-        <div id="sliders"></div>
+        <h2 data-i18n="sc.title"></h2>
+        <div id="scenSlotFut">
+          <div id="scenario">
+            <div class="presets" id="presets"></div>
+            <h3 class="sch" data-i18n="sc.base"></h3>
+            <div id="sliders"></div>
+            <h3 class="sch" data-i18n="sc.conds"></h3>
+            <div id="conds"></div>
+            <select id="addCond" class="addcond"></select>
+          </div>
+        </div>
+        <p class="stale" id="futStale" hidden data-i18n="sc.stale"></p>
         <div class="runrow">
           <label for="nRuns" data-i18n="fu.runs"></label>
           <select id="nRuns"><option value="100">100</option><option value="200" selected>200</option><option value="400">400</option></select>
@@ -124,6 +138,8 @@
         <p data-i18n-html="me.tf.con"></p>
       </div>
       <p data-i18n-html="me.tf.model"></p>
+      <h2 data-i18n="me.cond.h"></h2>
+      <p data-i18n="me.cond.p"></p>
       <h2 data-i18n="me.bt.h"></h2>
       <p data-i18n="me.bt.p"></p>
       <div id="backtest"></div>

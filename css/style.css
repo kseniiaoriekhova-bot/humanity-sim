@@ -225,6 +225,34 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 .ftable th:first-child, .ftable td:first-child { text-align: left; }
 .scroll { overflow-x: auto; }
 
+.sch { font-size: 13px; color: var(--ink-2); font-weight: 650; text-transform: uppercase; letter-spacing: .04em; margin: 14px 0 8px; }
+.cond { border: 1px solid var(--grid); border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; background: var(--surface); }
+.cond.off { opacity: .55; }
+.cond .ch { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.cond .sw { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; }
+.cond .sw input { accent-color: var(--ink); width: 16px; height: 16px; margin: 0; flex: none; }
+.cond .x { border: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: 14px; padding: 2px 4px; border-radius: 6px; }
+.cond .x:hover { background: var(--surface-2); color: var(--ink); }
+.cond .cd { font-size: 12.5px; color: var(--ink-2); margin: 4px 0 8px; line-height: 1.4; }
+.cond .slider { margin-bottom: 8px; }
+.cgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+.cgrid label { display: flex; flex-direction: column; gap: 3px; font-size: 12px; color: var(--ink-2); min-width: 0; }
+.cgrid .wide { grid-column: 1 / -1; }
+.cgrid input, .cgrid select, .addcond { border: 1px solid var(--ring); border-radius: 7px; padding: 5px 7px; background: var(--surface); font-size: 13.5px; color: var(--ink); width: 100%; min-width: 0; }
+.addcond { margin: 2px 0 12px; font-weight: 550; cursor: pointer; }
+.where { display: flex; flex-direction: column; gap: 4px; }
+.where .chip { font-size: 12px; padding: 2px 8px; }
+.stale { font-size: 13px; color: var(--warn); margin: 0 0 6px; }
+.scenlive { margin-bottom: 14px; }
+.scenlive summary { cursor: pointer; font-weight: 650; }
+.scenlive[open] summary { margin-bottom: 6px; }
+.scenlive #sliders { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0 24px; }
+.scenlive #conds { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 10px; align-items: start; margin-bottom: 10px; }
+.scenlive #conds .cond { margin-bottom: 0; }
+.scenlive .addcond { max-width: 360px; }
+.plist { list-style: none; margin: 0; padding: 0; font-size: 13px; }
+.plist li { padding: 3px 0; }
+
 /* ---------- метод ---------- */
 .prose { max-width: 860px; margin: 0 auto; background: var(--surface); border: 1px solid var(--ring); border-radius: var(--radius); padding: 24px 28px; }
 .prose h2 { font-size: 18px; margin: 26px 0 8px; }

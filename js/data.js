@@ -224,6 +224,23 @@
     return { I, D, A };
   };
 
+  /* ---------- Умови сценарію (режим «майбутнє») ----------
+     scope: global — діє на весь світ; blocs — можна обрати блоки; one — один блок (медійна персона)
+     multi — можна додати кілька разів */
+  H.CONDS = [
+    { id: 'warming', scope: 'global', str: 0.4 },
+    { id: 'ads', scope: 'blocs', str: 0.6 },
+    { id: 'market', scope: 'blocs', str: 0.6 },
+    { id: 'persona', scope: 'one', multi: true, str: 0.7, len: 8, ideo: 'nat', bloc: 'US' },
+    { id: 'celebs', scope: 'blocs', str: 0.6 },
+    { id: 'ubi', scope: 'blocs', str: 0.6, from: 2035 },
+    { id: 'unions', scope: 'blocs', str: 0.6 },
+    { id: 'migration', scope: 'global', str: 0.5 },
+    { id: 'energy', scope: 'global', str: 0.6, from: 2040 },
+    { id: 'openai', scope: 'global', str: 0.6 },
+    { id: 'pandemics', scope: 'global', str: 0.5 },
+  ];
+
   /* ---------- Джерела ---------- */
   H.SOURCES = [
     ['Maddison Project Database 2023 (ВВП на особу)', 'https://www.rug.nl/ggdc/historicaldevelopment/maddison/'],
